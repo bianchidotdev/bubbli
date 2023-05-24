@@ -47,6 +47,7 @@ declare module '$env/static/private' {
 	export const npm_config_noproxy: string;
 	export const SOPS_AGE_KEY_FILE: string;
 	export const npm_config_local_prefix: string;
+	export const MIX_ARCHIVES: string;
 	export const USER: string;
 	export const NVM_DIR: string;
 	export const LS_COLORS: string;
@@ -77,6 +78,7 @@ declare module '$env/static/private' {
 	export const npm_config_resolution_mode: string;
 	export const ITERM_PROFILE: string;
 	export const XPC_FLAGS: string;
+	export const MIX_HOME: string;
 	export const npm_config_node_gyp: string;
 	export const npm_package_version: string;
 	export const XPC_SERVICE_NAME: string;
@@ -154,6 +156,7 @@ declare module '$env/dynamic/private' {
 		npm_config_noproxy: string;
 		SOPS_AGE_KEY_FILE: string;
 		npm_config_local_prefix: string;
+		MIX_ARCHIVES: string;
 		USER: string;
 		NVM_DIR: string;
 		LS_COLORS: string;
@@ -184,6 +187,7 @@ declare module '$env/dynamic/private' {
 		npm_config_resolution_mode: string;
 		ITERM_PROFILE: string;
 		XPC_FLAGS: string;
+		MIX_HOME: string;
 		npm_config_node_gyp: string;
 		npm_package_version: string;
 		XPC_SERVICE_NAME: string;
