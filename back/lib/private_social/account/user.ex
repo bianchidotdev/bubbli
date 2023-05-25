@@ -21,6 +21,7 @@ defmodule PrivateSocial.Account.User do
     timestamps()
 
     has_many :client_keys, PrivateSocial.Account.ClientKey
+    has_many :authentication_challenges, PrivateSocial.Account.AuthenticationChallenge
   end
 
   @doc false
