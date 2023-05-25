@@ -29,6 +29,10 @@ config :private_social, PrivateSocialWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
+config :private_social, PrivateSocial.Account.Guardian,
+  issuer: "private_social",
+  secret_key: "tOTzRIOC13AetKmQ9stYeOgNJgDSzGS0XkGm05NA0TwgJKRHhQBTayTZgwoSAAh2"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

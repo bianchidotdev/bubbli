@@ -8,6 +8,21 @@ defmodule PrivateSocial.Account do
 
   alias PrivateSocial.Account.User
 
+  def auth_challenge_user(email) do
+    query = from u in User, where: u.email == ^email
+    case Repo.one(query) do
+      nil ->
+        {:error, :no_user_found}
+      user ->
+        # TODO(bianchi): need to generate and store a one-time use string
+        {:ok, user.salt}
+    end
+  end
+
+  def authenticate_user(_username) do
+    # TODO(bianchi): implement
+  end
+
   @doc """
   Returns the list of users.
 

@@ -9,7 +9,6 @@ defmodule PrivateSocial.Account.User do
     field :is_active, :boolean, default: false
 
     # cryptography
-    field :client_public_keys, {:array, :string}
     field :encrypted_master_private_key
     field :master_public_key, :string
     field :salt, :string
@@ -20,6 +19,8 @@ defmodule PrivateSocial.Account.User do
     field :last_name, :string
 
     timestamps()
+
+    has_many :client_keys, PrivateSocial.Account.ClientKey
   end
 
   @doc false
