@@ -6,7 +6,7 @@ defmodule PrivateSocial.Account do
   import Ecto.Query, warn: false
   alias PrivateSocial.Repo
 
-  alias PrivateSocial.Account.User
+  alias PrivateSocial.Account.{User,AuthenticationChallenge,TempUserRegistration}
 
   def auth_challenge_user(email) do
     query = from u in User, where: u.email == ^email
@@ -15,12 +15,49 @@ defmodule PrivateSocial.Account do
         {:error, :no_user_found}
       user ->
         # TODO(bianchi): need to generate and store a one-time use string
-        {:ok, user.salt}
+        {:ok, auth_challenge} = create_auth_challenge(user.email)
+        {:ok, %{salt: user.salt, challenge: auth_challenge.challenge_string}}
     end
+  end
+
+  def validate_auth_challenge() do
+
   end
 
   def authenticate_user(_username) do
     # TODO(bianchi): implement
+  end
+
+  def create_auth_challenge(email) do
+    # cryptographic challenge reference docs: https://www.w3.org/TR/webauthn-2/#sctn-cryptographic-challenges
+    challenge_string = :crypto.strong_rand_bytes(32) |> Base.url_encode64
+    # TODO(bianchi): move auth timeout window into configuration
+    expiry_time = Timex.now |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
+    %AuthenticationChallenge{challenge_string: challenge_string, expires_at: expiry_time}
+    |> AuthenticationChallenge.changeset(%{email: email})
+    |> Repo.insert()
+  end
+
+  def get_or_create_temp_user(email) do
+    query = from tu in TempUserRegistration, where: tu.email == ^email
+    case Repo.one(query) do
+      nil ->
+        {:ok, temp_user} = create_temp_user(email)
+        temp_user
+      temp_user -> temp_user
+    end
+  end
+
+  def create_temp_user(email) do
+    expiry_time = Timex.now |> Timex.shift(days: 1) |> DateTime.truncate(:second)
+    %TempUserRegistration{expires_at: expiry_time}
+    |> TempUserRegistration.changeset(%{email: email})
+    |> Repo.insert(returning: [:salt])
+  end
+
+  def user_exists?(email) do
+    query = from u in User, where: u.email == ^email
+    Repo.exists?(query)
   end
 
   @doc """
@@ -67,7 +104,7 @@ defmodule PrivateSocial.Account do
   def create_user(attrs \\ %{}) do
     %User{}
     |> User.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(returning: [:salt])
   end
 
   @doc """

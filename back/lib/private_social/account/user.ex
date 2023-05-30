@@ -9,7 +9,7 @@ defmodule PrivateSocial.Account.User do
     field :is_active, :boolean, default: false
 
     # cryptography
-    field :encrypted_master_private_key
+    field :encrypted_master_private_key, :map
     field :master_public_key, :string
     field :salt, :string
 
@@ -21,14 +21,15 @@ defmodule PrivateSocial.Account.User do
     timestamps()
 
     has_many :client_keys, PrivateSocial.Account.ClientKey
-    has_many :authentication_challenges, PrivateSocial.Account.AuthenticationChallenge
+    has_many :authentication_challenges, PrivateSocial.Account.AuthenticationChallenge, references: :email, foreign_key: :email
   end
 
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :is_active])
+    |> cast(attrs, [:email, :is_active, :encrypted_master_private_key, :master_public_key, :display_name, :first_name, :last_name])
     |> validate_required([:email, :is_active])
+    |> validate_format(:email, ~r/@/) # Check that email is valid
     |> unique_constraint(:email)
   end
 end

@@ -7,7 +7,7 @@ defmodule PrivateSocial.AccountFixtures do
   @doc """
   Generate a unique user email.
   """
-  def unique_user_email, do: "some email#{System.unique_integer([:positive])}"
+  def unique_user_email, do: "someemail#{System.unique_integer([:positive])}@example.com"
 
   @doc """
   Generate a user.
@@ -17,7 +17,8 @@ defmodule PrivateSocial.AccountFixtures do
       attrs
       |> Enum.into(%{
         email: unique_user_email(),
-        is_active: true
+        is_active: true,
+        salt: "testsalt"
       })
       |> PrivateSocial.Account.create_user()
     user

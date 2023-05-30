@@ -21,10 +21,10 @@ defmodule PrivateSocial.AccountTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{email: "some email", is_active: true}
+      valid_attrs = %{email: "some@email", is_active: true}
 
       assert {:ok, %User{} = user} = Account.create_user(valid_attrs)
-      assert user.email == "some email"
+      assert user.email == "some@email"
       assert user.is_active == true
     end
 
@@ -34,10 +34,10 @@ defmodule PrivateSocial.AccountTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{email: "some updated email", is_active: false}
+      update_attrs = %{email: "someupdated@email", is_active: false}
 
       assert {:ok, %User{} = user} = Account.update_user(user, update_attrs)
-      assert user.email == "some updated email"
+      assert user.email == "someupdated@email"
       assert user.is_active == false
     end
 

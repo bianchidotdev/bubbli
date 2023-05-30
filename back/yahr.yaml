@@ -1,0 +1,11 @@
+requests:
+  local:
+    host: localhost:4000
+    scheme: http
+    requests:
+      registration_init:
+        path: /api/v1/registration_init
+        method: post
+        payload: { "email": "michael@bianchi.dev" }
+        headers:
+          Content-Type: "application/json"

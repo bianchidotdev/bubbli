@@ -3,6 +3,7 @@ defmodule PrivateSocial.Account.ClientKey do
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
 
   schema "client_keys" do
     field :type, Ecto.Enum, values: [:password, :recovery, :device]
