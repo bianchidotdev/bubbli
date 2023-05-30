@@ -8,13 +8,11 @@ defmodule PrivateSocialWeb.Router do
   scope "/api/v1", PrivateSocialWeb do
     pipe_through :api
 
-    resources "/threads", ThreadController, except: [:new, :edit]
-
     post "/registration_init", RegistrationController, :init
     post "/registration_confirm", RegistrationController, :confirm
 
-    post "/login_init", AuthenticationController, :init
-    post "/login_verify", AuthenticationController, :verify
+#    post "/login_init", AuthenticationController, :init
+#    post "/login_verify", AuthenticationController, :verify
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
