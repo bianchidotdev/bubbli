@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Account.ClientKey do
+defmodule Bubbli.Account.ClientKey do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,7 +13,7 @@ defmodule PrivateSocial.Account.ClientKey do
 
     timestamps()
 
-    belongs_to :user, PrivateSocial.Account.User, type: :binary_id, primary_key: true
+    belongs_to :user, Bubbli.Account.User, type: :binary_id, primary_key: true
   end
 
   @doc false

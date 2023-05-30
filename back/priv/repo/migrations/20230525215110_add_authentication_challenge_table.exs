@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Repo.Migrations.AddAuthenticationChallengeTable do
+defmodule Bubbli.Repo.Migrations.AddAuthenticationChallengeTable do
   use Ecto.Migration
 
   def change do

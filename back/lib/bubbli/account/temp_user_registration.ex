@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Account.TempUserRegistration do
+defmodule Bubbli.Account.TempUserRegistration do
   use Ecto.Schema
   import Ecto.Changeset
 

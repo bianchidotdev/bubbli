@@ -1,9 +1,9 @@
-defmodule PrivateSocialWeb.RegistrationController do
-  use PrivateSocialWeb, :controller
+defmodule BubbliWeb.RegistrationController do
+  use BubbliWeb, :controller
 
-  alias PrivateSocial.Account
+  alias Bubbli.Account
 
-  action_fallback PrivateSocialWeb.FallbackController
+  action_fallback BubbliWeb.FallbackController
 
   def init(conn, %{"email" => email}) do
     case Account.user_exists?(email) do

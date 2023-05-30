@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Repo.Migrations.AddClientKeysTable do
+defmodule Bubbli.Repo.Migrations.AddClientKeysTable do
   use Ecto.Migration
 
   def change do

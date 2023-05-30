@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(PrivateSocial.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Bubbli.Repo, :manual)

@@ -1,16 +1,16 @@
-defmodule PrivateSocialWeb.FallbackController do
+defmodule BubbliWeb.FallbackController do
   @moduledoc """
   Translates controller action results into valid `Plug.Conn` responses.
 
   See `Phoenix.Controller.action_fallback/1` for more details.
   """
-  use PrivateSocialWeb, :controller
+  use BubbliWeb, :controller
 
   # This clause handles errors returned by Ecto's insert/update/delete.
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: PrivateSocialWeb.ChangesetJSON)
+    |> put_view(json: BubbliWeb.ChangesetJSON)
     |> render(:error, changeset: changeset)
   end
 
@@ -18,7 +18,7 @@ defmodule PrivateSocialWeb.FallbackController do
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
-    |> put_view(html: PrivateSocialWeb.ErrorHTML, json: PrivateSocialWeb.ErrorJSON)
+    |> put_view(html: BubbliWeb.ErrorHTML, json: BubbliWeb.ErrorJSON)
     |> render(:"404")
   end
 end

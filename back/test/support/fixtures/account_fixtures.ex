@@ -1,7 +1,7 @@
-defmodule PrivateSocial.AccountFixtures do
+defmodule Bubbli.AccountFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `PrivateSocial.Account` context.
+  entities via the `Bubbli.Account` context.
   """
 
   @doc """
@@ -20,7 +20,7 @@ defmodule PrivateSocial.AccountFixtures do
         is_active: true,
         salt: "testsalt"
       })
-      |> PrivateSocial.Account.create_user()
+      |> Bubbli.Account.create_user()
     user
   end
 end

@@ -1,4 +1,4 @@
-defmodule PrivateSocialWeb.RegistrationJSON do
+defmodule BubbliWeb.RegistrationJSON do
   @doc """
   """
   def init(%{challenge: challenge, temp_user: temp_user}) do

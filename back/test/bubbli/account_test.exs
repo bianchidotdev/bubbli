@@ -1,12 +1,12 @@
-defmodule PrivateSocial.AccountTest do
-  use PrivateSocial.DataCase
+defmodule Bubbli.AccountTest do
+  use Bubbli.DataCase
 
-  alias PrivateSocial.Account
+  alias Bubbli.Account
 
   describe "users" do
-    alias PrivateSocial.Account.User
+    alias Bubbli.Account.User
 
-    import PrivateSocial.AccountFixtures
+    import Bubbli.AccountFixtures
 
     @invalid_attrs %{email: nil, is_active: nil}
 

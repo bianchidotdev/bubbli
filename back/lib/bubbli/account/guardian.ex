@@ -1,7 +1,7 @@
-defmodule PrivateSocial.Account.Guardian do
-  use Guardian, otp_app: :private_social
+defmodule Bubbli.Account.Guardian do
+  use Guardian, otp_app: :bubbli
 
-  alias PrivateSocial.Account
+  alias Bubbli.Account
 
   def subject_for_token(user, _claims) do
     {:ok, to_string(user.id)}

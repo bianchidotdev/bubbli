@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Account.User do
+defmodule Bubbli.Account.User do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -20,8 +20,8 @@ defmodule PrivateSocial.Account.User do
 
     timestamps()
 
-    has_many :client_keys, PrivateSocial.Account.ClientKey
-    has_many :authentication_challenges, PrivateSocial.Account.AuthenticationChallenge, references: :email, foreign_key: :email
+    has_many :client_keys, Bubbli.Account.ClientKey
+    has_many :authentication_challenges, Bubbli.Account.AuthenticationChallenge, references: :email, foreign_key: :email
   end
 
   @doc false

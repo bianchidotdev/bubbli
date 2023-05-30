@@ -1,4 +1,4 @@
-defmodule PrivateSocialWeb.ChangesetJSON do
+defmodule BubbliWeb.ChangesetJSON do
   @doc """
   Renders changeset errors.
   """
@@ -13,9 +13,9 @@ defmodule PrivateSocialWeb.ChangesetJSON do
     # uncommenting and adjusting the following code:
 
     # if count = opts[:count] do
-    #   Gettext.dngettext(PrivateSocialWeb.Gettext, "errors", msg, msg, count, opts)
+    #   Gettext.dngettext(BubbliWeb.Gettext, "errors", msg, msg, count, opts)
     # else
-    #   Gettext.dgettext(PrivateSocialWeb.Gettext, "errors", msg, opts)
+    #   Gettext.dgettext(BubbliWeb.Gettext, "errors", msg, opts)
     # end
 
     Enum.reduce(opts, msg, fn {key, value}, acc ->

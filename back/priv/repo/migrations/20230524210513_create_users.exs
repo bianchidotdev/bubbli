@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Repo.Migrations.CreateUsers do
+defmodule Bubbli.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def change do

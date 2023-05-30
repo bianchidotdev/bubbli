@@ -5,13 +5,13 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     PrivateSocial.Repo.insert!(%PrivateSocial.SomeSchema{})
+#     Bubbli.Repo.insert!(%Bubbli.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias PrivateSocial.Repo
-alias PrivateSocial.Account.{User}
+alias Bubbli.Repo
+alias Bubbli.Account.{User}
 
 defmodule Seeds do
   def setup_global_seeds(), do: nil

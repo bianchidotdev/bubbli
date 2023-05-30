@@ -1,4 +1,4 @@
-defmodule PrivateSocialWeb.Telemetry do
+defmodule BubbliWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -52,23 +52,23 @@ defmodule PrivateSocialWeb.Telemetry do
       ),
 
       # Database Metrics
-      summary("private_social.repo.query.total_time",
+      summary("bubbli.repo.query.total_time",
         unit: {:native, :millisecond},
         description: "The sum of the other measurements"
       ),
-      summary("private_social.repo.query.decode_time",
+      summary("bubbli.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
       ),
-      summary("private_social.repo.query.query_time",
+      summary("bubbli.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
       ),
-      summary("private_social.repo.query.queue_time",
+      summary("bubbli.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
       ),
-      summary("private_social.repo.query.idle_time",
+      summary("bubbli.repo.query.idle_time",
         unit: {:native, :millisecond},
         description:
           "The time the connection spent waiting before being checked out for the query"
@@ -86,7 +86,7 @@ defmodule PrivateSocialWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {PrivateSocialWeb, :count_users, []}
+      # {BubbliWeb, :count_users, []}
     ]
   end
 end

@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Repo.Migrations.AddTempUserRegistrationTable do
+defmodule Bubbli.Repo.Migrations.AddTempUserRegistrationTable do
   use Ecto.Migration
 
   def change do

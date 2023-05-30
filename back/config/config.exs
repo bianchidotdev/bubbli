@@ -7,17 +7,17 @@
 # General application configuration
 import Config
 
-config :private_social,
-  ecto_repos: [PrivateSocial.Repo]
+config :bubbli,
+  ecto_repos: [Bubbli.Repo]
 
 # Configures the endpoint
-config :private_social, PrivateSocialWeb.Endpoint,
+config :bubbli, BubbliWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [json: PrivateSocialWeb.ErrorJSON],
+    formats: [json: BubbliWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: PrivateSocial.PubSub,
+  pubsub_server: Bubbli.PubSub,
   live_view: [signing_salt: "HtOw9bl+"]
 
 # Configures the mailer
@@ -27,7 +27,7 @@ config :private_social, PrivateSocialWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :private_social, PrivateSocial.Mailer, adapter: Swoosh.Adapters.Local
+config :bubbli, Bubbli.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

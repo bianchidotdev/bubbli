@@ -1,4 +1,4 @@
-# PrivateSocial
+# Bubbli
 
 To start your Phoenix server:
 

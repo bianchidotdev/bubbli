@@ -1,12 +1,12 @@
-defmodule PrivateSocial.Account do
+defmodule Bubbli.Account do
   @moduledoc """
   The Account context.
   """
 
   import Ecto.Query, warn: false
-  alias PrivateSocial.Repo
+  alias Bubbli.Repo
 
-  alias PrivateSocial.Account.{User,AuthenticationChallenge,TempUserRegistration}
+  alias Bubbli.Account.{User,AuthenticationChallenge,TempUserRegistration}
 
   def auth_challenge_user(email) do
     query = from u in User, where: u.email == ^email

@@ -1,12 +1,12 @@
-defmodule PrivateSocialWeb do
+defmodule BubbliWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use PrivateSocialWeb, :controller
-      use PrivateSocialWeb, :html
+      use BubbliWeb, :controller
+      use BubbliWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -39,10 +39,10 @@ defmodule PrivateSocialWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: PrivateSocialWeb.Layouts]
+        layouts: [html: BubbliWeb.Layouts]
 
       import Plug.Conn
-      import PrivateSocialWeb.Gettext
+      import BubbliWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -51,9 +51,9 @@ defmodule PrivateSocialWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: PrivateSocialWeb.Endpoint,
-        router: PrivateSocialWeb.Router,
-        statics: PrivateSocialWeb.static_paths()
+        endpoint: BubbliWeb.Endpoint,
+        router: BubbliWeb.Router,
+        statics: BubbliWeb.static_paths()
     end
   end
 

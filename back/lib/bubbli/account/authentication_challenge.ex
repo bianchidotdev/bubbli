@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Account.AuthenticationChallenge do
+defmodule Bubbli.Account.AuthenticationChallenge do
   use Ecto.Schema
   import Ecto.Changeset
 

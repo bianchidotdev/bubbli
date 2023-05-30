@@ -1,6 +1,6 @@
-defmodule PrivateSocial do
+defmodule Bubbli do
   @moduledoc """
-  PrivateSocial keeps the contexts that define your domain
+  Bubbli keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

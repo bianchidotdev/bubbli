@@ -1,11 +1,11 @@
-defmodule PrivateSocialWeb.Router do
-  use PrivateSocialWeb, :router
+defmodule BubbliWeb.Router do
+  use BubbliWeb, :router
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/api/v1", PrivateSocialWeb do
+  scope "/api/v1", BubbliWeb do
     pipe_through :api
 
     post "/registration_init", RegistrationController, :init
@@ -16,7 +16,7 @@ defmodule PrivateSocialWeb.Router do
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:private_social, :dev_routes) do
+  if Application.compile_env(:bubbli, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
@@ -27,7 +27,7 @@ defmodule PrivateSocialWeb.Router do
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]
 
-      live_dashboard "/dashboard", metrics: PrivateSocialWeb.Telemetry
+      live_dashboard "/dashboard", metrics: BubbliWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

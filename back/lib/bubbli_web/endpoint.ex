@@ -1,12 +1,12 @@
-defmodule PrivateSocialWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :private_social
+defmodule BubbliWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :bubbli
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_private_social_key",
+    key: "_bubbli_key",
     signing_salt: "VwrSQ8K2",
     same_site: "Lax"
   ]
@@ -19,15 +19,15 @@ defmodule PrivateSocialWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :private_social,
+    from: :bubbli,
     gzip: false,
-    only: PrivateSocialWeb.static_paths()
+    only: BubbliWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :private_social
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :bubbli
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,
@@ -45,5 +45,5 @@ defmodule PrivateSocialWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug PrivateSocialWeb.Router
+  plug BubbliWeb.Router
 end

@@ -1,4 +1,4 @@
-defmodule PrivateSocial.Application do
+defmodule Bubbli.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -9,22 +9,22 @@ defmodule PrivateSocial.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
-      PrivateSocialWeb.Telemetry,
+      BubbliWeb.Telemetry,
       # Start the Ecto repository
-      PrivateSocial.Repo,
+      Bubbli.Repo,
       # Start the PubSub system
-      {Phoenix.PubSub, name: PrivateSocial.PubSub},
+      {Phoenix.PubSub, name: Bubbli.PubSub},
       # Start Finch
-      {Finch, name: PrivateSocial.Finch},
+      {Finch, name: Bubbli.Finch},
       # Start the Endpoint (http/https)
-      PrivateSocialWeb.Endpoint
-      # Start a worker by calling: PrivateSocial.Worker.start_link(arg)
-      # {PrivateSocial.Worker, arg}
+      BubbliWeb.Endpoint
+      # Start a worker by calling: Bubbli.Worker.start_link(arg)
+      # {Bubbli.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: PrivateSocial.Supervisor]
+    opts = [strategy: :one_for_one, name: Bubbli.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -32,7 +32,7 @@ defmodule PrivateSocial.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    PrivateSocialWeb.Endpoint.config_change(changed, removed)
+    BubbliWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end
