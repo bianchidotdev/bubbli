@@ -12,6 +12,29 @@
 	let encryptedMessage = "";
 	let encryptedMessageInput = "moiTwApxZXooBgzismOsY+jK+APaQ04ZVnV8o9u64bM=";
 	let decryptedMessage = "";
+	let publicKey = "";
+	let encryptedPrivateKey = "";
+
+	async function genKeyPair() {
+		return crypto.subtle.generateKey(
+				{
+					name: "ECDSA",
+					namedCurve: "P-384",
+				},
+				true,
+				["sign", "verify"]
+		);
+	}
+
+	async function getEncryptedKeyPair() {
+		const keyPair = await genKeyPair();
+		const symmetricKey = await getSymmetricKey();
+		publicKey = await crypto.subtle.exportKey("raw", keyPair.publicKey)
+
+		encryptedPrivateKey = await crypto.subtle.wrapKey("pkcs8", keyPair.privateKey, symmetricKey, {name: "AES-GCM", iv: crypto.getRandomValues(new Uint8Array(12))});
+		console.log(publicKey);
+		console.log(encryptedPrivateKey);
+	}
 
 	function getKeyMaterial() {
 		const enc = new TextEncoder();
@@ -24,19 +47,19 @@
 		);
 	}
 
-	async function getKey() {
+	async function getSymmetricKey() {
 		const keyMaterial = await getKeyMaterial();
 		const key = await crypto.subtle.deriveKey(
 			{
 				name: "PBKDF2",
 				salt,
-				iterations: 100000,
+				iterations: 600000,
 				hash: "SHA-256",
 			},
 			keyMaterial,
 			{ name: "AES-GCM", length: 256 },
 			true,
-			["encrypt", "decrypt"]
+			["encrypt", "decrypt", "wrapKey", "unwrapKey"]
 		);
 
 		return key;
@@ -46,7 +69,7 @@
 		console.log(typeof(msg));
 		const enc = new TextEncoder();
 		let plaintext = enc.encode(msg);
-		const key = await getKey();
+		const key = await getSymmetricKey();
 
 		return crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext);
 	}
@@ -59,7 +82,7 @@
 	}
 
 	async function decrypt(encMsg) {
-		const key = await getKey();
+		const key = await getSymmetricKey();
 		
 		return crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, encMsg);
 	}
@@ -84,6 +107,15 @@
 	<h1>Crypto tests</h1>
 
 	<p>{uuid}</p>
+
+	<h2>PKI</h2>
+	<input type="password" bind:value={password} />
+
+	<button type="button" on:click={getEncryptedKeyPair}>Generate Key Pair</button>
+
+	<p>{publicKey}</p>
+	<p>{encryptedPrivateKey}</p>
+
 	<h2>Encryption</h2>
 	<input type="password" bind:value={password} />
 	<input type="text" bind:value={message} />
