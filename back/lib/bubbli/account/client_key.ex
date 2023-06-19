@@ -10,6 +10,7 @@ defmodule Bubbli.Account.ClientKey do
     field :name, :string
 
     field :public_key, :string
+    field :encrypted_private_key, :string
 
     timestamps()
 

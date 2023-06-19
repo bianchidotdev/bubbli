@@ -8,8 +8,8 @@ defmodule BubbliWeb.Router do
   scope "/api/v1", BubbliWeb do
     pipe_through :api
 
-    post "/registration_init", RegistrationController, :init
-    post "/registration_confirm", RegistrationController, :confirm
+    post "/registration/start", RegistrationController, :start
+    post "/registration/finish", RegistrationController, :finish
 
 #    post "/login_init", AuthenticationController, :init
 #    post "/login_verify", AuthenticationController, :verify

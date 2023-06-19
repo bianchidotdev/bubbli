@@ -3,9 +3,29 @@ requests:
     host: localhost:4000
     scheme: http
     requests:
-      registration_init:
-        path: /api/v1/registration_init
+      registration_start:
+        path: /api/v1/registration/start
         method: post
-        payload: { "email": "michael@bianchi.dev" }
+        payload:
+          email: "michael@bianchi.dev"
+        headers:
+          Content-Type: "application/json"
+      registration_finish:
+        path: /api/v1/registration/finish
+        method: post
+        payload:
+          email: "michael@bianchi.dev"
+          challenge: "rvUBDHTCwU74DP8XA2dXAr8Sx1vbKwubfOA9ndafIuM="
+          signed_challenge: "owGbwMvMwCVmv3/CDXfxebcZTxsnMaRUpWUVlYU6uXiEOJeHmpu4BFhEOBqlRDgWWQRXGJYleZeXJqX5O1rmpSSmeZb62nJ1lLIwiHExyIopshQtTRLu5Zc4fiV5RhLMUFYmkIkMXJwCMBFRXob/Ra9/LZr9OKHJ70qZYNaeU3r9c3waRfpWr1v/sezjuo3+MxkZNorH/2PcPbflV6/x53denlP0Xi+++lB5260nPaq6y182sQMA"
+          public_key: |
+            -----BEGIN RSA PUBLIC KEY-----
+            
+            mDMEZHpcqxYJKwYBBAHaRw8BAQdAEciO6QTdzJVqpshPzveozK31qb2VqRMlPQsR
+            bxu/3uG0P2JpYW5jaGkgdGVzdCAodGhpcyBpcyBmb3Igc2lnbmF0dXJlIHRlc3Rp
+            bmcpIDx0ZXN0QGJpYW5jaGkuZGV2PoiTBBMWCgA7FiEEcqViE40PGMfUY5hiP7+Q
+            2EcXntsFAmR6XKsCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgkQP7+Q
+            2EcXntvAMQEA/RWdz2drddJQoe/3JkPk9Q+038CYbcTu8k9qijOpwxYBAMr7a+XM
+            aTk7oOwBo3vDqc/DluZm5VLlqx9AwoEs1IsK
+            -----END RSA PUBLIC KEY-----
         headers:
           Content-Type: "application/json"

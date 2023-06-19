@@ -20,6 +20,17 @@ defmodule Bubbli.Account do
     end
   end
 
+  def get_auth_challenge(email, challenge_string) do
+    query = from c in AuthenticationChallenge, where: c.email == ^email and c.challenge_string == ^challenge_string
+    case Repo.one(query) do
+      nil ->
+        {:error, :no_challenge_found}
+      challenge ->
+        # TODO(bianchi): have clause for expired token
+        {:ok, challenge}
+    end
+  end
+
   def validate_auth_challenge() do
 
   end
