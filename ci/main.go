@@ -36,6 +36,9 @@ func main() {
 			Exclude: []string{"back/priv/", "ci/", "front/"},
 		})
 
+	depsCache := client.CacheVolume("deps")
+	buildCache := client.CacheVolume("build")
+
 	// set the working directory in the container
 	// install application dependencies
 	runner := elixir.
@@ -43,6 +46,8 @@ func main() {
 		WithEnvVariable("DB_HOST", "db").
 		WithEnvVariable("MIX_ENV", "test").
 		WithWorkdir("/app").
+		WithMountedCache("/app/deps", depsCache).
+		WithMountedCache("/app/_build", buildCache).
 		WithExec([]string{"mix", "local.hex", "--force"}).
 		WithExec([]string{"mix", "deps.get"})
 
