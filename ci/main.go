@@ -46,8 +46,8 @@ func main() {
 		WithEnvVariable("DB_HOST", "db").
 		WithEnvVariable("MIX_ENV", "test").
 		WithWorkdir("/app").
-		WithMountedCache("/app/deps", depsCache).
-		WithMountedCache("/app/_build", buildCache).
+		WithMountedCache("/back/deps", depsCache).
+		WithMountedCache("/back/_build", buildCache).
 		WithExec([]string{"mix", "local.hex", "--force"}).
 		WithExec([]string{"mix", "deps.get"})
 
