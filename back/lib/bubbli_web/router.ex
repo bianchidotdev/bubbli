@@ -9,10 +9,10 @@ defmodule BubbliWeb.Router do
     pipe_through :api
 
     post "/registration/start", RegistrationController, :start
-    post "/registration/finish", RegistrationController, :finish
+    post "/registration/confirm", RegistrationController, :confirm
 
-#    post "/login_init", AuthenticationController, :init
-#    post "/login_verify", AuthenticationController, :verify
+    #    post "/login_init", AuthenticationController, :init
+    #    post "/login_verify", AuthenticationController, :verify
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

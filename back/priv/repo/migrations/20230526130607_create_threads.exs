@@ -3,7 +3,6 @@ defmodule Bubbli.Repo.Migrations.CreateThreads do
 
   def change do
     create table(:threads) do
-
       timestamps()
     end
   end

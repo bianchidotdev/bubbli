@@ -6,13 +6,15 @@ defmodule Bubbli.Account do
   import Ecto.Query, warn: false
   alias Bubbli.Repo
 
-  alias Bubbli.Account.{User,AuthenticationChallenge,TempUserRegistration}
+  alias Bubbli.Account.{User, AuthenticationChallenge}
 
   def auth_challenge_user(email) do
     query = from u in User, where: u.email == ^email
+
     case Repo.one(query) do
       nil ->
         {:error, :no_user_found}
+
       user ->
         # TODO(bianchi): need to generate and store a one-time use string
         {:ok, auth_challenge} = create_auth_challenge(user.email)
@@ -21,10 +23,14 @@ defmodule Bubbli.Account do
   end
 
   def get_auth_challenge(email, challenge_string) do
-    query = from c in AuthenticationChallenge, where: c.email == ^email and c.challenge_string == ^challenge_string
+    query =
+      from c in AuthenticationChallenge,
+        where: c.email == ^email and c.challenge_string == ^challenge_string
+
     case Repo.one(query) do
       nil ->
         {:error, :no_challenge_found}
+
       challenge ->
         # TODO(bianchi): have clause for expired token
         {:ok, challenge}
@@ -32,7 +38,6 @@ defmodule Bubbli.Account do
   end
 
   def validate_auth_challenge() do
-
   end
 
   def authenticate_user(_username) do
@@ -41,29 +46,13 @@ defmodule Bubbli.Account do
 
   def create_auth_challenge(email) do
     # cryptographic challenge reference docs: https://www.w3.org/TR/webauthn-2/#sctn-cryptographic-challenges
-    challenge_string = :crypto.strong_rand_bytes(32) |> Base.url_encode64
+    challenge_string = :crypto.strong_rand_bytes(32) |> Base.url_encode64()
     # TODO(bianchi): move auth timeout window into configuration
-    expiry_time = Timex.now |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
+    expiry_time = Timex.now() |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
+
     %AuthenticationChallenge{challenge_string: challenge_string, expires_at: expiry_time}
     |> AuthenticationChallenge.changeset(%{email: email})
     |> Repo.insert()
-  end
-
-  def get_or_create_temp_user(email) do
-    query = from tu in TempUserRegistration, where: tu.email == ^email
-    case Repo.one(query) do
-      nil ->
-        {:ok, temp_user} = create_temp_user(email)
-        temp_user
-      temp_user -> temp_user
-    end
-  end
-
-  def create_temp_user(email) do
-    expiry_time = Timex.now |> Timex.shift(days: 1) |> DateTime.truncate(:second)
-    %TempUserRegistration{expires_at: expiry_time}
-    |> TempUserRegistration.changeset(%{email: email})
-    |> Repo.insert(returning: [:salt])
   end
 
   def user_exists?(email) do

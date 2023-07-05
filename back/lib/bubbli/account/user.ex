@@ -21,15 +21,27 @@ defmodule Bubbli.Account.User do
     timestamps()
 
     has_many :client_keys, Bubbli.Account.ClientKey
-    has_many :authentication_challenges, Bubbli.Account.AuthenticationChallenge, references: :email, foreign_key: :email
+
+    has_many :authentication_challenges, Bubbli.Account.AuthenticationChallenge,
+      references: :email,
+      foreign_key: :email
   end
 
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :is_active, :encrypted_master_private_key, :master_public_key, :display_name, :first_name, :last_name])
+    |> cast(attrs, [
+      :email,
+      :is_active,
+      :encrypted_master_private_key,
+      :master_public_key,
+      :display_name,
+      :first_name,
+      :last_name
+    ])
     |> validate_required([:email, :is_active])
-    |> validate_format(:email, ~r/@/) # Check that email is valid
+    # Check that email is valid
+    |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
   end
 end

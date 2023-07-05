@@ -13,12 +13,12 @@
 alias Bubbli.Repo
 alias Bubbli.Account.{User}
 
-#defmodule Seeds do
+# defmodule Seeds do
 #  def setup_global_seeds(), do: nil
-#end
+# end
 #
-#Seeds.setup_global_seeds()
+# Seeds.setup_global_seeds()
 
-Repo.insert! %User{
+Repo.insert!(%User{
   email: "test@example.com"
-}
+})

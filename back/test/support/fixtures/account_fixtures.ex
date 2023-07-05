@@ -21,6 +21,7 @@ defmodule Bubbli.AccountFixtures do
         salt: "testsalt"
       })
       |> Bubbli.Account.create_user()
+
     user
   end
 end

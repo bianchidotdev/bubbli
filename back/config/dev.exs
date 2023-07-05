@@ -22,7 +22,8 @@ config :bubbli, BubbliWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
-  debug_errors: false, # NOTE(bianchi): forces JSON responses
+  # NOTE(bianchi): forces JSON responses
+  debug_errors: false,
   secret_key_base: "8FqmpKL3ma3jihN2dr90dlvfOQtAFBe3IUikaS4lqz+tIveBcSYGD886z3cygtK2",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},

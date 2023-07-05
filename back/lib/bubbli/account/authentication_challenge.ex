@@ -15,7 +15,8 @@ defmodule Bubbli.Account.AuthenticationChallenge do
     user
     |> cast(attrs, [:challenge_string, :expires_at, :email])
     |> validate_required([:challenge_string, :expires_at, :email])
-    |> validate_format(:email, ~r/@/) # Check that email is valid
+    # Check that email is valid
+    |> validate_format(:email, ~r/@/)
     |> foreign_key_constraint(:user_id)
   end
 end

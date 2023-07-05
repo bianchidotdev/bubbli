@@ -12,10 +12,11 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
 
       # cryptography
       # TODO(bianchi): figure out how to store (ie. structure + encoding)
+      # TODO(bianchi): make required
       add :encrypted_master_private_key, :map
       # NOTE(bianchi): stored as binary blogs (independent of encoding)
       add :master_public_key, :bytea
-      add :salt, :text, null: false, default: fragment("gen_salt('bf')")
+      add :salt, :bytea
 
       # user attributes
       add :display_name, :string

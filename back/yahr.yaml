@@ -7,25 +7,18 @@ requests:
         path: /api/v1/registration/start
         method: post
         payload:
-          email: "michael@bianchi.dev"
+          email: "test26@example.com"
         headers:
           Content-Type: "application/json"
       registration_finish:
-        path: /api/v1/registration/finish
+        path: /api/v1/registration/confirm
         method: post
         payload:
-          email: "michael@bianchi.dev"
-          challenge: "rvUBDHTCwU74DP8XA2dXAr8Sx1vbKwubfOA9ndafIuM="
-          signed_challenge: "owGbwMvMwCVmv3/CDXfxebcZTxsnMaRUpWUVlYU6uXiEOJeHmpu4BFhEOBqlRDgWWQRXGJYleZeXJqX5O1rmpSSmeZb62nJ1lLIwiHExyIopshQtTRLu5Zc4fiV5RhLMUFYmkIkMXJwCMBFRXob/Ra9/LZr9OKHJ70qZYNaeU3r9c3waRfpWr1v/sezjuo3+MxkZNorH/2PcPbflV6/x53denlP0Xi+++lB5260nPaq6y182sQMA"
-          public_key: |
-            -----BEGIN RSA PUBLIC KEY-----
-            
-            mDMEZHpcqxYJKwYBBAHaRw8BAQdAEciO6QTdzJVqpshPzveozK31qb2VqRMlPQsR
-            bxu/3uG0P2JpYW5jaGkgdGVzdCAodGhpcyBpcyBmb3Igc2lnbmF0dXJlIHRlc3Rp
-            bmcpIDx0ZXN0QGJpYW5jaGkuZGV2PoiTBBMWCgA7FiEEcqViE40PGMfUY5hiP7+Q
-            2EcXntsFAmR6XKsCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgkQP7+Q
-            2EcXntvAMQEA/RWdz2drddJQoe/3JkPk9Q+038CYbcTu8k9qijOpwxYBAMr7a+XM
-            aTk7oOwBo3vDqc/DluZm5VLlqx9AwoEs1IsK
-            -----END RSA PUBLIC KEY-----
+          email: "test26@example.com"
+          challenge: "Pauum46zxK6AvDxydC4W63WNe09lwyaRzAgvE0vQA7c="
+          signed_challenge: "Qnt4NRknH2zGg89q1hqrLnlZULUAMCsQ1fgkJSo4bhC1vKgx3Jk3YLJNK1wcWM2ENvILE+4B8y5J1Xs54DJXb/J1DYJB1WN2dZsHYTxq17YtaDBsjbhzajwX609Xkg9W"
+          encrypted_private_key: "kdyUpy9SyH5hQmducs9VWgMlxhvqAMdJbJAmQVWzeHg3iQlGMuKwRizrTiI7mZtZPqTloZ82EWS4Dje62Y+kj0rSucRTer9sFLfKk5mfnFNgbl07I6RS0nilzWQi6Xa0PmZGxNK+pbe8ezRLCn3fVoztHJiVZkRuINo788vo7NOWt9ClJn9g4KhAzlVJsqaVhUxqEG1Kqf/vK+ASBN/a2cG4c1Rr/N0P0jTNJhgQUNBC0HxiQ3McHcwnavwejAklqj+xXc2tMj1E"
+          public_key: "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAErgziC/r9/zxiIzawbiUkhMAfaAZxuvv5qw2BEt52aiKP6KsO7pqajq5L3atGMMnLwjAnEyCcKgYJYZQCcv883k+CBa13OQZPsh2DftQSwDjBYyiKHLcUFXWsTMSOaAnn\n-----END PUBLIC KEY-----"
+          salt: "u8xQdrBRSJfcxrxHX1v9rVGjWleEhjz7zQtIknSK6z8="
         headers:
           Content-Type: "application/json"
