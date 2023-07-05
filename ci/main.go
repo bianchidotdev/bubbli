@@ -46,10 +46,12 @@ func main() {
 		WithEnvVariable("DB_HOST", "db").
 		WithEnvVariable("MIX_ENV", "test").
 		WithWorkdir("/app").
-		WithMountedCache("/back/deps", depsCache).
-		WithMountedCache("/back/_build", buildCache).
+		WithMountedCache("/app/deps", depsCache).
+		WithMountedCache("/app/_build", buildCache).
 		WithExec([]string{"mix", "local.hex", "--force"}).
 		WithExec([]string{"mix", "deps.get"})
+
+		// TODO(bianchi): https://docs.dagger.io/7442989/cookbook/#perform-multi-stage-build
 
 		// run application tests
 	out, err := runner.

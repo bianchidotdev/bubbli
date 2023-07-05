@@ -12,6 +12,7 @@ config :bubbli,
 
 # Configures the endpoint
 config :bubbli, BubbliWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   render_errors: [
     formats: [json: BubbliWeb.ErrorJSON],

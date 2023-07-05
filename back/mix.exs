@@ -48,6 +48,7 @@ defmodule Bubbli.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:guardian, "~> 2.0"},
       {:timex, "~> 3.0"},
+      {:bandit, "~> 1.0-pre"},
     ]
   end
 
