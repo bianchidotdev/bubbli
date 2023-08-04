@@ -46,3 +46,8 @@ tasks:
     dir: front
     cmds:
       - npm run test:unit
+
+  frontcov:
+    dir: front
+    cmds:
+      - npm run test:cov
