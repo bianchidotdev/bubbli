@@ -1,53 +1,53 @@
-<script>
-	import Header from './Header.svelte';
-	import './styles.css';
+<script lang="ts">
+  // The ordering of these imports is critical to your app working properly
+  import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
+  // If you have source.organizeImports set to true in VSCode, then it will auto change this ordering
+  import '@skeletonlabs/skeleton/styles/skeleton.css';
+  // Most of your app wide CSS should be put in this file
+  import '../app.postcss';
+  import { AppShell, AppBar, LightSwitch } from '@skeletonlabs/skeleton';
+  import { Drawer, drawerStore, Toast } from '@skeletonlabs/skeleton';
+  import Navigation from '$lib/components/Navigation.svelte';
+
+  function drawerOpen(): void {
+    drawerStore.open({});
+  }
 </script>
 
-<div class="app">
-	<Header />
+<Drawer>
+  <h2 class="p-4">Navigation</h2>
+  <hr />
+  <Navigation />
+</Drawer>
 
-	<main>
-		<slot />
-	</main>
+<Toast />
 
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
-</div>
+<AppShell>
+  <!-- (Header slot w/ App Bar) -->
+  <AppBar>
+    <svelte:fragment slot="lead">
+      <div class="flex items-center">
+        <button class="lg:hidden btn btn-sm mr-4" on:click={drawerOpen}>
+          <span>
+            <svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
+              <rect width="100" height="20" />
+              <rect y="30" width="100" height="20" />
+              <rect y="60" width="100" height="20" />
+            </svg>
+          </span>
+        </button>
+        <a href="/">
+          <strong class="text-xl uppercase">Bubbli</strong>
+        </a>
+      </div>
+    </svelte:fragment>
+    <svelte:fragment slot="trail">
+      <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
+      <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>
+      <LightSwitch />
+    </svelte:fragment>
+  </AppBar>
 
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
+  <!-- (Default Page Content slot) -->
+  <slot />
+</AppShell>

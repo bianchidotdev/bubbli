@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  appstart:
+    dir: back
+    cmds:
+      - mix phx.server
+
+  frontstart:
+    dir: front
+    cmds:
+      - npm run dev

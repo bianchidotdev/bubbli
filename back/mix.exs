@@ -49,6 +49,8 @@ defmodule Bubbli.MixProject do
       {:guardian, "~> 2.0"},
       {:timex, "~> 3.0"},
       {:bandit, "~> 1.0-pre"},
+      {:corsica, "~> 1.0"},
+      {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false}
     ]
   end
 
