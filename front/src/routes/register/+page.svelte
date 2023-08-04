@@ -152,7 +152,7 @@
 </svelte:head>
 
 <section class="container mx-auto">
-  <div class="card p-4 m-6 max-w-2xl">
+  <div class="card p-4 m-6 md:mx-auto max-w-2xl">
     <h1>Register</h1>
     {#if error}
       <p class="center error">{error}</p>

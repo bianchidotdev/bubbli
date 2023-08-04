@@ -9,7 +9,7 @@ defmodule Bubbli.Account.User do
     field :is_active, :boolean, default: false
 
     # cryptography
-    field :encrypted_master_private_key, :map
+    field :encrypted_master_private_key, :map, redact: true
     field :master_public_key, :string
     field :salt, :string
 

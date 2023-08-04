@@ -1,12 +1,48 @@
 version: '3'
 
 tasks:
+  setup:
+    dir: local
+    cmds:
+      - mkcert -install
+      - mkcert local.bubbli.dev
+    preconditions:
+      - sh: which mkcert
+        msg: mkcert not installed - install with `brew install mkcert nss`
+    status:
+      - test -f local.bubbli.dev-key.pem
+      - test -f local.bubbli.dev-key.pem
+
+  up:
+
+
+  testall:
+    aliases: [test]
+    deps:
+      - apptest
+      - fronttest
+
   appstart:
     dir: back
     cmds:
       - mix phx.server
 
+  apptest:
+    dir: back
+    cmds:
+      - mix test
+
   frontstart:
     dir: front
     cmds:
       - npm run dev
+
+  fronttest:
+    dir: front
+    cmds:
+      - npm run test
+
+  frontwatch:
+    dir: front
+    cmds:
+      - npm run test:unit
