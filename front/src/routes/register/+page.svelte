@@ -28,41 +28,48 @@
   };
 
   let basicInformationLocked = true;
+  let validEmail = false;
+  let emailVerified = false;
   let passwordLocked = true;
 
-
-   const triggerError = (message) => {
-          const t: ToastSettings = {
-            message: message,
-            background: 'variant-filled-error'
-          };
-          toastStore.trigger(t);
-   }
-  const emailRegex = /.+@.+\..+/;
-  const validateEmail = () => {
-    if (!email.match(emailRegex)) {
-      basicInformationLocked = true;
-    } else {
-      submitEmailForm();
-    }
+  const triggerError = (message) => {
+    const t: ToastSettings = {
+      message: message,
+      background: 'variant-filled-error'
+    };
+    toastStore.trigger(t);
   };
 
-  const validatePassword = (pw: string) => {
-    passwordLocked = pw.length >= 8;
-    return passwordLocked;
+  const onEmailInput = () => {
+    emailVerified = false;
+    validateEmail();
+  };
+  const emailRegex = /^.+@.+\..+$/;
+  const validateEmail = () => {
+    validEmail = !!email.match(emailRegex);
+  };
+
+  const verifyEmail = () => {
+    submitEmailForm();
+  };
+
+  const validatePassword = () => {
+    passwordLocked = password.length < 8;
+    return !passwordLocked;
   };
 
   const registrationNextHandler = async (e) => {
     switch (formSteps[e.detail.step]) {
       case BasicInformation:
-        submitEmailForm();
+        console.log('Advancing to password step');
+      //submitEmailForm();
     }
   };
 
-  const registrationSubmitHandler = async (e) => {
+  const registrationSubmitHandler = async () => {
     if (!validatePassword(password)) {
-      triggerError("Password must be 8 characters or longer");
-      return false
+      triggerError('Password must be 8 characters or longer');
+      return false;
     }
     submitConfirmationForm();
   };
@@ -75,9 +82,10 @@
             $user.email = email;
             challenge = data.challenge;
             basicInformationLocked = false;
+            emailVerified = true;
           });
         } else if (response.status === 409) {
-          triggerError('Account already exists')
+          triggerError('Account already exists');
         } else {
           console.log(response.json());
         }
@@ -136,14 +144,6 @@
       console.log('Error occurred creating encryption keys - ', e);
     }
   };
-
-  const submitForm = async () => {
-    if (formStep === 'Email') {
-      submitEmailForm();
-    } else if (formStep === 'Confirmation') {
-      submitConfirmationForm();
-    }
-  };
 </script>
 
 <svelte:head>
@@ -164,17 +164,32 @@
 
         <label class="label">
           <span>Email</span>
-          <div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+          <div class="w-full grid grid-cols-1 sm:grid-cols-4 gap-4">
             <input
-              class="input"
+              class="input sm:col-span-3 {email.length === 0
+                ? ''
+                : validEmail
+                ? 'input-success'
+                : 'input-error'}"
               bind:value={email}
+              on:input={onEmailInput}
               name="email"
               type="email"
               aria-label="Email address"
               placeholder="Email address"
               required
             />
-            <button class="variant-filled-secondary" on:click={validateEmail}>Verify</button>
+            {#if !emailVerified}
+              <button
+                class="btn sm:w-full px-10 ml-auto variant-ghost-secondary"
+                disabled={!validEmail}
+                on:click={verifyEmail}>Verify</button
+              >
+            {:else}
+              <button class="btn sm:w-full px-10 ml-auto variant-filled-secondary" disabled
+                >Verified!</button
+              >
+            {/if}
           </div>
         </label>
       </Step>
@@ -183,9 +198,13 @@
         <label class="label">
           <span>Password</span>
           <input
-            class="input"
+            class="input {password.length === 0
+              ? ''
+              : passwordLocked
+              ? 'input-error'
+              : 'input-success'}"
             bind:value={password}
-            on:change={validatePassword}
+            on:input={validatePassword}
             name="password"
             type="password"
             aria-label="Password"
@@ -193,6 +212,11 @@
             required
           />
         </label>
+        {#if passwordLocked}
+          <p class="alert-message">Password must be 8 characters or more</p>
+        {:else}
+          <p class="success">😎 Password meets minimum rules</p>
+        {/if}
       </Step>
       <!-- ... -->
     </Stepper>

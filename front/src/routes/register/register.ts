@@ -1,5 +1,4 @@
 import { BASE_API_URI } from '$lib/constants.ts';
-import { user } from '../../stores/user';
 
 export const registrationStart = async (email, firstName) => {
   return fetch(`${BASE_API_URI}/registration/start`, {
