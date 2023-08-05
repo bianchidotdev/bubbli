@@ -1,0 +1,5 @@
+local.bubbli.org {
+  tls internal
+	reverse_proxy "/*" localhost:5173
+	reverse_proxy "/api/*" localhost:4000
+}

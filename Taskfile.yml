@@ -1,20 +1,22 @@
 version: '3'
 
 tasks:
-  setup:
-    dir: local
-    cmds:
-      - mkcert -install
-      - mkcert local.bubbli.dev
-    preconditions:
-      - sh: which mkcert
-        msg: mkcert not installed - install with `brew install mkcert nss`
-    status:
-      - test -f local.bubbli.dev-key.pem
-      - test -f local.bubbli.dev-key.pem
-
   up:
+    deps:
+      - caddyup
+      - appstart
+      - frontstart
 
+  installdeps:
+    deps:
+      - installcaddy
+      - installrtx
+      - installlanguages
+
+  caddyup:
+    deps: [setup]
+    cmds:
+      - caddy run
 
   testall:
     aliases: [test]
