@@ -1,1 +1,1 @@
-export const BASE_API_URI = 'http://localhost:4000/api/v1';
+export const BASE_API_URI = 'https://local.bubbli.org/api/v1';

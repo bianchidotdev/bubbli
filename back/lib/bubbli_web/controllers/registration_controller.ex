@@ -8,8 +8,7 @@ defmodule BubbliWeb.RegistrationController do
   action_fallback BubbliWeb.FallbackController
 
   def test(conn, _) do
-    conn
-      |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
+    conn |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
   end
 
   def start(conn, %{"email" => email}) do
@@ -58,12 +57,17 @@ defmodule BubbliWeb.RegistrationController do
              salt: salt
            }),
          # TODO(bianchi): create client keys
-        Logger.info("Successfully created user"),
-        token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+         Logger.info("Successfully created user"),
+         token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
       conn
-      |> Plug.Conn.put_resp_cookie("authorization", token, http_only: true, secure: true, max_age: 60 * 60 * 24)
+      |> Plug.Conn.put_resp_cookie("authorization", token,
+        http_only: true,
+        same_site: "Strict",
+        secure: true,
+        max_age: 60 * 60 * 24
+      )
       |> put_status(200)
-      |> render(:successfully_registered)
+      |> render(:successfully_registered, user_id: user.id)
     else
       whoops ->
         IO.inspect("Unexpected error: #{whoops}")

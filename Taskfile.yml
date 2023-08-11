@@ -14,7 +14,7 @@ tasks:
       - installlanguages
 
   caddyup:
-    deps: [setup]
+    # deps: [setup] TODO
     cmds:
       - caddy run
 

@@ -2,6 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 
 export interface User {
   email: string;
+  id: string;
   salt: null | Uint8Array;
   passwordBasedEncryptionKey: null | CryptoKey;
   clientKeyPair: null | CryptoKeyPair;
@@ -10,6 +11,7 @@ export interface User {
 
 export const user: Writable<User> = writable({
   email: '',
+  id: '',
   salt: null,
   passwordBasedEncryptionKey: null,
   clientKeyPair: null,

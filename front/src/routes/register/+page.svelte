@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { BASE_API_URI } from '$lib/constants.ts'; // TODO: why is .ts needed
-  import { user } from '../../stores/user';
   import { fromByteArray } from 'base64-js';
   import {
     generatePasswordBasedEncryptionKey,
@@ -14,6 +13,8 @@
   import { toastStore } from '@skeletonlabs/skeleton';
   import type { ToastSettings } from '@skeletonlabs/skeleton';
   import { registrationStart } from './register.ts';
+  import { user } from '../../stores/user';
+  import { isAuthenticated } from '../../stores/authenticated';
 
   let email = '',
     firstName = '',
@@ -139,7 +140,24 @@
           encrypted_private_key: base64EncodeArrayBuffer(encPrivateKey),
           client_keys: clientKeys
         })
-      });
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            response.json().then((json) => {
+              console.log(json);
+              user.set({
+                id: json['user_id'],
+                email: email
+              });
+              isAuthenticated.set(true);
+              goto(`/`);
+            });
+          }
+        })
+        .catch((error) => {
+          console.log('error registering', error);
+        });
     } catch (e) {
       console.log('Error occurred creating encryption keys - ', e);
     }
@@ -159,7 +177,7 @@
     {/if}
 
     <Stepper on:complete={registrationSubmitHandler} on:next={registrationNextHandler}>
-      <Step locked={basicInformationLocked}>
+      <Step locked={!emailVerified}>
         <svelte:fragment slot="header">Basic Information</svelte:fragment>
 
         <label class="label">

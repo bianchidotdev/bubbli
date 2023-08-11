@@ -6,7 +6,7 @@ defmodule BubbliWeb.Router do
   end
 
   pipeline :authed do
-   plug BubbliWeb.Plug.Auth
+    plug BubbliWeb.Plug.Auth
   end
 
   # routes for authn
@@ -24,7 +24,7 @@ defmodule BubbliWeb.Router do
   scope "/api/v1", BubbliWeb do
     pipe_through [:api, :authed]
     get "/test", RegistrationController, :test
-    #delete "/auth/logout", AuthenticationController, :delete
+    # delete "/auth/logout", AuthenticationController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

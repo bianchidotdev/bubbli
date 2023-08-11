@@ -14,6 +14,7 @@ defmodule BubbliWeb.Plug.Auth do
     else
       {:error, error} ->
         Logger.info("Error authenticating request, #{error}")
+
         conn
         |> put_status(:unauthorized)
         |> Phoenix.Controller.put_view(BubbliWeb.ErrorJSON)
@@ -30,8 +31,8 @@ defmodule BubbliWeb.Plug.Auth do
         with {:ok, token} <- Map.fetch(conn.req_cookies, "authorization") do
           {:ok, token}
         else
-        _ -> {:error, :notfound}
-      end
+          _ -> {:error, :notfound}
+        end
     end
   end
 end

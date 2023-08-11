@@ -13,9 +13,10 @@ defmodule BubbliWeb.RegistrationJSON do
     %{error: :user_exists}
   end
 
-  def successfully_registered(_map) do
+  def successfully_registered(%{user_id: user_id}) do
     %{
-      success: true
+      success: true,
+      user_id: user_id
     }
   end
 end

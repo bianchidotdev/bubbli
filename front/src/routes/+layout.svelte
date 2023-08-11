@@ -8,6 +8,18 @@
   import { AppShell, AppBar, LightSwitch } from '@skeletonlabs/skeleton';
   import { Drawer, drawerStore, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
+  import { user } from '../stores/user';
+  import { onMount } from 'svelte';
+  import { BASE_API_URI } from '$lib/constants.ts';
+
+  // TODO
+  // TODO: should this actually live in layout?
+  onMount(async () => {
+    const [response, errs] = await getCurrentUser(fetch, `${BASE_API_URI}/user/`);
+    if (errs.length <= 0) {
+      user.set(response.user);
+    }
+  });
 
   function drawerOpen(): void {
     drawerStore.open({});
