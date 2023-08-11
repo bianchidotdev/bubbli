@@ -7,6 +7,11 @@ defmodule BubbliWeb.RegistrationController do
 
   action_fallback BubbliWeb.FallbackController
 
+  def test(conn, _) do
+    conn
+      |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
+  end
+
   def start(conn, %{"email" => email}) do
     case Account.user_exists?(email) do
       true ->
@@ -39,6 +44,7 @@ defmodule BubbliWeb.RegistrationController do
       Logger.info("Signature verified - creating user")
     else
       {:error, err} ->
+        Logger.info("Bad request to registration: #{err}")
         conn |> put_status(400) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"400")
     end
 
@@ -52,12 +58,16 @@ defmodule BubbliWeb.RegistrationController do
              salt: salt
            }),
          # TODO(bianchi): create client keys
-         Logger.info("Successfully created user") do
-      conn |> put_status(200) |> render(:successfully_authenticated)
+        Logger.info("Successfully created user"),
+        token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+      conn
+      |> Plug.Conn.put_resp_cookie("authorization", token, http_only: true, secure: true, max_age: 60 * 60 * 24)
+      |> put_status(200)
+      |> render(:successfully_registered)
     else
       whoops ->
         IO.inspect("Unexpected error: #{whoops}")
-        conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"400")
+        conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"500")
     end
   end
 

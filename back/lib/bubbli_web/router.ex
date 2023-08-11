@@ -5,14 +5,26 @@ defmodule BubbliWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authed do
+   plug BubbliWeb.Plug.Auth
+  end
+
+  # routes for authn
   scope "/api/v1", BubbliWeb do
-    pipe_through :api
+    pipe_through [:api]
 
     post "/registration/start", RegistrationController, :start
     post "/registration/confirm", RegistrationController, :confirm
 
-    #    post "/login_init", AuthenticationController, :init
-    #    post "/login_verify", AuthenticationController, :verify
+    #    post "/auth/login_start", AuthenticationController, :init
+    #    post "/auth/login_verify", AuthenticationController, :verify
+  end
+
+  # authenticated routes
+  scope "/api/v1", BubbliWeb do
+    pipe_through [:api, :authed]
+    get "/test", RegistrationController, :test
+    #delete "/auth/logout", AuthenticationController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

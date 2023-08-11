@@ -73,6 +73,8 @@ defmodule Bubbli.Account do
     Repo.all(User)
   end
 
+  def get_user(id), do: Repo.get(User, id)
+
   @doc """
   Gets a single user.
 

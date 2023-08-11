@@ -34,6 +34,8 @@ config :bubbli, Bubbli.Account.Guardian,
   issuer: "bubbli",
   secret_key: "tOTzRIOC13AetKmQ9stYeOgNJgDSzGS0XkGm05NA0TwgJKRHhQBTayTZgwoSAAh2"
 
+config :bubbli, :signing_salt, "testsigningsalt"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
