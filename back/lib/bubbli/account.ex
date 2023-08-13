@@ -4,9 +4,10 @@ defmodule Bubbli.Account do
   """
 
   import Ecto.Query, warn: false
-  alias Bubbli.Repo
 
-  alias Bubbli.Account.{User, AuthenticationChallenge}
+  alias Bubbli.Account.AuthenticationChallenge
+  alias Bubbli.Account.User
+  alias Bubbli.Repo
 
   def auth_challenge_user(email) do
     query = from u in User, where: u.email == ^email
@@ -37,7 +38,7 @@ defmodule Bubbli.Account do
     end
   end
 
-  def validate_auth_challenge() do
+  def validate_auth_challenge do
   end
 
   def authenticate_user(_username) do
@@ -46,9 +47,9 @@ defmodule Bubbli.Account do
 
   def create_auth_challenge(email) do
     # cryptographic challenge reference docs: https://www.w3.org/TR/webauthn-2/#sctn-cryptographic-challenges
-    challenge_string = :crypto.strong_rand_bytes(32) |> Base.url_encode64()
+    challenge_string = 32 |> :crypto.strong_rand_bytes() |> Base.url_encode64()
     # TODO(bianchi): move auth timeout window into configuration
-    expiry_time = Timex.now() |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
+    expiry_time = DateTime.utc_now() |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
 
     %AuthenticationChallenge{challenge_string: challenge_string, expires_at: expiry_time}
     |> AuthenticationChallenge.changeset(%{email: email})

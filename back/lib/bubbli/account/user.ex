@@ -1,8 +1,25 @@
 defmodule Bubbli.Account.User do
+  @moduledoc false
   use Ecto.Schema
+
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @public_fields [
+    :email,
+    :is_active,
+    :display_name,
+    :first_name,
+    :last_name
+  ]
+
+  def serialize_for_api(user) do
+    Enum.reduce(Map.from_struct(user), %{}, fn
+      {_, %Ecto.Association.NotLoaded{}}, acc -> acc
+      {k, v}, acc when k in @public_fields -> Map.put(acc, k, v)
+      {_, _}, acc -> acc
+    end)
+  end
 
   schema "users" do
     field :email, :string

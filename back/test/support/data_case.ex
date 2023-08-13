@@ -18,12 +18,12 @@ defmodule Bubbli.DataCase do
 
   using do
     quote do
-      alias Bubbli.Repo
-
+      import Bubbli.DataCase
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Bubbli.DataCase
+
+      alias Bubbli.Repo
     end
   end
 

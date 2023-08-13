@@ -236,11 +236,7 @@
           <p class="success">😎 Password meets minimum rules</p>
         {/if}
       </Step>
-      <!-- ... -->
     </Stepper>
-
-    <p>Challenge: {challenge}</p>
-    <p>Salt: {$user.salt}</p>
   </div>
   <p class="center">Already a user? <a href="/login">Login</a>.</p>
 </section>

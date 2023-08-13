@@ -1,4 +1,5 @@
-import { writable, type Writable } from 'svelte/store';
+import { localStorageStore } from '@skeletonlabs/skeleton';
+import type { Writable } from 'svelte/store';
 
 export interface User {
   email: string;
@@ -9,7 +10,7 @@ export interface User {
   firstName: string;
 }
 
-export const user: Writable<User> = writable({
+export const user: Writable<User> = localStorageStore('currentUser', {
   email: '',
   id: '',
   salt: null,

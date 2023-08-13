@@ -50,7 +50,8 @@ defmodule Bubbli.MixProject do
       {:timex, "~> 3.0"},
       {:bandit, "~> 1.0-pre"},
       {:corsica, "~> 1.0"},
-      {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
+      {:styler, "~> 0.8", only: [:dev, :test], runtime: false}
     ]
   end
 

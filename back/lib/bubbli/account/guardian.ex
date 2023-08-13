@@ -1,4 +1,5 @@
 defmodule Bubbli.Account.Guardian do
+  @moduledoc false
   use Guardian, otp_app: :bubbli
 
   alias Bubbli.Account

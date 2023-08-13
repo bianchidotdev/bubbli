@@ -20,14 +20,14 @@ defmodule BubbliWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint BubbliWeb.Endpoint
-
       use BubbliWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
       import BubbliWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      @endpoint BubbliWeb.Endpoint
     end
   end
 

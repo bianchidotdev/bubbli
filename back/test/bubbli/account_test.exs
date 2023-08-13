@@ -4,9 +4,9 @@ defmodule Bubbli.AccountTest do
   alias Bubbli.Account
 
   describe "users" do
-    alias Bubbli.Account.User
-
     import Bubbli.AccountFixtures
+
+    alias Bubbli.Account.User
 
     @invalid_attrs %{email: nil, is_active: nil}
 

@@ -23,9 +23,10 @@ defmodule BubbliWeb do
     quote do
       use Phoenix.Router, helpers: false
 
+      import Phoenix.Controller
+
       # Import common connection and controller functions to use in pipelines
       import Plug.Conn
-      import Phoenix.Controller
     end
   end
 
@@ -41,8 +42,8 @@ defmodule BubbliWeb do
         formats: [:html, :json],
         layouts: [html: BubbliWeb.Layouts]
 
-      import Plug.Conn
       import BubbliWeb.Gettext
+      import Plug.Conn
 
       unquote(verified_routes())
     end

@@ -1,9 +1,9 @@
 defmodule BubbliWeb.RegistrationController do
-  require Logger
-
   use BubbliWeb, :controller
 
   alias Bubbli.Account
+
+  require Logger
 
   action_fallback BubbliWeb.FallbackController
 
@@ -12,17 +12,15 @@ defmodule BubbliWeb.RegistrationController do
   end
 
   def start(conn, %{"email" => email}) do
-    case Account.user_exists?(email) do
-      true ->
-        conn |> put_status(409) |> render(:user_exists)
+    if Account.user_exists?(email) do
+      conn |> put_status(409) |> render(:user_exists)
+    else
+      {:ok, challenge} = Account.create_auth_challenge(email)
 
-      false ->
-        {:ok, challenge} = Account.create_auth_challenge(email)
-
-        conn
-        |> put_status(:ok)
-        |> put_resp_header("location", ~p"/api/v1/registration/confirm")
-        |> render(:init, challenge: challenge)
+      conn
+      |> put_status(:ok)
+      |> put_resp_header("location", ~p"/api/v1/registration/confirm")
+      |> render(:init, challenge: challenge)
     end
   end
 
@@ -45,14 +43,15 @@ defmodule BubbliWeb.RegistrationController do
       {:error, err} ->
         Logger.info("Bad request to registration: #{err}")
         conn |> put_status(400) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"400")
+        # TODO(bianchi): change into map
     end
 
     with {:ok, user} <-
            Account.create_user(%{
              email: email,
+             is_active: true,
              first_name: first_name,
              public_key: public_PEM,
-             # TODO(bianchi): change into map
              encrypted_private_key: encrypted_private_key,
              salt: salt
            }),
@@ -81,8 +80,7 @@ defmodule BubbliWeb.RegistrationController do
          # erlang :public_key expects a DER encoded signature as opposed to the raw bytes
          # https://elixirforum.com/t/verifying-web-crypto-signatures-in-erlang-elixir/20727/2
          {:is_ecdsa_signature, signature} <-
-           {:is_ecdsa_signature,
-            Bubbli.ECDSASignature.new(raw_signature) |> Bubbli.ECDSASignature.to_der()},
+           {:is_ecdsa_signature, raw_signature |> Bubbli.ECDSASignature.new() |> Bubbli.ECDSASignature.to_der()},
          {:is_valid_pem, [key_entry]} <- {:is_valid_pem, :public_key.pem_decode(public_PEM)},
          {:is_public_key, public_key} <-
            {:is_public_key, :public_key.pem_entry_decode(key_entry)},

@@ -10,8 +10,8 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+alias Bubbli.Account.User
 alias Bubbli.Repo
-alias Bubbli.Account.{User}
 
 # defmodule Seeds do
 #  def setup_global_seeds(), do: nil

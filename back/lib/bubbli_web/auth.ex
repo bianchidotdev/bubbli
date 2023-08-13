@@ -1,5 +1,7 @@
 defmodule BubbliWeb.Plug.Auth do
+  @moduledoc false
   import Plug.Conn
+
   require Logger
 
   def init(opts) do
@@ -9,8 +11,7 @@ defmodule BubbliWeb.Plug.Auth do
   def call(conn, _opts) do
     with {:ok, token} <- get_auth_token(conn),
          {:ok, data} <- BubbliWeb.Token.verify(token) do
-      conn
-      |> assign(:current_user, Bubbli.Account.get_user(data.user_id))
+      assign(conn, :current_user, Bubbli.Account.get_user(data.user_id))
     else
       {:error, error} ->
         Logger.info("Error authenticating request, #{error}")

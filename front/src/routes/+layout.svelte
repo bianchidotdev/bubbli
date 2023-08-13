@@ -5,25 +5,28 @@
   import '@skeletonlabs/skeleton/styles/skeleton.css';
   // Most of your app wide CSS should be put in this file
   import '../app.postcss';
-  import { AppShell, AppBar, LightSwitch } from '@skeletonlabs/skeleton';
+  import { goto } from '$app/navigation';
+  import { AppShell, AppBar, Avatar, LightSwitch } from '@skeletonlabs/skeleton';
   import { Drawer, drawerStore, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
   import { user } from '../stores/user';
   import { onMount } from 'svelte';
-  import { BASE_API_URI } from '$lib/constants.ts';
-
-  // TODO
-  // TODO: should this actually live in layout?
-  onMount(async () => {
-    const [response, errs] = await getCurrentUser(fetch, `${BASE_API_URI}/user/`);
-    if (errs.length <= 0) {
-      user.set(response.user);
-    }
-  });
+  import { popup } from '@skeletonlabs/skeleton';
+  import type { PopupSettings } from '@skeletonlabs/skeleton';
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
   function drawerOpen(): void {
     drawerStore.open({});
   }
+  function onAvatarClick(): void {
+    goto('/account');
+  }
+
+  let authed = !!$user;
+  const popupClick: PopupSettings = {
+    event: 'click',
+    target: 'popupClick'
+  };
 </script>
 
 <Drawer>
@@ -54,8 +57,23 @@
       </div>
     </svelte:fragment>
     <svelte:fragment slot="trail">
-      <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
-      <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>
+      {#if authed}
+        <Avatar
+          on:click={popupClick}
+          initials="??"
+          rounded="rounded-3xl"
+          width="w-12"
+          border="border-4 border-surface-300-600-token hover:!border-primary-500"
+          cursor="cursor-pointer"
+        />
+        <div class="card p-4 variant-filled-primary" data-popup="popupClick">
+          <p>Click Content</p>
+          <div class="arrow variant-filled-primary" />
+        </div>
+      {:else}
+        <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
+        <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>
+      {/if}
       <LightSwitch />
     </svelte:fragment>
   </AppBar>

@@ -1,4 +1,5 @@
 defmodule Bubbli.ECDSASignature do
+  @moduledoc false
   require Record
 
   Record.defrecord(

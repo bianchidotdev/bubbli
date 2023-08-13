@@ -23,6 +23,7 @@ defmodule BubbliWeb.Router do
   # authenticated routes
   scope "/api/v1", BubbliWeb do
     pipe_through [:api, :authed]
+    get "/current_user", UserController, :show
     get "/test", RegistrationController, :test
     # delete "/auth/logout", AuthenticationController, :delete
   end

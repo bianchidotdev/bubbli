@@ -1,5 +1,7 @@
 defmodule Bubbli.Account.AuthenticationChallenge do
+  @moduledoc false
   use Ecto.Schema
+
   import Ecto.Changeset
 
   schema "authentication_challenges" do

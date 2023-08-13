@@ -1,4 +1,5 @@
 defmodule BubbliWeb.Token do
+  @moduledoc false
   require Logger
 
   # 1 day
