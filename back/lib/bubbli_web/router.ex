@@ -16,8 +16,10 @@ defmodule BubbliWeb.Router do
     post "/registration/start", RegistrationController, :start
     post "/registration/confirm", RegistrationController, :confirm
 
-    #    post "/auth/login_start", AuthenticationController, :init
-    #    post "/auth/login_verify", AuthenticationController, :verify
+    post "/auth/login_start", AuthenticationController, :start
+    post "/auth/login_verify", AuthenticationController, :verify
+
+    delete "/auth/logout", AuthenticationController, :logout
   end
 
   # authenticated routes

@@ -24,6 +24,14 @@ export const generatePasswordBasedEncryptionKey = async (pw: string, salt: Uint8
   return key;
 };
 
+export const generateSalt = () => {
+  return crypto.getRandomValues(new Uint8Array(32));
+};
+
+export const generateEncryptionIV = () => {
+  return crypto.getRandomValues(new Uint8Array(12));
+};
+
 export const generateClientKeyPair = async () => {
   return await window.crypto.subtle.generateKey(
     {
@@ -57,6 +65,13 @@ export const encryptCryptoKey = async (
     name: 'AES-GCM',
     iv: iv
   });
+};
+
+export const exportPublicKeyAsPEM = async (publicKey: CryptoKey) => {
+  const exportedPublicKey = await crypto.subtle.exportKey('spki', exportedPublicKey);
+  return `-----BEGIN PUBLIC KEY-----\n${base64EncodeArrayBuffer(
+    exportedPublicKey
+  )}\n-----END PUBLIC KEY-----`;
 };
 
 export const base64EncodeArrayBuffer = (arrayBuffer: ArrayBuffer) => {

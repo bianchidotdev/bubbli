@@ -1,44 +1,43 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+
   import { Stepper, Step } from '@skeletonlabs/skeleton';
-  import { user } from '../../stores/user';
-  import { validateEmail, registrationStart, registrationVerify } from '$lib/user'
+
+  import { validateEmail, loginStart, loginVerify } from '$lib/user'
   import { triggerError } from "$lib/error"
+  import { user } from '../../stores/user'
 
-  let email = '',
-    firstName = '',
-    error: string | null,
-    password = '',
-    challenge = '';
+  let error = null;
 
+  let email = ""
   let validEmail = false;
   let emailVerified = false;
-  let passwordLocked = true;
+
+  let password = ""
+  let passwordLocked = true
+
+  let challenge = null;
 
   const onEmailInput = () => {
     emailVerified = false;
     validEmail = validateEmail(email);
   };
 
+  const validatePassword = () => {
+    passwordLocked = password.length <= 0;
+    return !passwordLocked
+  }
+
+  const loginSubmitHandler = () => {
+   submitConfirmationForm()
+  }
+
   const verifyEmail = () => {
     submitEmailForm();
   };
 
-  const validatePassword = () => {
-    passwordLocked = password.length < 8;
-    return !passwordLocked;
-  };
-
-  const registrationSubmitHandler = async () => {
-    if (!validatePassword(password)) {
-      triggerError('Password must be 8 characters or longer');
-      return false;
-    }
-    submitConfirmationForm();
-  };
-
   const submitEmailForm = async () => {
-    await registrationStart(email)
+    await loginStart(email)
       .then((response) => {
         if (response.status === 200) {
           response.json().then((data) => {
@@ -61,43 +60,38 @@
   };
 
   const submitConfirmationForm = async () => {
-    try {
-      registrationVerify(password, challenge)
-        .then((response) => {
-          console.log(response);
-          if (response.status === 200) {
-            response.json().then((json) => {
-              console.log(json);
-              user.set({
-                id: json['user_id'],
-                email: email
-              });
-              goto(`/dashboard`);
-            });
-          }
-        })
-        .catch((error) => {
-          console.log('error registering', error);
-        });
-    } catch (e) {
-      console.log('Error occurred creating encryption keys - ', e);
-    }
-  };
+    loginVerify(password, challenge)
+      .then((response) => {
+        if (response.status === 200) {
+          response.json().then((json) => {
+            console.log(json);
+            user.set({
+              id: json["user_id"],
+              email: email
+            })
+            goto(`/dashboard`)
+          })
+        }
+      })
+    .catch((error) => {
+      console.log("Error logging in", error)
+    })
+  }
 </script>
 
 <svelte:head>
-  <title>Register</title>
-  <meta name="description" content="User Registration" />
+  <title>Login</title>
+  <meta name="description" content="User Login" />
 </svelte:head>
 
 <section class="container mx-auto">
   <div class="card p-4 m-6 md:mx-auto max-w-2xl">
-    <h1>Register</h1>
+    <h1>Login</h1>
     {#if error}
       <p class="center error">{error}</p>
     {/if}
 
-    <Stepper on:complete={registrationSubmitHandler}>
+    <Stepper on:complete={loginSubmitHandler}>
       <Step locked={!emailVerified}>
         <svelte:fragment slot="header">Basic Information</svelte:fragment>
 
@@ -151,13 +145,7 @@
             required
           />
         </label>
-        {#if passwordLocked}
-          <p class="alert-message">Password must be 8 characters or more</p>
-        {:else}
-          <p class="success">😎 Password meets minimum rules</p>
-        {/if}
       </Step>
     </Stepper>
   </div>
-  <p class="center">Already a user? <a href="/login">Login</a>.</p>
 </section>

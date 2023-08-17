@@ -4,7 +4,7 @@ import { getCurrentUser } from '$lib/user';
 
 export const ssr = false;
 
-export const load: LayoutLoad = async () => {
+export const load: LayoutLoad = async ( fetch, params ) => {
   let currentUser = get(user);
   if (currentUser && currentUser.email && user.email !== '') {
     console.log('already logged in as ', currentUser.email);

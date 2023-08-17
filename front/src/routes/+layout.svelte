@@ -6,27 +6,23 @@
   // Most of your app wide CSS should be put in this file
   import '../app.postcss';
   import { goto } from '$app/navigation';
-  import { AppShell, AppBar, Avatar, LightSwitch } from '@skeletonlabs/skeleton';
-  import { Drawer, drawerStore, Toast } from '@skeletonlabs/skeleton';
+  import { AppShell, AppBar, LightSwitch, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
+  import NavAvatar from "$lib/components/NavAvatar.svelte";
   import { user } from '../stores/user';
   import { onMount } from 'svelte';
-  import { popup } from '@skeletonlabs/skeleton';
-  import type { PopupSettings } from '@skeletonlabs/skeleton';
-  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
+  // floating-ui popup setup
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+  import { storePopup } from '@skeletonlabs/skeleton';
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+  import { Drawer, drawerStore } from '@skeletonlabs/skeleton';
   function drawerOpen(): void {
     drawerStore.open({});
   }
-  function onAvatarClick(): void {
-    goto('/account');
-  }
 
   let authed = !!$user;
-  const popupClick: PopupSettings = {
-    event: 'click',
-    target: 'popupClick'
-  };
 </script>
 
 <Drawer>
@@ -58,18 +54,7 @@
     </svelte:fragment>
     <svelte:fragment slot="trail">
       {#if authed}
-        <Avatar
-          on:click={popupClick}
-          initials="??"
-          rounded="rounded-3xl"
-          width="w-12"
-          border="border-4 border-surface-300-600-token hover:!border-primary-500"
-          cursor="cursor-pointer"
-        />
-        <div class="card p-4 variant-filled-primary" data-popup="popupClick">
-          <p>Click Content</p>
-          <div class="arrow variant-filled-primary" />
-        </div>
+        <NavAvatar user={$user}/>
       {:else}
         <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
         <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>
