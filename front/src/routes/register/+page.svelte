@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { Stepper, Step } from '@skeletonlabs/skeleton';
   import { user } from '../../stores/user';
-  import { validateEmail, registrationStart, registrationVerify } from '$lib/user'
-  import { triggerError } from "$lib/error"
+  import { validateEmail, registrationStart, registrationVerify } from '$lib/user';
+  import { triggerError } from '$lib/error';
 
   let email = '',
-    firstName = '',
+    displayName = '',
     error: string | null,
     password = '',
     challenge = '';
@@ -42,7 +42,10 @@
       .then((response) => {
         if (response.status === 200) {
           response.json().then((data) => {
-            $user.email = email;
+            user.set({
+              email: email,
+              displayName: displayName
+            });
             challenge = data.challenge;
             emailVerified = true;
           });
@@ -50,8 +53,8 @@
           triggerError('Account already exists');
         } else {
           response.json().then((data) => {
-            console.log(data)
-          })
+            console.log(data);
+          });
         }
       })
       .catch((error) => {
@@ -62,23 +65,20 @@
 
   const submitConfirmationForm = async () => {
     try {
-      registrationVerify(password, challenge)
-        .then((response) => {
-          console.log(response);
-          if (response.status === 200) {
-            response.json().then((json) => {
-              console.log(json);
-              user.set({
-                id: json['user_id'],
-                email: email
-              });
-              goto(`/dashboard`);
+      registrationVerify(password, challenge).then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          response.json().then((json) => {
+            console.log(json);
+            user.set({
+              id: json['user_id'],
+              email: email,
+              authenticated: true
             });
-          }
-        })
-        .catch((error) => {
-          console.log('error registering', error);
-        });
+            goto(`/dashboard`);
+          });
+        }
+      });
     } catch (e) {
       console.log('Error occurred creating encryption keys - ', e);
     }
@@ -102,6 +102,18 @@
         <svelte:fragment slot="header">Basic Information</svelte:fragment>
 
         <label class="label">
+          <span>Display Name</span>
+          <input
+            class="input"
+            bind:value={displayName}
+            name="display name"
+            type="text"
+            aria-label="Display Name"
+            placeholder="Jay Smith"
+            required
+          />
+        </label>
+        <label class="label">
           <span>Email</span>
           <div class="w-full grid grid-cols-1 sm:grid-cols-4 gap-4">
             <input
@@ -115,7 +127,7 @@
               name="email"
               type="email"
               aria-label="Email address"
-              placeholder="Email address"
+              placeholder="jaysmith@example.com"
               required
             />
             {#if !emailVerified}

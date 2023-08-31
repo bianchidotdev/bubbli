@@ -2,31 +2,32 @@ defmodule BubbliWeb.Router do
   use BubbliWeb, :router
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   pipeline :authed do
-    plug BubbliWeb.Plug.Auth
+    plug(BubbliWeb.Plug.Auth)
   end
 
   # routes for authn
   scope "/api/v1", BubbliWeb do
-    pipe_through [:api]
+    pipe_through([:api])
 
-    post "/registration/start", RegistrationController, :start
-    post "/registration/confirm", RegistrationController, :confirm
+    post("/registration/start", RegistrationController, :start)
+    post("/registration/confirm", RegistrationController, :confirm)
 
-    post "/auth/login_start", AuthenticationController, :start
-    post "/auth/login_verify", AuthenticationController, :verify
+    post("/auth/signin", AuthenticationController, :signin)
+    post("/auth/login_start", AuthenticationController, :start)
+    post("/auth/login_verify", AuthenticationController, :verify)
 
-    delete "/auth/logout", AuthenticationController, :logout
+    delete("/auth/logout", AuthenticationController, :logout)
   end
 
   # authenticated routes
   scope "/api/v1", BubbliWeb do
-    pipe_through [:api, :authed]
-    get "/current_user", UserController, :show
-    get "/test", RegistrationController, :test
+    pipe_through([:api, :authed])
+    get("/current_user", UserController, :show)
+    get("/test", RegistrationController, :test)
     # delete "/auth/logout", AuthenticationController, :delete
   end
 
@@ -40,10 +41,10 @@ defmodule BubbliWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through([:fetch_session, :protect_from_forgery])
 
-      live_dashboard "/dashboard", metrics: BubbliWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: BubbliWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end

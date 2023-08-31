@@ -1,20 +1,23 @@
 import { BASE_API_URI } from '$lib/constants';
 import { user } from '../stores/user';
+import { get } from 'svelte/store';
 import { fromByteArray } from 'base64-js';
+import { goto, invalidateAll } from '$app/navigation';
 
 import {
-  generatePasswordBasedEncryptionKey,
+  generatePasswordBasedKeysArgon2,
+  generateSymmetricEncryptionKey,
   generateClientKeyPair,
   generateSalt,
   generateEncryptionIV,
-  signMessage,
-  encryptCryptoKey,
+  encryptAsymmetricKey,
+  encryptSymmetricKey,
   exportPublicKeyAsPEM,
   base64EncodeArrayBuffer
 } from '$lib/crypto';
 
-export const getCurrentUser = async () => {
-  const res = await fetch(`${BASE_API_URI}/current_user/`, {
+export const getCurrentUser = async (fetchFn) => {
+  const res = await fetchFn(`${BASE_API_URI}/current_user/`, {
     credentials: 'include'
   });
   if (res.status === 200) {
@@ -28,12 +31,20 @@ export const getCurrentUser = async () => {
 };
 
 export const logOutUser = async () => {
-  const res = await fetch(`${BASE_API_URI}/auth/logout/`, {
+  fetch(`${BASE_API_URI}/auth/logout/`, {
     method: 'DELETE',
     credentials: 'include'
-  });
+  })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((error) => {
+      console.log('Error clearing out login state', error);
+    });
 
-  user.set(null);
+  user.set({});
+  invalidateAll();
+  goto('/login');
 };
 
 const emailRegex = /^.+@.+\..+$/;
@@ -41,7 +52,7 @@ export const validateEmail = (email) => {
   return !!email.match(emailRegex);
 };
 
-export const registrationStart = async (email) => {
+export const registrationStart = async (email, displayName) => {
   return fetch(`${BASE_API_URI}/registration/start`, {
     method: 'POST',
     mode: 'cors',
@@ -50,46 +61,81 @@ export const registrationStart = async (email) => {
     },
     body: JSON.stringify({
       email: email,
-      first_name: firstName
+      display_name: displayName
     })
   });
 };
 
-export const registrationVerify = async (password, challenge) => {
-  $user.salt = generateSalt();
+export const registrationVerify = async (password, recoveryPhrase) => {
+  const salt = generateSalt();
   const privateKeyEncryptionIV = generateEncryptionIV();
+  const recoveryKeyEncryptionIV = generateEncryptionIV();
+  const userKeyEncryptionIV = generateEncryptionIV();
   // generate keys
-  $user.passwordBasedEncryptionKey = await generatePasswordBasedEncryptionKey(password, $user.salt);
-  $user.clientKeyPair = await generateClientKeyPair();
-  const signedChallenge = await signMessage($user.clientKeyPair, challenge);
-  const pemExportedPublicKey = await exportPublicKeyAsPEM($user.clientKeyPair.publicKey);
-  const encPrivateKey = await encryptCryptoKey(
-    $user.passwordBasedEncryptionKey,
-    $user.clientKeyPair.privateKey,
+  const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+    password,
+    salt
+  );
+
+  const { encryptionKey: recoveryKey } = await generatePasswordBasedKeysArgon2(
+    recoveryPhrase,
+    salt
+  );
+
+  // TODO: I don't have to generate a random symmetric key and encrypt it here
+  //   because it'll get generated for each encryption context
+  //   though maybe it's worth generating the user's timeline at this step
+  const clientKeyPair = await generateClientKeyPair();
+  const pemExportedPublicKey = await exportPublicKeyAsPEM(clientKeyPair.publicKey);
+  const pwEncPrivateKey = await encryptAsymmetricKey(
+    encryptionKey,
+    clientKeyPair.privateKey,
     privateKeyEncryptionIV
+  );
+  const recoveryEncPrivateKey = await encryptAsymmetricKey(
+    recoveryKey,
+    clientKeyPair.privateKey,
+    recoveryKeyEncryptionIV
   );
   const clientKeys = [
     {
       type: 'password',
-      encryption_iv: fromByteArray(privateKeyEncryptionIV)
+      encryption_iv: fromByteArray(privateKeyEncryptionIV),
+      encrypted_private_key: base64EncodeArrayBuffer(pwEncPrivateKey)
+    },
+    {
+      type: 'recovery',
+      encryption_iv: fromByteArray(recoveryKeyEncryptionIV),
+      encrypted_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
     }
-    // TODO(bianchi): Recovery codes
   ];
-  await fetch(`${BASE_API_URI}/registration/confirm`, {
+
+  const userSymmetricEncryptionKey = await generateSymmetricEncryptionKey(salt);
+  console.log('wrapping user encryption key');
+  const encryptedUserEncryptionKey = await encryptSymmetricKey(
+    encryptionKey,
+    userSymmetricEncryptionKey,
+    userKeyEncryptionIV
+  );
+  console.log('wrapped user encryption key');
+
+  // TODO: store encryption key in secret session store
+  const tmpUser = get(user);
+  user.set({ ...tmpUser, ...{ salt: salt } });
+  return fetch(`${BASE_API_URI}/registration/confirm`, {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      email: $user.email,
-      first_name: $user.firstName,
-      challenge: challenge,
-      signed_challenge: base64EncodeArrayBuffer(signedChallenge),
-      salt: fromByteArray($user.salt),
+      email: tmpUser.email,
+      display_name: tmpUser.displayName,
+      salt: fromByteArray(salt),
       public_key: pemExportedPublicKey,
-      encrypted_private_key: base64EncodeArrayBuffer(encPrivateKey),
-      client_keys: clientKeys
+      master_password_hash: masterPasswordHash,
+      client_keys: clientKeys,
+      encrypted_user_encryption_key: encryptedUserEncryptionKey
     })
   });
 };
@@ -107,13 +153,21 @@ export const loginStart = async (email) => {
   });
 };
 
-export const loginVerify = async () => {
+export const loginVerify = async (email: string, password: string, salt: Uint8Array) => {
+  const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+    password,
+    salt
+  );
+  // TODO: store encryptionKey securely
   return fetch(`${BASE_API_URI}/auth/login_verify`, {
     method: 'POST',
     mode: 'cors',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({})
+    body: JSON.stringify({
+      email: email,
+      master_password_hash: fromByteArray(masterPasswordHash)
+    })
   });
 };

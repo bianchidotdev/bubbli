@@ -3,20 +3,24 @@
 
   import { Stepper, Step } from '@skeletonlabs/skeleton';
 
-  import { validateEmail, loginStart, loginVerify } from '$lib/user'
-  import { triggerError } from "$lib/error"
-  import { user } from '../../stores/user'
+  import { validateEmail, loginStart, loginVerify } from '$lib/user';
+  import { triggerError } from '$lib/error';
+  import { user } from '../../stores/user';
+  import { get } from 'svelte/store';
+
+  // import { User } from "lucide-svelte"
+  // import SignIn from '$lib/components/SignIn.svelte';
+
+  import { toByteArray } from 'base64-js';
 
   let error = null;
 
-  let email = ""
+  let email = '';
   let validEmail = false;
   let emailVerified = false;
 
-  let password = ""
-  let passwordLocked = true
-
-  let challenge = null;
+  let password = '';
+  let passwordLocked = true;
 
   const onEmailInput = () => {
     emailVerified = false;
@@ -25,12 +29,12 @@
 
   const validatePassword = () => {
     passwordLocked = password.length <= 0;
-    return !passwordLocked
-  }
+    return !passwordLocked;
+  };
 
   const loginSubmitHandler = () => {
-   submitConfirmationForm()
-  }
+    submitVerifyForm();
+  };
 
   const verifyEmail = () => {
     submitEmailForm();
@@ -41,16 +45,19 @@
       .then((response) => {
         if (response.status === 200) {
           response.json().then((data) => {
-            $user.email = email;
-            challenge = data.challenge;
+            console.log(data);
+            user.set({
+              email: email,
+              salt: toByteArray(data.user.salt)
+            });
             emailVerified = true;
           });
         } else if (response.status === 409) {
           triggerError('Account already exists');
         } else {
           response.json().then((data) => {
-            console.log(data)
-          })
+            console.log(data);
+          });
         }
       })
       .catch((error) => {
@@ -59,24 +66,26 @@
       });
   };
 
-  const submitConfirmationForm = async () => {
-    loginVerify(password, challenge)
+  const submitVerifyForm = async () => {
+    const userStore = get(user);
+    loginVerify(email, password, userStore.salt)
       .then((response) => {
         if (response.status === 200) {
           response.json().then((json) => {
             console.log(json);
             user.set({
-              id: json["user_id"],
-              email: email
-            })
-            goto(`/dashboard`)
-          })
+              id: json['user_id'],
+              email: email,
+              authenticated: true
+            });
+            goto(`/dashboard`);
+          });
         }
       })
-    .catch((error) => {
-      console.log("Error logging in", error)
-    })
-  }
+      .catch((error) => {
+        console.log('Error logging in', error);
+      });
+  };
 </script>
 
 <svelte:head>
@@ -85,6 +94,16 @@
 </svelte:head>
 
 <section class="container mx-auto">
+  <!-- <div class="flex max-w-md flex-col justify-center px-6 py-12 lg:px-8 mx-auto">
+       <div class="card p-6 pb-8 pt-8">
+       <div>
+       <div class="flex flex-row justify-center items-center mb-4">
+       <User />
+       </div>
+       <SignIn {data} />
+       </div>
+       </div>
+       </div> -->
   <div class="card p-4 m-6 md:mx-auto max-w-2xl">
     <h1>Login</h1>
     {#if error}

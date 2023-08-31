@@ -1,19 +1,22 @@
 <script lang="ts">
-  import { Avatar } from "@skeletonlabs/skeleton";
+  import { Avatar } from '@skeletonlabs/skeleton';
   import { popup } from '@skeletonlabs/skeleton';
   import type { PopupSettings } from '@skeletonlabs/skeleton';
 
-  import type { User } from "$app/stores/user";
-  import { logOutUser } from "$lib/user";
+  import type { User } from '$app/stores/user';
+  import { logOutUser } from '$lib/user';
 
   const avatarFeatured: PopupSettings = {
     event: 'click',
     target: 'avatarFeatured'
   };
 
+  const onLogOutEvent = () => {
+    logOutUser();
+  };
+
   export let user: User;
 </script>
-
 
 <div use:popup={avatarFeatured}>
   <Avatar
@@ -28,14 +31,15 @@
     <ul class="list-nav">
       <li><span class="flex-auto">{user.email}</span></li>
       <hr />
-      <li><a href="/account">
+      <li>
+        <a href="/account">
           <span class="flex-auto">Settings</span>
-      </a></li>
-      <li><a on:click={logOutUser}>Log Out</a></li>
+        </a>
+      </li>
+      <!-- <li><a on:click={onLogOutEvent}>Log Out</a></li> -->
+      <li>
+        <button type="button" class="btn variant-filled" on:click={onLogOutEvent}>Log Out</button>
+      </li>
     </ul>
-    
-
-
-
   </div>
 </div>

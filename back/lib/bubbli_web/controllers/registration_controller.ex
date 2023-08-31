@@ -5,7 +5,7 @@ defmodule BubbliWeb.RegistrationController do
 
   require Logger
 
-  action_fallback BubbliWeb.FallbackController
+  action_fallback(BubbliWeb.FallbackController)
 
   def test(conn, _) do
     conn |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
@@ -26,34 +26,25 @@ defmodule BubbliWeb.RegistrationController do
 
   def confirm(conn, %{
         "email" => email,
-        "first_name" => first_name,
-        "signed_challenge" => encoded_signature,
-        "public_key" => public_PEM,
-        "encrypted_private_key" => encrypted_private_key,
+        "display_name" => display_name,
         "salt" => salt,
-        "challenge" => challenge_string,
-        "client_keys" => client_keys
+        "public_key" => public_PEM,
+        "client_keys" => client_keys,
+        "encrypted_user_encryption_key" => encd_user_enc_key,
+        "master_password_hash" => master_password_hash
       }) do
     dbg()
 
-    with {:ok, _challenge} <- Account.get_auth_challenge(email, challenge_string),
-         {:ok} <- validate_signature(challenge_string, encoded_signature, public_PEM) do
-      Logger.info("Signature verified - creating user")
-    else
-      {:error, err} ->
-        Logger.info("Bad request to registration: #{err}")
-        conn |> put_status(400) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"400")
-        # TODO(bianchi): change into map
-    end
-
     with {:ok, user} <-
-           Account.create_user(%{
+           Account.register_user(%{
              email: email,
              is_active: true,
-             first_name: first_name,
-             public_key: public_PEM,
-             encrypted_private_key: encrypted_private_key,
-             salt: salt
+             display_name: display_name,
+             salt: salt,
+             master_public_key: public_PEM,
+             client_keys: client_keys,
+             encd_user_enc_key: encd_user_enc_key,
+             master_password_hash: master_password_hash
            }),
          # TODO(bianchi): create client keys
          Logger.info("Successfully created user"),
@@ -69,7 +60,7 @@ defmodule BubbliWeb.RegistrationController do
       |> render(:successfully_registered, user_id: user.id)
     else
       whoops ->
-        IO.inspect("Unexpected error: #{whoops}")
+        IO.inspect("Unexpected error: #{inspect(whoops)}")
         conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"500")
     end
   end
@@ -80,7 +71,8 @@ defmodule BubbliWeb.RegistrationController do
          # erlang :public_key expects a DER encoded signature as opposed to the raw bytes
          # https://elixirforum.com/t/verifying-web-crypto-signatures-in-erlang-elixir/20727/2
          {:is_ecdsa_signature, signature} <-
-           {:is_ecdsa_signature, raw_signature |> Bubbli.ECDSASignature.new() |> Bubbli.ECDSASignature.to_der()},
+           {:is_ecdsa_signature,
+            raw_signature |> Bubbli.ECDSASignature.new() |> Bubbli.ECDSASignature.to_der()},
          {:is_valid_pem, [key_entry]} <- {:is_valid_pem, :public_key.pem_decode(public_PEM)},
          {:is_public_key, public_key} <-
            {:is_public_key, :public_key.pem_entry_decode(key_entry)},

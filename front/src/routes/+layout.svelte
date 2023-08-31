@@ -5,12 +5,10 @@
   import '@skeletonlabs/skeleton/styles/skeleton.css';
   // Most of your app wide CSS should be put in this file
   import '../app.postcss';
-  import { goto } from '$app/navigation';
   import { AppShell, AppBar, LightSwitch, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
-  import NavAvatar from "$lib/components/NavAvatar.svelte";
+  import NavAvatar from '$lib/components/NavAvatar.svelte';
   import { user } from '../stores/user';
-  import { onMount } from 'svelte';
 
   // floating-ui popup setup
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
@@ -22,7 +20,7 @@
     drawerStore.open({});
   }
 
-  let authed = !!$user;
+  $: authed = !!$user.authenticated;
 </script>
 
 <Drawer>
@@ -54,7 +52,7 @@
     </svelte:fragment>
     <svelte:fragment slot="trail">
       {#if authed}
-        <NavAvatar user={$user}/>
+        <NavAvatar user={$user} />
       {:else}
         <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
         <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>

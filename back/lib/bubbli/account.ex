@@ -10,7 +10,7 @@ defmodule Bubbli.Account do
   alias Bubbli.Repo
 
   def auth_challenge_user(email) do
-    query = from u in User, where: u.email == ^email
+    query = from(u in User, where: u.email == ^email)
 
     case Repo.one(query) do
       nil ->
@@ -25,8 +25,9 @@ defmodule Bubbli.Account do
 
   def get_auth_challenge(email, challenge_string) do
     query =
-      from c in AuthenticationChallenge,
+      from(c in AuthenticationChallenge,
         where: c.email == ^email and c.challenge_string == ^challenge_string
+      )
 
     case Repo.one(query) do
       nil ->
@@ -57,8 +58,21 @@ defmodule Bubbli.Account do
   end
 
   def user_exists?(email) do
-    query = from u in User, where: u.email == ^email
+    query = from(u in User, where: u.email == ^email)
     Repo.exists?(query)
+  end
+
+  def get_user_by(query) do
+    with %User{} = user <- Repo.get_by(User, query) do
+      {:ok, user}
+    else
+      nil -> {:error, :user_not_found}
+      error -> {:error, error}
+    end
+  end
+
+  def verify_user(user, password) do
+    User.verify_user(user, password)
   end
 
   @doc """
@@ -91,6 +105,19 @@ defmodule Bubbli.Account do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  def register_user(%{client_keys: client_keys, encd_user_enc_key: user_enc_key} = attrs) do
+    dbg()
+
+    Repo.transaction(fn ->
+      encd_private_keys = Enum.map(client_keys, & &1["encrypted_private_key"])
+      user_attrs = %{attrs | encrypted_master_private_keys: encd_private_keys}
+      {:ok, user} = create_user(user_attrs)
+      # TODO: create client keys
+      # TODO: create timeline (and encryption context)
+      user
+    end)
+  end
 
   @doc """
   Creates a user.

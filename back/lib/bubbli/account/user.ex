@@ -9,8 +9,7 @@ defmodule Bubbli.Account.User do
     :email,
     :is_active,
     :display_name,
-    :first_name,
-    :last_name
+    :salt
   ]
 
   def serialize_for_api(user) do
@@ -21,27 +20,32 @@ defmodule Bubbli.Account.User do
     end)
   end
 
+  def verify_user(user, password) do
+    Argon2.check_pass(user, password, hash_key: :master_password_hash)
+  end
+
   schema "users" do
-    field :email, :string
-    field :is_active, :boolean, default: false
+    field(:email, :string)
+    field(:is_active, :boolean, default: false)
 
     # cryptography
-    field :encrypted_master_private_key, :map, redact: true
-    field :master_public_key, :string
-    field :salt, :string
+    field(:encrypted_master_private_keys, :map, redact: true)
+    field(:master_public_key, :string)
+    field(:salt, :string)
+    field(:master_password_hash, :string)
 
     # user attributes
-    field :display_name, :string
-    field :first_name, :string
-    field :last_name, :string
+    field(:display_name, :string)
+    field(:username, :string)
 
     timestamps()
 
-    has_many :client_keys, Bubbli.Account.ClientKey
+    has_many(:client_keys, Bubbli.Account.ClientKey)
 
-    has_many :authentication_challenges, Bubbli.Account.AuthenticationChallenge,
+    has_many(:authentication_challenges, Bubbli.Account.AuthenticationChallenge,
       references: :email,
       foreign_key: :email
+    )
   end
 
   @doc false
@@ -50,15 +54,47 @@ defmodule Bubbli.Account.User do
     |> cast(attrs, [
       :email,
       :is_active,
-      :encrypted_master_private_key,
-      :master_public_key,
       :display_name,
-      :first_name,
-      :last_name
+      :master_public_key,
+      :encrypted_master_private_keys,
+      :salt,
+      :master_password_hash,
+      :username
     ])
-    |> validate_required([:email, :is_active])
-    # Check that email is valid
+    |> validate_required([
+      :email,
+      :is_active,
+      :display_name,
+      # :username,
+      :master_public_key,
+      :encrypted_master_private_keys,
+      :salt,
+      :master_password_hash
+    ])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
+    |> put_pass_hash()
   end
+
+  # this mimics bitwardens server-side password hashing model
+  # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
+  defp put_pass_hash(
+         %Ecto.Changeset{
+           valid?: true,
+           changes: %{master_password_hash: password_hash, salt: salt}
+         } = changeset
+       ) do
+    # https://bitwarden.com/help/kdf-algorithms/#argon2id
+    hashed_password_hash =
+      Argon2.Base.hash_password(password_hash, salt,
+        t_cost: 3,
+        # 64 MiB
+        m_cost: 16,
+        parallelism: 4
+      )
+
+    change(changeset, %{master_password_hash: hashed_password_hash})
+  end
+
+  defp put_pass_hash(changeset), do: changeset
 end
