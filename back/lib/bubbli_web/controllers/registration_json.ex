@@ -6,7 +6,10 @@ defmodule BubbliWeb.RegistrationJSON do
   end
 
   def init(%{challenge: challenge}) do
-    %{challenge: challenge.challenge_string}
+    %{
+      success: true,
+      challenge: challenge.challenge_string
+    }
   end
 
   def user_exists(_map) do

@@ -78,6 +78,7 @@ defmodule Bubbli.Account.User do
 
   # this mimics bitwardens server-side password hashing model
   # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
+  # hashing defaults: https://bitwarden.com/help/kdf-algorithms/#argon2id
   defp put_pass_hash(
          %Ecto.Changeset{
            valid?: true,
