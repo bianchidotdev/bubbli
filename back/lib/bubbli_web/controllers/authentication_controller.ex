@@ -35,10 +35,16 @@ defmodule BubbliWeb.AuthenticationController do
     end
   end
 
-  def verify(conn, %{"email" => email, "master_password_hash" => pw_hash}) do
+  def verify(conn, %{
+        "email" => email,
+        "master_password_hash" => pw_hash,
+        "client_key_type" => client_key_type
+      }) do
     with {:ok, user} <- Account.get_user_by(email: email),
-         {:ok, ^user} <- Account.verify_user(user, pw_hash),
-         token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+         :ok <- Account.verify_user(user, pw_hash),
+         {:ok, client_key} <- Account.get_client_key_by_user_and_type(user, client_key_type),
+         token <-
+           BubbliWeb.Token.sign(%{user_id: user.id}) do
       conn
       |> put_status(:ok)
       |> Plug.Conn.put_resp_cookie("authorization", token,
@@ -47,7 +53,7 @@ defmodule BubbliWeb.AuthenticationController do
         secure: true,
         max_age: 60 * 60 * 24
       )
-      |> render(:successfully_authenticated, user: user)
+      |> render(:successfully_authenticated, user: user, client_key: client_key)
     else
       # make meaningful error
       {:error, error} ->

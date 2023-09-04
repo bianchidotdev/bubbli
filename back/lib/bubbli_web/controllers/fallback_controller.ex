@@ -21,4 +21,11 @@ defmodule BubbliWeb.FallbackController do
     |> put_view(html: BubbliWeb.ErrorHTML, json: BubbliWeb.ErrorJSON)
     |> render(:"404")
   end
+
+  def call(conn, {:error, :bad_request, error}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(html: BubbliWeb.ErrorHTML, json: BubbliWeb.ErrorJSON)
+    |> render(:"400", error: error)
+  end
 end

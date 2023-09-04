@@ -30,10 +30,6 @@ config :bubbli, BubbliWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
-config :bubbli, Bubbli.Account.Guardian,
-  issuer: "bubbli",
-  secret_key: "tOTzRIOC13AetKmQ9stYeOgNJgDSzGS0XkGm05NA0TwgJKRHhQBTayTZgwoSAAh2"
-
 config :bubbli, :signing_salt, "testsigningsalt"
 
 # ## SSL Support

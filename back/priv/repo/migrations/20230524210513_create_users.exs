@@ -12,8 +12,6 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
 
       # cryptography
       # TODO(bianchi): figure out how to store (ie. structure + encoding)
-      # TODO(bianchi): make required
-      add(:encrypted_master_private_keys, :map)
       # NOTE(bianchi): stored as binary blogs (independent of encoding)
       add(:master_public_key, :bytea)
       add(:salt, :bytea)
@@ -28,6 +26,7 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
     end
 
     create(unique_index(:users, [:email]))
-    create(index(:users, [:encrypted_master_private_keys], using: "GIN"))
+    # TODO: fix index
+    # create(index(:users, [:encrypted_master_private_keys], using: "GIN"))
   end
 end

@@ -11,7 +11,7 @@ defmodule BubbliWeb.ErrorJSON do
   # "Not Found".
 
   def render("401.json", _assigns) do
-    %{errors: %{detail: "Unauthorized"}}
+    %{errors: %{detail: "unauthorized"}}
   end
 
   def render(template, _assigns) do

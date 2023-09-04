@@ -12,6 +12,14 @@ defmodule Bubbli.Account.User do
     :salt
   ]
 
+  # https://bitwarden.com/help/kdf-algorithms/#argon2id
+  @argon2_opts [
+    t_cost: 3,
+    # 64 MiB
+    m_cost: 16,
+    parallelism: 4
+  ]
+
   def serialize_for_api(user) do
     Enum.reduce(Map.from_struct(user), %{}, fn
       {_, %Ecto.Association.NotLoaded{}}, acc -> acc
@@ -21,7 +29,7 @@ defmodule Bubbli.Account.User do
   end
 
   def verify_user(user, password) do
-    Argon2.check_pass(user, password, hash_key: :master_password_hash)
+    Argon2.verify_pass(password, user.master_password_hash)
   end
 
   schema "users" do
@@ -29,7 +37,7 @@ defmodule Bubbli.Account.User do
     field(:is_active, :boolean, default: false)
 
     # cryptography
-    field(:encrypted_master_private_keys, :map, redact: true)
+    # field(:encrypted_master_private_keys, :map, redact: true)
     field(:master_public_key, :string)
     field(:salt, :string)
     field(:master_password_hash, :string)
@@ -56,7 +64,7 @@ defmodule Bubbli.Account.User do
       :is_active,
       :display_name,
       :master_public_key,
-      :encrypted_master_private_keys,
+      # :encrypted_master_private_keys,
       :salt,
       :master_password_hash,
       :username
@@ -67,7 +75,7 @@ defmodule Bubbli.Account.User do
       :display_name,
       # :username,
       :master_public_key,
-      :encrypted_master_private_keys,
+      # :encrypted_master_private_keys,
       :salt,
       :master_password_hash
     ])
@@ -85,14 +93,8 @@ defmodule Bubbli.Account.User do
            changes: %{master_password_hash: password_hash, salt: salt}
          } = changeset
        ) do
-    # https://bitwarden.com/help/kdf-algorithms/#argon2id
     hashed_password_hash =
-      Argon2.Base.hash_password(password_hash, salt,
-        t_cost: 3,
-        # 64 MiB
-        m_cost: 16,
-        parallelism: 4
-      )
+      Argon2.Base.hash_password(password_hash, salt, @argon2_opts)
 
     change(changeset, %{master_password_hash: hashed_password_hash})
   end

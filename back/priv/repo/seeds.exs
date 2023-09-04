@@ -19,6 +19,6 @@ alias Bubbli.Repo
 #
 # Seeds.setup_global_seeds()
 
-Repo.insert!(%User{
-  email: "test@example.com"
-})
+# Repo.insert!(%User{
+#   email: "test@example.com"
+# })

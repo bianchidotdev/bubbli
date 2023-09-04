@@ -154,6 +154,7 @@ export const loginStart = async (email) => {
 };
 
 export const loginVerify = async (email: string, password: string, salt: Uint8Array) => {
+  console.log(email, password, salt);
   const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
@@ -167,7 +168,8 @@ export const loginVerify = async (email: string, password: string, salt: Uint8Ar
     },
     body: JSON.stringify({
       email: email,
-      master_password_hash: fromByteArray(masterPasswordHash)
+      master_password_hash: masterPasswordHash,
+      client_key_type: 'password'
     })
   });
 };

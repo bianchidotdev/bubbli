@@ -8,6 +8,15 @@ defmodule Bubbli.AccountTest do
 
     alias Bubbli.Account.User
 
+    @create_attrs %{
+      email: "testabcd@example.com",
+      is_active: true,
+      display_name: "test",
+      master_public_key: "test",
+      encrypted_master_private_keys: %{"test" => "test"},
+      salt: "testtesttesttest",
+      master_password_hash: "test"
+    }
     @invalid_attrs %{email: nil, is_active: nil}
 
     test "list_users/0 returns all users" do
@@ -21,10 +30,8 @@ defmodule Bubbli.AccountTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{email: "some@email", is_active: true}
-
-      assert {:ok, %User{} = user} = Account.create_user(valid_attrs)
-      assert user.email == "some@email"
+      assert {:ok, %User{} = user} = Account.create_user(@create_attrs)
+      assert user.email == "testabcd@example.com"
       assert user.is_active == true
     end
 

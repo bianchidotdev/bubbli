@@ -23,10 +23,11 @@ defmodule BubbliWeb.AuthenticationJSON do
     }
   end
 
-  def successfully_authenticated(%{user: user}) do
+  def successfully_authenticated(%{user: user, client_key: client_key}) do
     %{
       success: true,
-      user: Bubbli.Account.User.serialize_for_api(user)
+      user: Bubbli.Account.User.serialize_for_api(user),
+      encrypted_master_private_key: client_key.encrypted_private_key
     }
   end
 end

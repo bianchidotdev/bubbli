@@ -7,6 +7,7 @@ defmodule Bubbli.Account do
 
   alias Bubbli.Account.AuthenticationChallenge
   alias Bubbli.Account.User
+  alias Bubbli.Account.ClientKey
   alias Bubbli.Repo
 
   def auth_challenge_user(email) do
@@ -39,11 +40,19 @@ defmodule Bubbli.Account do
     end
   end
 
-  def validate_auth_challenge do
-  end
+  def get_client_key_by_user_and_type(user, type) do
+    query =
+      from(k in ClientKey,
+        where: k.user_id == ^user.id and k.type == ^type
+      )
 
-  def authenticate_user(_username) do
-    # TODO(bianchi): implement
+    case Repo.one(query) do
+      nil ->
+        {:error, :no_key_found}
+
+      client_key ->
+        {:ok, client_key}
+    end
   end
 
   def create_auth_challenge(email) do
@@ -72,7 +81,10 @@ defmodule Bubbli.Account do
   end
 
   def verify_user(user, password) do
-    User.verify_user(user, password)
+    case User.verify_user(user, password) do
+      true -> :ok
+      false -> {:error, :invalid_password}
+    end
   end
 
   @doc """
@@ -106,17 +118,25 @@ defmodule Bubbli.Account do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
-  def register_user(%{client_keys: client_keys, encd_user_enc_key: user_enc_key} = attrs) do
-    dbg()
-
+  def register_user(%{client_keys: client_keys_attrs, encd_user_enc_key: _user_enc_key} = attrs) do
     Repo.transaction(fn ->
-      encd_private_keys = Enum.map(client_keys, & &1["encrypted_private_key"])
-      user_attrs = %{attrs | encrypted_master_private_keys: encd_private_keys}
-      {:ok, user} = create_user(user_attrs)
-      # TODO: create client keys
+      {:ok, user} = create_user(attrs)
+
+      _client_keys =
+        Enum.map(client_keys_attrs, fn key_attrs ->
+          key_attrs = Map.put(key_attrs, "user_id", user.id)
+          create_client_key(key_attrs)
+        end)
+
       # TODO: create timeline (and encryption context)
       user
     end)
+  end
+
+  def create_client_key(attrs \\ %{}) do
+    %ClientKey{}
+    |> ClientKey.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -134,7 +154,7 @@ defmodule Bubbli.Account do
   def create_user(attrs \\ %{}) do
     %User{}
     |> User.changeset(attrs)
-    |> Repo.insert(returning: [:salt])
+    |> Repo.insert()
   end
 
   @doc """

@@ -20,6 +20,8 @@ config :bubbli, BubbliWeb.Endpoint,
   secret_key_base: "v4D9SnNezQfft6g8sQLUSeeIL8O+p1oyZ0fMXwtVILoKxJpnc8KJLS4HUVYCLxm7",
   server: false
 
+config :bubbli, :signing_salt, "testsigningsalt"
+
 # In test we don't send emails.
 config :bubbli, Bubbli.Mailer, adapter: Swoosh.Adapters.Test
 
