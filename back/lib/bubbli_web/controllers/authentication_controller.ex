@@ -35,11 +35,7 @@ defmodule BubbliWeb.AuthenticationController do
     end
   end
 
-  def verify(conn, %{
-        "email" => email,
-        "master_password_hash" => pw_hash,
-        "client_key_type" => client_key_type
-      }) do
+  def verify(conn, %{"email" => email, "master_password_hash" => pw_hash, "client_key_type" => client_key_type}) do
     with {:ok, user} <- Account.get_user_by(email: email),
          :ok <- Account.verify_user(user, pw_hash),
          {:ok, client_key} <- Account.get_client_key_by_user_and_type(user, client_key_type),

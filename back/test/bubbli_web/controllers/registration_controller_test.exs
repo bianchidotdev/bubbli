@@ -1,5 +1,6 @@
 defmodule BubbliWeb.RegistrationControllerTest do
   use BubbliWeb.ConnCase
+
   import Bubbli.AccountFixtures
 
   # alias Bubbli.Account

@@ -88,10 +88,7 @@ defmodule Bubbli.Account.User do
   # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
   # hashing defaults: https://bitwarden.com/help/kdf-algorithms/#argon2id
   defp put_pass_hash(
-         %Ecto.Changeset{
-           valid?: true,
-           changes: %{master_password_hash: password_hash, salt: salt}
-         } = changeset
+         %Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash, salt: salt}} = changeset
        ) do
     hashed_password_hash =
       Argon2.Base.hash_password(password_hash, salt, @argon2_opts)

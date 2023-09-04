@@ -6,8 +6,8 @@ defmodule Bubbli.Account do
   import Ecto.Query, warn: false
 
   alias Bubbli.Account.AuthenticationChallenge
-  alias Bubbli.Account.User
   alias Bubbli.Account.ClientKey
+  alias Bubbli.Account.User
   alias Bubbli.Repo
 
   def auth_challenge_user(email) do
@@ -81,9 +81,10 @@ defmodule Bubbli.Account do
   end
 
   def verify_user(user, password) do
-    case User.verify_user(user, password) do
-      true -> :ok
-      false -> {:error, :invalid_password}
+    if User.verify_user(user, password) do
+      :ok
+    else
+      {:error, :invalid_password}
     end
   end
 
