@@ -69,9 +69,9 @@
 
   const submitVerifyForm = async () => {
     const userStore = get(user);
-    const response = await loginVerify(email, password, userStore.salt)
+    const response = await loginVerify(email, password, userStore.salt);
     if (response.status === 200) {
-      const json = await response.json()
+      const json = await response.json();
       console.log(json);
       user.set({
         id: json['user_id'],
@@ -79,23 +79,26 @@
         authenticated: true
       });
 
-      const encryptedPrivateKey = json["encrypted_private_key"]
-      const privateKeyEncryptionIV = json["encrypted_private_key_iv"]
+      const encryptedPrivateKey = json['encrypted_private_key'];
+      const privateKeyEncryptionIV = json['encrypted_private_key_iv'];
 
       // TODO: move to user.ts or at least out of the login page
-      const encryptionKey = encryptionKeyStore.get("masterEncryptionKey")
+      const encryptionKey = encryptionKeyStore.get('masterEncryptionKey');
       if (!encryptionKey || !encryptedPrivateKey || !privateKeyEncryptionIV) {
-        return triggerError('Unknown error getting keys from server')
+        return triggerError('Unknown error getting keys from server');
       }
 
-      const masterPrivateKey = await decryptAsymmetricKey(encryptionKey, encryptedPrivateKey, privateKeyEncryptionIV)
+      const masterPrivateKey = await decryptAsymmetricKey(
+        encryptionKey,
+        encryptedPrivateKey,
+        privateKeyEncryptionIV
+      );
 
-      encryptionKeyStore.set("masterPrivateKey", masterPrivateKey)
+      encryptionKeyStore.set('masterPrivateKey', masterPrivateKey);
 
-
-        goto(`/dashboard`);
+      goto(`/dashboard`);
     } else {
-      console.log(await response.json())
+      console.log(await response.json());
     }
   };
 </script>

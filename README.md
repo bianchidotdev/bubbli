@@ -9,6 +9,8 @@ Requirements:
 * `caddy`
 * Elixir and Erlang
 * NodeJS
+* Go (for running Dagger CI)
+* Postgres 15
 
 Language versioning is managed using [`rtx`](https://github.com/jdx/rtx) and current versions can be installed with `rtx install` in the root Bubbli directory
 
