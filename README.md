@@ -7,7 +7,6 @@ An end-to-end encrypted social media app supporting user timelines, groups, and 
 Heavily inspired by [BitWarden's Security Whitepaper](https://bitwarden.com/images/resources/security-white-paper-download.pdf).
 
 ```mermaid
-
 flowchart LR
     %% Variables
     PW{{User Password}}
@@ -77,13 +76,8 @@ flowchart LR
     subgraph Server
     style Server fill:#FFF
     PWHASH --> SERVERARGON
-
-    %% TODO: Separate out user from encryption context DB tables
     WRAPPEDAKEY --> DB
     WRAPPEDSKEY --> DB
     SERVERARGON --> DB
     end
-  
-
 ```
-
