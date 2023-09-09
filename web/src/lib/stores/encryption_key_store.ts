@@ -1,6 +1,12 @@
 import SessionKeystore from 'session-keystore';
 
 // TODO: this isn't persisting past refreshes like it says it should
+// Alright, so here's what we're going to do.
+// store the unexportable master encryption key and the encrypted private key in indexedDB.
+// With that, we'll have longer term storage and supposedly it's ok to store unexportable
+// crypto keys in indexedDB.
+// example: https://gist.github.com/saulshanabrook/b74984677bccd08b028b30d9968623f5
+// another: https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
 
 export const masterPrivateKeyConst = 'masterPrivateKey';
 export const masterEncryptionKeyConst = 'masterEncryptionKey';

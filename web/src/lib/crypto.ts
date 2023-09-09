@@ -91,6 +91,7 @@ export const generatePasswordBasedKeysArgon2 = async (
     }
   });
 
+  // key splitting into encryption and authentication "keys"
   const encryptionKeyMaterial = keyMaterial.slice(0, encryptionKeyLength);
   const authenticationKeyMaterial = keyMaterial.slice(
     encryptionKeyLength,
@@ -101,7 +102,7 @@ export const generatePasswordBasedKeysArgon2 = async (
     'raw',
     encryptionKeyMaterial,
     symmetricKeyParams,
-    true,
+    false,
     clientKeyUsages
   );
 
