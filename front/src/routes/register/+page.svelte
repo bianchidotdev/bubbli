@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Stepper, Step } from '@skeletonlabs/skeleton';
-  import { user } from '../../stores/user';
+  import { user } from '$lib/stores/user';
   import { validateEmail, registrationStart, registrationVerify } from '$lib/user';
   import { triggerError } from '$lib/error';
 

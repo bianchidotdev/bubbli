@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { user } from '../stores/user';
+import { user } from '$lib/stores/user';
 import { getCurrentUser } from '$lib/user';
 
 export const ssr = false;

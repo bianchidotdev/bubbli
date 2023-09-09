@@ -3,7 +3,7 @@
   import { popup } from '@skeletonlabs/skeleton';
   import type { PopupSettings } from '@skeletonlabs/skeleton';
 
-  import type { User } from '$app/stores/user';
+  import type { User } from '$lib/stores/user';
   import { logOutUser } from '$lib/user';
 
   const avatarFeatured: PopupSettings = {

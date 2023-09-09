@@ -8,7 +8,7 @@
   import { AppShell, AppBar, LightSwitch, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
   import NavAvatar from '$lib/components/NavAvatar.svelte';
-  import { user } from '../stores/user';
+  import { user } from '$lib/stores/user';
 
   // floating-ui popup setup
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';

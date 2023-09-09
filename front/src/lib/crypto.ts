@@ -151,6 +151,25 @@ export const encryptAsymmetricKey = async (
   });
 };
 
+export const decryptAsymmetricKey = async (
+  encryptionKey: CryptoKey,
+  encryptedAsymmetricKey: Uint8Array,
+  iv: Uint8Array
+): CryptoKey => {
+  return await crypto.subtle.unwrapKey(
+    'pkcs8',
+    encryptedAsymmetricKey,
+    encryptionKey,
+    {
+      name: 'AES-GCM',
+      iv: iv
+    },
+    asymmetricKeyPairParams,
+    true,
+    ['encrypt', 'decrypt']
+  );
+};
+
 export const encryptSymmetricKey = async (
   encryptionKey: CryptoKey,
   cryptoKey: CryptoKey,

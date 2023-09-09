@@ -1,5 +1,5 @@
 import { BASE_API_URI } from '$lib/constants';
-import { user } from '../stores/user';
+import { user } from '$lib/stores/user';
 import { get } from 'svelte/store';
 import { fromByteArray } from 'base64-js';
 import { goto, invalidateAll } from '$app/navigation';
@@ -15,6 +15,8 @@ import {
   exportPublicKeyAsPEM,
   base64EncodeArrayBuffer
 } from '$lib/crypto';
+
+import { encryptionKeyStore } from '$lib/stores/encryption_key_store';
 
 export const getCurrentUser = async (fetchFn) => {
   const res = await fetchFn(`${BASE_API_URI}/current_user/`, {
@@ -119,6 +121,8 @@ export const registrationVerify = async (password, recoveryPhrase) => {
   );
   console.log('wrapped user encryption key');
 
+  encryptionKeyStore.set('masterEncryptionKey', encryptionKey);
+  encryptionKeyStore.set('masterPrivateKey', clientKeyPair.privateKey);
   // TODO: store encryption key in secret session store
   const tmpUser = get(user);
   user.set({ ...tmpUser, ...{ salt: salt } });
@@ -159,7 +163,7 @@ export const loginVerify = async (email: string, password: string, salt: Uint8Ar
     password,
     salt
   );
-  // TODO: store encryptionKey securely
+  encryptionKeyStore.set('masterEncryptionKey', encryptionKey);
   return fetch(`${BASE_API_URI}/auth/login_verify`, {
     method: 'POST',
     mode: 'cors',
@@ -173,3 +177,8 @@ export const loginVerify = async (email: string, password: string, salt: Uint8Ar
     })
   });
 };
+
+export const decryptAndLoadMasterPrivateKey = async (
+  encryptedPrivateKey,
+  encryptedPrivateKeyIV
+) => {};

@@ -1,5 +1,5 @@
 <script>
-  import { user } from '../../stores/user';
+  import { user } from '$lib/stores/user';
 
   let authed = $user && $user.email !== '';
   const buttonclick = async () => {

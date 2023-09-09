@@ -5,7 +5,8 @@
 
   import { validateEmail, loginStart, loginVerify } from '$lib/user';
   import { triggerError } from '$lib/error';
-  import { user } from '../../stores/user';
+  import { user } from '$lib/stores/user';
+  import { encryptionKeyStore } from '$lib/stores/encryption_key_store';
   import { get } from 'svelte/store';
 
   // import { User } from "lucide-svelte"
@@ -68,23 +69,34 @@
 
   const submitVerifyForm = async () => {
     const userStore = get(user);
-    loginVerify(email, password, userStore.salt)
-      .then((response) => {
-        if (response.status === 200) {
-          response.json().then((json) => {
-            console.log(json);
-            user.set({
-              id: json['user_id'],
-              email: email,
-              authenticated: true
-            });
-            goto(`/dashboard`);
-          });
-        }
-      })
-      .catch((error) => {
-        console.log('Error logging in', error);
+    const response = await loginVerify(email, password, userStore.salt)
+    if (response.status === 200) {
+      const json = await response.json()
+      console.log(json);
+      user.set({
+        id: json['user_id'],
+        email: email,
+        authenticated: true
       });
+
+      const encryptedPrivateKey = json["encrypted_private_key"]
+      const privateKeyEncryptionIV = json["encrypted_private_key_iv"]
+
+      // TODO: move to user.ts or at least out of the login page
+      const encryptionKey = encryptionKeyStore.get("masterEncryptionKey")
+      if (!encryptionKey || !encryptedPrivateKey || !privateKeyEncryptionIV) {
+        return triggerError('Unknown error getting keys from server')
+      }
+
+      const masterPrivateKey = await decryptAsymmetricKey(encryptionKey, encryptedPrivateKey, privateKeyEncryptionIV)
+
+      encryptionKeyStore.set("masterPrivateKey", masterPrivateKey)
+
+
+        goto(`/dashboard`);
+    } else {
+      console.log(await response.json())
+    }
   };
 </script>
 
