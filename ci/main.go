@@ -32,8 +32,8 @@ func main() {
 	// TODO(bianchi): read versions from .rtx.toml
 	elixir := client.Container().
 		From("hexpm/elixir:1.15.2-erlang-26.0.2-debian-bookworm-20230612-slim").
-		WithDirectory("/app", client.Host().Directory("back"), dagger.ContainerWithDirectoryOpts{
-			Exclude: []string{"back/priv/", "ci/", "front/"},
+		WithDirectory("/app", client.Host().Directory("app"), dagger.ContainerWithDirectoryOpts{
+			Exclude: []string{"app/priv/", "ci/", "web"},
 		})
 
 	depsCache := client.CacheVolume("deps")
