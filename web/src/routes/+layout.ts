@@ -1,23 +1,23 @@
 import { get } from 'svelte/store';
-import { user } from '$lib/stores/user';
+import { userStore } from '$lib/stores/user_store';
 import { getCurrentUser } from '$lib/user';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ fetch }) => {
-  let currentUser = get(user);
-  if (currentUser && currentUser.email && user.email !== '') {
-    console.log('already logged in as ', currentUser.email);
+  let user = get(userStore);
+  if (user && user.email && user.email !== '') {
+    console.log('already logged in as ', user.email);
   } else {
-    currentUser = await getCurrentUser(fetch);
-    if (currentUser && currentUser.email !== '') {
-      console.log('fetched currentUser data for ', user.email);
-      user.set(currentUser);
+    user = await getCurrentUser(fetch);
+    if (user && user.email !== '') {
+      console.log('fetched user data for ', user.email);
+      userStore.set(user);
     } else {
-      user.set({});
+      userStore.set({});
     }
   }
-  //if (!currentUser.email || $uesr.email === '') {
+  //if (!user.email || $uesr.email === '') {
   //    goto('/')
   //}
 };

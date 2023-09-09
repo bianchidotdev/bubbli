@@ -1,18 +1,19 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import { toByteArray } from 'base64-js';
+
   import { Stepper, Step } from '@skeletonlabs/skeleton';
 
-  import { validateEmail, loginStart, loginVerify } from '$lib/user';
+  import {
+    validateEmail,
+    loginStart,
+    loginVerify,
+    decryptAndLoadMasterPrivateKey
+  } from '$lib/user';
   import { triggerError } from '$lib/error';
-  import { user } from '$lib/stores/user';
-  import { encryptionKeyStore } from '$lib/stores/encryption_key_store';
+  import { userStore } from '$lib/stores/user_store';
   import { get } from 'svelte/store';
-
-  // import { User } from "lucide-svelte"
-  // import SignIn from '$lib/components/SignIn.svelte';
-
-  import { toByteArray } from 'base64-js';
 
   let error = null;
 
@@ -47,7 +48,7 @@
         if (response.status === 200) {
           response.json().then((data) => {
             console.log(data);
-            user.set({
+            userStore.set({
               email: email,
               salt: toByteArray(data.user.salt)
             });
@@ -68,35 +69,28 @@
   };
 
   const submitVerifyForm = async () => {
-    const userStore = get(user);
-    const response = await loginVerify(email, password, userStore.salt);
+    const user = get(userStore);
+    const response = await loginVerify(email, password, user.salt);
     if (response.status === 200) {
       const json = await response.json();
-      console.log(json);
-      user.set({
+      userStore.set({
         id: json['user_id'],
         email: email,
         authenticated: true
       });
 
-      const encryptedPrivateKey = json['encrypted_private_key'];
-      const privateKeyEncryptionIV = json['encrypted_private_key_iv'];
+      const encryptedPrivateKey = toByteArray(json['encrypted_master_private_key']);
+      const encryptedPrivateKeyIV = toByteArray(json['encrypted_master_private_key_iv']);
 
-      // TODO: move to user.ts or at least out of the login page
-      const encryptionKey = encryptionKeyStore.get('masterEncryptionKey');
-      if (!encryptionKey || !encryptedPrivateKey || !privateKeyEncryptionIV) {
-        return triggerError('Unknown error getting keys from server');
-      }
-
-      const masterPrivateKey = await decryptAsymmetricKey(
-        encryptionKey,
-        encryptedPrivateKey,
-        privateKeyEncryptionIV
-      );
-
-      encryptionKeyStore.set('masterPrivateKey', masterPrivateKey);
-
-      goto(`/dashboard`);
+      decryptAndLoadMasterPrivateKey(encryptedPrivateKey, encryptedPrivateKeyIV)
+        .then(() => {
+          goto(`/dashboard`);
+        })
+        .catch((error) => {
+          console.error(error);
+          triggerError('Unknown error getting keys from server');
+          goto(`/login`);
+        });
     } else {
       console.log(await response.json());
     }
@@ -109,16 +103,6 @@
 </svelte:head>
 
 <section class="container mx-auto">
-  <!-- <div class="flex max-w-md flex-col justify-center px-6 py-12 lg:px-8 mx-auto">
-       <div class="card p-6 pb-8 pt-8">
-       <div>
-       <div class="flex flex-row justify-center items-center mb-4">
-       <User />
-       </div>
-       <SignIn {data} />
-       </div>
-       </div>
-       </div> -->
   <div class="card p-4 m-6 md:mx-auto max-w-2xl">
     <h1>Login</h1>
     {#if error}

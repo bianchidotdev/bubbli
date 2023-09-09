@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Stepper, Step } from '@skeletonlabs/skeleton';
-  import { user } from '$lib/stores/user';
+  import { userStore } from '$lib/stores/user_store';
   import { validateEmail, registrationStart, registrationVerify } from '$lib/user';
   import { triggerError } from '$lib/error';
 
@@ -42,7 +42,7 @@
       .then((response) => {
         if (response.status === 200) {
           response.json().then((data) => {
-            user.set({
+            userStore.set({
               email: email,
               displayName: displayName
             });
@@ -66,11 +66,9 @@
   const submitConfirmationForm = async () => {
     try {
       registrationVerify(password, challenge).then((response) => {
-        console.log(response);
         if (response.status === 200) {
           response.json().then((json) => {
-            console.log(json);
-            user.set({
+            userStore.set({
               id: json['user_id'],
               email: email,
               authenticated: true

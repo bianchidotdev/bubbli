@@ -27,7 +27,8 @@ defmodule BubbliWeb.AuthenticationJSON do
     %{
       success: true,
       user: Bubbli.Account.User.serialize_for_api(user),
-      encrypted_master_private_key: client_key.encrypted_private_key
+      encrypted_master_private_key: client_key.encrypted_private_key,
+      encrypted_master_private_key_iv: client_key.encryption_iv
     }
   end
 end

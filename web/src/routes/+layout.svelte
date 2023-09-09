@@ -8,7 +8,7 @@
   import { AppShell, AppBar, LightSwitch, Toast } from '@skeletonlabs/skeleton';
   import Navigation from '$lib/components/Navigation.svelte';
   import NavAvatar from '$lib/components/NavAvatar.svelte';
-  import { user } from '$lib/stores/user';
+  import { userStore } from '$lib/stores/user_store';
 
   // floating-ui popup setup
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
@@ -20,7 +20,10 @@
     drawerStore.open({});
   }
 
-  $: authed = !!$user.authenticated;
+  let authed = !!$userStore.authenticated;
+  userStore.subscribe((user) => {
+    authed = !!user.authenticated;
+  });
 </script>
 
 <Drawer>
@@ -52,7 +55,7 @@
     </svelte:fragment>
     <svelte:fragment slot="trail">
       {#if authed}
-        <NavAvatar user={$user} />
+        <NavAvatar user={$userStore} />
       {:else}
         <a class="btn btn-sm variant-ghost-surface" href="/login"> Login </a>
         <a class="btn btn-sm variant-ghost-surface" href="/register"> Register </a>

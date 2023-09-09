@@ -1,4 +1,4 @@
-import { fromByteArray } from 'base64-js';
+import { fromByteArray, toByteArray } from 'base64-js';
 import { argon2id } from 'hash-wasm';
 import { generateMnemonic } from 'bip39';
 
@@ -13,6 +13,8 @@ const symmetricKeyParams = {
   length: 256
 };
 
+const clientKeyUsages = ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'];
+
 const asymmetricKeyPairParams = {
   name: 'RSA-OAEP',
   modulusLength: 4096,
@@ -24,37 +26,58 @@ const asymmetricKeyPairParams = {
 const argon2Options = {
   parallelism: 4,
   iterations: 3,
-  memorySize: 65536, // use 64MB memory
+  memorySize: 65536, // use 64MiB memory
   hashLength: encryptionKeyLength + authenticationKeyLength, // output size = 64 bytes
   outputType: 'binary' // return standard encoded string containing parameters needed to verify the key
 };
 
-export const generateRecoveryPhrase = async (): string => {
-  return generateMnemonic();
-  return { recoveryPhrase: recoveryPhrase, recoveryKey: recoveryKey };
-};
+// Deprecated in favor of Argon2
+// export const generatePasswordBasedEncryptionKeyPBKDF2 = async (pw: string, salt: Uint8Array) => {
+//   const passwordAsBytes = encoder.encode(pw);
+//   const keyMaterial = await crypto.subtle.importKey('raw', passwordAsBytes, 'PBKDF2', false, [
+//     'deriveBits',
+//     'deriveKey'
+//   ]);
+//   const key = await crypto.subtle.deriveKey(
+//     {
+//       name: 'PBKDF2',
+//       salt: salt,
+//       iterations: 600000,
+//       hash: 'SHA-256'
+//     },
+//     keyMaterial,
+//     symmetricKeyParams,
+//     true,
+//     ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey']
+//   );
 
-export const generatePasswordBasedEncryptionKeyPBKDF2 = async (pw: string, salt: Uint8Array) => {
-  const passwordAsBytes = encoder.encode(pw);
-  const keyMaterial = await crypto.subtle.importKey('raw', passwordAsBytes, 'PBKDF2', false, [
-    'deriveBits',
-    'deriveKey'
-  ]);
-  const key = await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: salt,
-      iterations: 600000,
-      hash: 'SHA-256'
-    },
-    keyMaterial,
-    symmetricKeyParams,
-    true,
-    ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey']
-  );
+//   return key;
+// };
 
-  return key;
-};
+// export const generateMasterPasswordHashPBKDF2 = async (
+//   passwordBasedEncKey: CryptoKey,
+//   pw: string
+// ) => {
+//   const passwordAsBytes = encoder.encode(pw);
+
+//   const exported = await crypto.subtle.exportKey('raw', passwordBasedEncKey);
+
+//   const keyMaterial = await crypto.subtle.importKey('raw', exported, 'PBKDF2', false, [
+//     'deriveBits'
+//   ]);
+
+//   const buffer = await crypto.subtle.deriveBits(
+//     {
+//       name: 'PBKDF2',
+//       salt: passwordAsBytes,
+//       iterations: 1,
+//       hash: 'SHA-256'
+//     },
+//     keyMaterial,
+//     256
+//   );
+//   return new Uint8Array(buffer);
+// };
 
 export const generatePasswordBasedKeysArgon2 = async (
   pw: string,
@@ -79,37 +102,12 @@ export const generatePasswordBasedKeysArgon2 = async (
     encryptionKeyMaterial,
     symmetricKeyParams,
     true,
-    ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey']
+    clientKeyUsages
   );
 
   const authenticationHash = fromByteArray(authenticationKeyMaterial);
 
   return { encryptionKey: encryptionKey, masterPasswordHash: authenticationHash };
-};
-
-export const generateMasterPasswordHashPBKDF2 = async (
-  passwordBasedEncKey: CryptoKey,
-  pw: string
-) => {
-  const passwordAsBytes = encoder.encode(pw);
-
-  const exported = await crypto.subtle.exportKey('raw', passwordBasedEncKey);
-
-  const keyMaterial = await crypto.subtle.importKey('raw', exported, 'PBKDF2', false, [
-    'deriveBits'
-  ]);
-
-  const buffer = await crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      salt: passwordAsBytes,
-      iterations: 1,
-      hash: 'SHA-256'
-    },
-    keyMaterial,
-    256
-  );
-  return new Uint8Array(buffer);
 };
 
 export const generateSalt = () => {
@@ -128,6 +126,7 @@ export const generateSymmetricEncryptionKey = async (): CryptoKey => {
   return await crypto.subtle.generateKey(symmetricKeyParams, true, ['encrypt', 'decrypt']);
 };
 
+// Deprecated in favor of Argon2 derived authentication hash
 // export const signMessage = async (keyPair: CryptoKeyPair, message: string) => {
 //   const encodedMessage = encoder.encode(message);
 //   return crypto.subtle.sign(
@@ -145,6 +144,7 @@ export const encryptAsymmetricKey = async (
   cryptoKey: CryptoKey,
   iv: Uint8Array
 ): UInt8Array => {
+  console.log(cryptoKey);
   return await crypto.subtle.wrapKey('pkcs8', cryptoKey, encryptionKey, {
     name: 'AES-GCM',
     iv: iv
@@ -166,7 +166,9 @@ export const decryptAsymmetricKey = async (
     },
     asymmetricKeyPairParams,
     true,
-    ['encrypt', 'decrypt']
+    // Can't have encrypt here because only the public key of RSA-OAEP can be used for encryption
+    // https://stackoverflow.com/questions/76403336/javascript-webcryptoapi-why-does-this-not-satisfy-operation-specific-requiremen
+    ['decrypt']
   );
 };
 

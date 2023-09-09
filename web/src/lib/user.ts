@@ -1,8 +1,8 @@
 import { BASE_API_URI } from '$lib/constants';
-import { user } from '$lib/stores/user';
+import { userStore } from '$lib/stores/user_store';
 import { get } from 'svelte/store';
 import { fromByteArray } from 'base64-js';
-import { goto, invalidateAll } from '$app/navigation';
+import { invalidateAll } from '$app/navigation';
 
 import {
   generatePasswordBasedKeysArgon2,
@@ -10,13 +10,18 @@ import {
   generateClientKeyPair,
   generateSalt,
   generateEncryptionIV,
+  decryptAsymmetricKey,
   encryptAsymmetricKey,
   encryptSymmetricKey,
   exportPublicKeyAsPEM,
   base64EncodeArrayBuffer
 } from '$lib/crypto';
 
-import { encryptionKeyStore } from '$lib/stores/encryption_key_store';
+import {
+  encryptionKeyStore,
+  masterPrivateKeyConst,
+  masterEncryptionKeyConst
+} from '$lib/stores/encryption_key_store';
 
 export const getCurrentUser = async (fetchFn) => {
   const res = await fetchFn(`${BASE_API_URI}/current_user/`, {
@@ -44,9 +49,9 @@ export const logOutUser = async () => {
       console.log('Error clearing out login state', error);
     });
 
-  user.set({});
+  userStore.set({});
+  encryptionKeyStore.clear();
   invalidateAll();
-  goto('/login');
 };
 
 const emailRegex = /^.+@.+\..+$/;
@@ -99,6 +104,7 @@ export const registrationVerify = async (password, recoveryPhrase) => {
     clientKeyPair.privateKey,
     recoveryKeyEncryptionIV
   );
+  console.log(pwEncPrivateKey);
   const clientKeys = [
     {
       type: 'password',
@@ -121,11 +127,11 @@ export const registrationVerify = async (password, recoveryPhrase) => {
   );
   console.log('wrapped user encryption key');
 
-  encryptionKeyStore.set('masterEncryptionKey', encryptionKey);
-  encryptionKeyStore.set('masterPrivateKey', clientKeyPair.privateKey);
-  // TODO: store encryption key in secret session store
-  const tmpUser = get(user);
-  user.set({ ...tmpUser, ...{ salt: salt } });
+  console.log(encryptionKey, clientKeyPair.privateKey);
+  encryptionKeyStore.set(masterEncryptionKeyConst, encryptionKey);
+  encryptionKeyStore.set(masterPrivateKeyConst, clientKeyPair.privateKey);
+  const user = get(userStore);
+  userStore.set({ ...user, ...{ salt: salt } });
   return fetch(`${BASE_API_URI}/registration/confirm`, {
     method: 'POST',
     mode: 'cors',
@@ -133,8 +139,8 @@ export const registrationVerify = async (password, recoveryPhrase) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      email: tmpUser.email,
-      display_name: tmpUser.displayName,
+      email: user.email,
+      display_name: user.displayName,
       salt: fromByteArray(salt),
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
@@ -181,4 +187,18 @@ export const loginVerify = async (email: string, password: string, salt: Uint8Ar
 export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey,
   encryptedPrivateKeyIV
-) => {};
+) => {
+  const encryptionKey = encryptionKeyStore.get('masterEncryptionKey');
+  if (!encryptionKey || !encryptedPrivateKey || !encryptedPrivateKeyIV) {
+    return { error: 'Missing required keys' };
+  }
+
+  const masterPrivateKey = await decryptAsymmetricKey(
+    encryptionKey,
+    encryptedPrivateKey,
+    encryptedPrivateKeyIV
+  );
+
+  encryptionKeyStore.set('masterPrivateKey', masterPrivateKey);
+  console.log(masterPrivateKey);
+};

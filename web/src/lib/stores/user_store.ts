@@ -11,7 +11,7 @@ export interface User {
   username: string;
 }
 
-export const user: Writable<User | null> = localStorageStore('currentUser', {
+export const userStore: Writable<User | null> = localStorageStore('currentUser', {
   email: '',
   id: '',
   salt: null,
