@@ -8,15 +8,23 @@ tasks:
       - webstart
 
   installdeps:
-    deps:
-      - installcaddy
-      - installrtx
-      - installlanguages
+    cmds:
+      - brew install caddy rtx
+      - rtx install
+    preconditions:
+      - which brew
 
   caddyup:
-    # deps: [setup] TODO
     cmds:
       - caddy run
+    preconditions:
+      - which caddy
+
+  caddysetup:
+    cmds:
+      - caddy trust
+    preconditions:
+      - which caddy
 
   testall:
     aliases: [test]
