@@ -1,0 +1,103 @@
+defmodule AppAshWeb.RegistrationController do
+  use AppAshWeb, :controller
+
+  alias AppAsh.{Account, Account.User}
+
+  require Logger
+
+  action_fallback(AppAshWeb.FallbackController)
+
+  def test(conn, _) do
+    conn |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
+  end
+
+  def register(conn, %{
+        "email" => email,
+        "display_name" => display_name,
+        "username" => username,
+        "public_key" => public_PEM,
+        "client_keys" => client_keys,
+        "encrypted_user_encryption_key" => encd_user_enc_key,
+        "master_password_hash" => master_password_hash
+      }) do
+    with {:valid_public_key_check, :ok} <-
+           {:valid_public_key_check, validate_public_key(public_PEM)},
+         {:user_exists_check, {:error, err}} <- {:user_exists_check, User.get_by_email(email)},
+         {:ok, user} <-
+           User.register(%{
+             email: email,
+             display_name: display_name,
+             username: username,
+             master_public_key: public_PEM,
+             client_keys: client_keys,
+             encd_user_enc_key: encd_user_enc_key,
+             master_password_hash: master_password_hash
+           }),
+         Logger.info("Successfully created user"),
+         dbg(user),
+         # token <- AppAshWeb.Token.sign(%{user_id: user.id}) do
+         token <- user.__metadata__.token do
+      conn
+      |> Plug.Conn.put_resp_cookie("authorization", token,
+        http_only: true,
+        same_site: "Strict",
+        secure: true,
+        max_age: 60 * 60 * 24
+      )
+      |> put_status(200)
+      |> render(:successfully_registered, user_id: user.id)
+    else
+      {:valid_public_key_check, :error} ->
+        conn |> put_status(400) |> render(:invalid_public_key)
+
+      {:user_exists_check, true} ->
+        conn |> put_status(409) |> render(:user_exists)
+
+      whoops ->
+        IO.inspect("Unexpected error: #{inspect(whoops)}")
+        conn |> put_status(500) |> put_view(json: AppAshWeb.ErrorJSON) |> render(:"500")
+    end
+  end
+
+  defp validate_public_key(public_PEM) do
+    # TODO(bianchi): move to independent module
+    #        # erlang :public_key expects a DER encoded signature as opposed to the raw bytes
+    #        # https://elixirforum.com/t/verifying-web-crypto-signatures-in-erlang-elixir/20727/2
+    with [key_entry] <- :public_key.pem_decode(public_PEM),
+         public_key <- :public_key.pem_entry_decode(key_entry),
+         false <- is_nil(public_key) do
+      :ok
+    else
+      error ->
+        Logger.warning("Invalid public key - error: #{error}")
+        :error
+    end
+  end
+
+  # NOTE(bianchi): removed due to using pbkdf-derived hash for authn instead
+  # defp validate_signature(challenge_string, encoded_signature, public_PEM) do
+  #   with {:is_base64, {:ok, raw_signature}} <- {:is_base64, Base.decode64(encoded_signature)},
+  #        # erlang :public_key expects a DER encoded signature as opposed to the raw bytes
+  #        # https://elixirforum.com/t/verifying-web-crypto-signatures-in-erlang-elixir/20727/2
+  #        {:is_ecdsa_signature, signature} <-
+  #          {:is_ecdsa_signature,
+  #           raw_signature |> AppAsh.ECDSASignature.new() |> AppAsh.ECDSASignature.to_der()},
+  #        {:is_valid_pem, [key_entry]} <- {:is_valid_pem, :public_key.pem_decode(public_PEM)},
+  #        {:is_public_key, public_key} <-
+  #          {:is_public_key, :public_key.pem_entry_decode(key_entry)},
+  #        {:is_valid_signature, true} <-
+  #          {:is_valid_signature,
+  #           :public_key.verify(
+  #             challenge_string,
+  #             :sha384,
+  #             signature,
+  #             public_key
+  #           )} do
+  #     {:ok}
+  #   else
+  #     {:is_valid_signature, false} -> {:error, :invalid_signature}
+  #     {_, {:error, err}} -> {:error, err}
+  #     _ -> {:error, :bad_request}
+  #   end
+  # end
+end
