@@ -12,13 +12,11 @@
   } from '$lib/user';
   import { triggerError } from '$lib/error';
   import { userStore } from '$lib/stores/user_store';
-  import { get } from 'svelte/store';
 
   let error = null;
 
   let email = '';
   let validEmail = false;
-
   let password = '';
   let passwordLocked = true;
 
@@ -34,36 +32,6 @@
   const loginSubmitHandler = () => {
     submitLoginForm();
   };
-
- // const verifyEmail = () => {
- //   submitEmailForm();
- // };
-
- // const submitEmailForm = async () => {
- //   await loginStart(email)
- //     .then((response) => {
- //       if (response.status === 200) {
- //         response.json().then((data) => {
- //           console.log(data);
- //           userStore.set({
- //             email: email,
- //             salt: toByteArray(data.user.salt)
- //           });
- //           emailVerified = true;
- //         });
- //       } else if (response.status === 409) {
- //         triggerError('Account already exists');
- //       } else {
- //         response.json().then((data) => {
- //           console.log(data);
- //         });
- //       }
- //     })
- //     .catch((error) => {
- //       error = error;
- //       console.error('Error:', error);
- //     });
- // };
 
   const submitLoginForm = async () => {
     const response = await login(email, password);

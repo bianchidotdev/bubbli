@@ -170,40 +170,6 @@ export const login = async (email, password) => {
   });
 };
 
-// export const loginStart = async (email) => {
-//   return fetch(`${BASE_API_URI}/auth/login_start`, {
-//     method: 'POST',
-//     mode: 'cors',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({
-//       email: email
-//     })
-//   });
-// };
-
-// export const loginVerify = async (email: string, password: string, salt: Uint8Array) => {
-//   console.log(email, password, salt);
-//   const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
-//     password,
-//     salt
-//   );
-//   encryptionKeyStore.set('masterEncryptionKey', encryptionKey);
-//   return fetch(`${BASE_API_URI}/auth/login_verify`, {
-//     method: 'POST',
-//     mode: 'cors',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({
-//       email: email,
-//       master_password_hash: masterPasswordHash,
-//       client_key_type: 'password'
-//     })
-//   });
-// };
-
 export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey,
   encryptedPrivateKeyIV

@@ -7,15 +7,16 @@ defmodule BubbliWeb.AuthenticationController do
 
   action_fallback(BubbliWeb.FallbackController)
 
-  def login(conn, %{"email" => email, "master_password_hash" => pw_hash_base64}) do
+  def login(conn, %{"email" => email, "master_password_hash" => pw_hash_base64, "client_key_type" => client_key_type}) do
     {:ok, password_hash} = Base.decode64(pw_hash_base64)
     with {:ok, user} <- Account.get_user_by(email: email),
          :ok <- Account.verify_user(user, password_hash),
+         {:ok, client_key} <- Account.get_client_key_by_user_and_type(user, client_key_type),
          token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
       conn
       |> put_status(:ok)
       |> put_resp_header("authorization", token)
-      |> render(:successfully_authenticated, %{user: user})
+      |> render(:successfully_authenticated, %{user: user, client_key: client_key})
     else
       {:error, :user_not_found} ->
         conn |> put_status(404) |> render(:failed_login, error: :user_not_found)
