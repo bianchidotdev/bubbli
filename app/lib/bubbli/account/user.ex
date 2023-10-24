@@ -9,15 +9,7 @@ defmodule Bubbli.Account.User do
     :email,
     :is_active,
     :display_name,
-    :salt
-  ]
-
-  # https://bitwarden.com/help/kdf-algorithms/#argon2id
-  @argon2_opts [
-    t_cost: 3,
-    # 64 MiB
-    m_cost: 16,
-    parallelism: 4
+    :username
   ]
 
   def serialize_for_api(user) do
@@ -39,7 +31,6 @@ defmodule Bubbli.Account.User do
     # cryptography
     # field(:encrypted_master_private_keys, :map, redact: true)
     field(:master_public_key, :string)
-    field(:salt, :string)
     field(:master_password_hash, :string)
 
     # user attributes
@@ -64,8 +55,6 @@ defmodule Bubbli.Account.User do
       :is_active,
       :display_name,
       :master_public_key,
-      # :encrypted_master_private_keys,
-      :salt,
       :master_password_hash,
       :username
     ])
@@ -73,10 +62,8 @@ defmodule Bubbli.Account.User do
       :email,
       :is_active,
       :display_name,
-      # :username,
+      :username,
       :master_public_key,
-      # :encrypted_master_private_keys,
-      :salt,
       :master_password_hash
     ])
     |> validate_format(:email, ~r/@/)
@@ -88,12 +75,10 @@ defmodule Bubbli.Account.User do
   # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
   # hashing defaults: https://bitwarden.com/help/kdf-algorithms/#argon2id
   defp put_pass_hash(
-         %Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash, salt: salt}} = changeset
-       ) do
-    hashed_password_hash =
-      Argon2.Base.hash_password(password_hash, salt, @argon2_opts)
-
-    change(changeset, %{master_password_hash: hashed_password_hash})
+    %Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash}} = changeset
+  ) do
+    # TODO: ensure the right opts are used
+    change(changeset, %{master_password_hash: Argon2.hash_pwd_salt(password_hash)})
   end
 
   defp put_pass_hash(changeset), do: changeset

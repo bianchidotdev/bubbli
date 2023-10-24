@@ -13,12 +13,11 @@ defmodule BubbliWeb.Router do
   scope "/api/v1", BubbliWeb do
     pipe_through([:api])
 
-    post("/registration/start", RegistrationController, :start)
-    post("/registration/confirm", RegistrationController, :confirm)
+    post("/auth/register", RegistrationController, :register)
 
-    post("/auth/signin", AuthenticationController, :signin)
-    post("/auth/login_start", AuthenticationController, :start)
-    post("/auth/login_verify", AuthenticationController, :verify)
+    post("/auth/login", AuthenticationController, :login)
+    # post("/auth/login_start", AuthenticationController, :start)
+    # post("/auth/login_verify", AuthenticationController, :verify)
 
     delete("/auth/logout", AuthenticationController, :logout)
   end

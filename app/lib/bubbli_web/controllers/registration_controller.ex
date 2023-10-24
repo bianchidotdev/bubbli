@@ -11,41 +11,27 @@ defmodule BubbliWeb.RegistrationController do
     conn |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
   end
 
-  def start(conn, %{"email" => email}) do
-    if Account.user_exists?(email) do
-      conn |> put_status(409) |> render(:user_exists)
-    else
-      {:ok, challenge} = Account.create_auth_challenge(email)
-
-      conn
-      |> put_status(:ok)
-      |> put_resp_header("location", ~p"/api/v1/registration/confirm")
-      |> render(:init, challenge: challenge)
-    end
-  end
-
-  def confirm(conn, %{
+  def register(conn, %{
         "email" => email,
         "display_name" => display_name,
-        "salt" => salt,
+        "username" => username,
         "public_key" => public_PEM,
         "client_keys" => client_keys,
         "encrypted_user_encryption_key" => encd_user_enc_key,
-        "master_password_hash" => master_password_hash
+        "master_password_hash" => password_hash_base64
       }) do
-    with {:valid_public_key_check, :ok} <-
-           {:valid_public_key_check, validate_public_key(public_PEM)},
+    with {:ok, password_hash} <- Base.decode64(password_hash_base64),
+         {:valid_public_key_check, :ok} <- {:valid_public_key_check, validate_public_key(public_PEM)},
          {:user_exists_check, false} <- {:user_exists_check, Account.user_exists?(email)},
          {:ok, user} <-
            Account.register_user(%{
              email: email,
-             is_active: true,
              display_name: display_name,
-             salt: salt,
+             username: username,
              master_public_key: public_PEM,
              client_keys: client_keys,
              encd_user_enc_key: encd_user_enc_key,
-             master_password_hash: master_password_hash
+             master_password_hash: password_hash
            }),
          Logger.info("Successfully created user"),
          token <- BubbliWeb.Token.sign(%{user_id: user.id}) do

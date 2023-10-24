@@ -21,6 +21,13 @@ config :bubbli, BubbliWeb.Endpoint,
   pubsub_server: Bubbli.PubSub,
   live_view: [signing_salt: "HtOw9bl+"]
 
+# https://bitwarden.com/help/kdf-algorithms/#argon2id
+config :argon2_elixir,
+  t_cost: 3,
+  # 64 MiB
+  m_cost: 16,
+  parallelism: 4
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

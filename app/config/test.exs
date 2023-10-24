@@ -20,6 +20,10 @@ config :bubbli, BubbliWeb.Endpoint,
   secret_key_base: "v4D9SnNezQfft6g8sQLUSeeIL8O+p1oyZ0fMXwtVILoKxJpnc8KJLS4HUVYCLxm7",
   server: false
 
+config :argon2_elixir,
+  t_cost: 1,
+  m_cost: 8
+
 config :bubbli, :signing_salt, "testsigningsalt"
 
 # In test we don't send emails.

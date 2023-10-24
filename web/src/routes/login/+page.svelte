@@ -7,8 +7,7 @@
 
   import {
     validateEmail,
-    loginStart,
-    loginVerify,
+    login,
     decryptAndLoadMasterPrivateKey
   } from '$lib/user';
   import { triggerError } from '$lib/error';
@@ -19,13 +18,11 @@
 
   let email = '';
   let validEmail = false;
-  let emailVerified = false;
 
   let password = '';
   let passwordLocked = true;
 
   const onEmailInput = () => {
-    emailVerified = false;
     validEmail = validateEmail(email);
   };
 
@@ -35,42 +32,41 @@
   };
 
   const loginSubmitHandler = () => {
-    submitVerifyForm();
+    submitLoginForm();
   };
 
-  const verifyEmail = () => {
-    submitEmailForm();
-  };
+ // const verifyEmail = () => {
+ //   submitEmailForm();
+ // };
 
-  const submitEmailForm = async () => {
-    await loginStart(email)
-      .then((response) => {
-        if (response.status === 200) {
-          response.json().then((data) => {
-            console.log(data);
-            userStore.set({
-              email: email,
-              salt: toByteArray(data.user.salt)
-            });
-            emailVerified = true;
-          });
-        } else if (response.status === 409) {
-          triggerError('Account already exists');
-        } else {
-          response.json().then((data) => {
-            console.log(data);
-          });
-        }
-      })
-      .catch((error) => {
-        error = error;
-        console.error('Error:', error);
-      });
-  };
+ // const submitEmailForm = async () => {
+ //   await loginStart(email)
+ //     .then((response) => {
+ //       if (response.status === 200) {
+ //         response.json().then((data) => {
+ //           console.log(data);
+ //           userStore.set({
+ //             email: email,
+ //             salt: toByteArray(data.user.salt)
+ //           });
+ //           emailVerified = true;
+ //         });
+ //       } else if (response.status === 409) {
+ //         triggerError('Account already exists');
+ //       } else {
+ //         response.json().then((data) => {
+ //           console.log(data);
+ //         });
+ //       }
+ //     })
+ //     .catch((error) => {
+ //       error = error;
+ //       console.error('Error:', error);
+ //     });
+ // };
 
-  const submitVerifyForm = async () => {
-    const user = get(userStore);
-    const response = await loginVerify(email, password, user.salt);
+  const submitLoginForm = async () => {
+    const response = await login(email, password);
     if (response.status === 200) {
       const json = await response.json();
       userStore.set({
@@ -110,7 +106,7 @@
     {/if}
 
     <Stepper on:complete={loginSubmitHandler}>
-      <Step locked={!emailVerified}>
+      <Step locked={!validEmail}>
         <svelte:fragment slot="header">Basic Information</svelte:fragment>
 
         <label class="label">
@@ -130,17 +126,6 @@
               placeholder="Email address"
               required
             />
-            {#if !emailVerified}
-              <button
-                class="btn sm:w-full px-10 ml-auto variant-ghost-secondary"
-                disabled={!validEmail}
-                on:click={verifyEmail}>Verify</button
-              >
-            {:else}
-              <button class="btn sm:w-full px-10 ml-auto variant-filled-secondary" disabled
-                >Verified!</button
-              >
-            {/if}
           </div>
         </label>
       </Step>

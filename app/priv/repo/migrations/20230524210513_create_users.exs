@@ -14,7 +14,6 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
       # TODO(bianchi): figure out how to store (ie. structure + encoding)
       # NOTE(bianchi): stored as binary blogs (independent of encoding)
       add(:master_public_key, :bytea)
-      add(:salt, :bytea)
       add(:master_password_hash, :bytea)
 
       # user attributes

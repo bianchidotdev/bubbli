@@ -121,7 +121,7 @@ defmodule Bubbli.Account do
 
   def register_user(%{client_keys: client_keys_attrs, encd_user_enc_key: _user_enc_key} = attrs) do
     Repo.transaction(fn ->
-      {:ok, user} = create_user(attrs)
+      {:ok, user} = create_user(Map.put(attrs, :is_active, true))
 
       _client_keys =
         Enum.map(client_keys_attrs, fn key_attrs ->
