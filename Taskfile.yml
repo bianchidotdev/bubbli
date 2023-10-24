@@ -33,12 +33,12 @@ tasks:
       - webtest
 
   appstart:
-    dir: app_ash
+    dir: app
     cmds:
       - mix phx.server
 
   apptest:
-    dir: app_ash
+    dir: app
     cmds:
       - mix test
 
