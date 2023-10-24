@@ -1,6 +1,5 @@
 import { BASE_API_URI } from '$lib/constants';
 import { userStore } from '$lib/stores/user_store';
-import { get } from 'svelte/store';
 import { fromByteArray } from 'base64-js';
 import { invalidateAll } from '$app/navigation';
 
@@ -8,7 +7,6 @@ import {
   generatePasswordBasedKeysArgon2,
   generateSymmetricEncryptionKey,
   generateClientKeyPair,
-  generateSalt,
   generateEncryptionIV,
   decryptAsymmetricKey,
   encryptAsymmetricKey,
@@ -22,6 +20,8 @@ import {
   masterPrivateKeyConst,
   masterEncryptionKeyConst
 } from '$lib/stores/encryption_key_store';
+
+const encoder = new TextEncoder();
 
 export const getCurrentUser = async (fetchFn) => {
   const res = await fetchFn(`${BASE_API_URI}/current_user/`, {
@@ -59,35 +59,36 @@ export const validateEmail = (email) => {
   return !!email.match(emailRegex);
 };
 
-export const registrationStart = async (email, displayName) => {
-  return fetch(`${BASE_API_URI}/registration/start`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      email: email,
-      display_name: displayName
-    })
-  });
-};
+// export const registrationStart = async (email, displayName) => {
+//   return fetch(`${BASE_API_URI}/registration/start`, {
+//     method: 'POST',
+//     mode: 'cors',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({
+//       email: email,
+//       display_name: displayName
+//     })
+//   });
+// };
 
-export const registrationVerify = async (password, recoveryPhrase) => {
-  const salt = generateSalt();
+export const register = async (user, password) => {
+  const salt = encoder.encode(user.email);
   const privateKeyEncryptionIV = generateEncryptionIV();
-  const recoveryKeyEncryptionIV = generateEncryptionIV();
+  // const recoveryKeyEncryptionIV = generateEncryptionIV();
   const userKeyEncryptionIV = generateEncryptionIV();
+  // TODO const recoveryPhrase =
   // generate keys
   const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
 
-  const { encryptionKey: recoveryKey } = await generatePasswordBasedKeysArgon2(
-    recoveryPhrase,
-    salt
-  );
+  // const { encryptionKey: recoveryKey } = await generatePasswordBasedKeysArgon2(
+  //   recoveryPhrase,
+  //   salt
+  // );
 
   // TODO: I don't have to generate a random symmetric key and encrypt it here
   //   because it'll get generated for each encryption context
@@ -99,23 +100,22 @@ export const registrationVerify = async (password, recoveryPhrase) => {
     clientKeyPair.privateKey,
     privateKeyEncryptionIV
   );
-  const recoveryEncPrivateKey = await encryptAsymmetricKey(
-    recoveryKey,
-    clientKeyPair.privateKey,
-    recoveryKeyEncryptionIV
-  );
-  console.log(pwEncPrivateKey);
+  // const recoveryEncPrivateKey = await encryptAsymmetricKey(
+  //   recoveryKey,
+  //   clientKeyPair.privateKey,
+  //   recoveryKeyEncryptionIV
+  // );
   const clientKeys = [
     {
       type: 'password',
       encryption_iv: fromByteArray(privateKeyEncryptionIV),
       encrypted_private_key: base64EncodeArrayBuffer(pwEncPrivateKey)
-    },
-    {
-      type: 'recovery',
-      encryption_iv: fromByteArray(recoveryKeyEncryptionIV),
-      encrypted_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
     }
+    // {
+    //   type: 'recovery',
+    //   encryption_iv: fromByteArray(recoveryKeyEncryptionIV),
+    //   encrypted_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
+    // }
   ];
 
   const userSymmetricEncryptionKey = await generateSymmetricEncryptionKey(salt);
@@ -130,9 +130,8 @@ export const registrationVerify = async (password, recoveryPhrase) => {
   console.log(encryptionKey, clientKeyPair.privateKey);
   encryptionKeyStore.set(masterEncryptionKeyConst, encryptionKey);
   encryptionKeyStore.set(masterPrivateKeyConst, clientKeyPair.privateKey);
-  const user = get(userStore);
   userStore.set({ ...user, ...{ salt: salt } });
-  return fetch(`${BASE_API_URI}/registration/confirm`, {
+  return fetch(`${BASE_API_URI}/register`, {
     method: 'POST',
     mode: 'cors',
     headers: {
@@ -141,7 +140,8 @@ export const registrationVerify = async (password, recoveryPhrase) => {
     body: JSON.stringify({
       email: user.email,
       display_name: user.displayName,
-      salt: fromByteArray(salt),
+      username: user.username,
+      // salt: fromByteArray(salt),
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
       client_keys: clientKeys,

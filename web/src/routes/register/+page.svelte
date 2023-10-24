@@ -1,28 +1,30 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { onDestroy } from 'svelte'
   import { Stepper, Step } from '@skeletonlabs/skeleton';
   import { userStore } from '$lib/stores/user_store';
-  import { validateEmail, registrationStart, registrationVerify } from '$lib/user';
+  import { validateEmail, register } from '$lib/user';
   import { triggerError } from '$lib/error';
 
+  let user;
+  const unsubscribe = userStore.subscribe((value) => user = value)
+  onDestroy(unsubscribe)
   let email = '',
     displayName = '',
+    username = '',
     error: string | null,
-    password = '',
-    challenge = '';
+    password = ''
 
   let validEmail = false;
-  let emailVerified = false;
   let passwordLocked = true;
 
   const onEmailInput = () => {
-    emailVerified = false;
     validEmail = validateEmail(email);
   };
 
-  const verifyEmail = () => {
-    submitEmailForm();
-  };
+  // const verifyEmail = () => {
+  //   submitEmailForm();
+  // };
 
   const validatePassword = () => {
     passwordLocked = password.length < 8;
@@ -37,35 +39,37 @@
     submitConfirmationForm();
   };
 
-  const submitEmailForm = async () => {
-    await registrationStart(email)
-      .then((response) => {
-        if (response.status === 200) {
-          response.json().then((data) => {
-            userStore.set({
-              email: email,
-              displayName: displayName
-            });
-            challenge = data.challenge;
-            emailVerified = true;
-          });
-        } else if (response.status === 409) {
-          triggerError('Account already exists');
-        } else {
-          response.json().then((data) => {
-            console.log(data);
-          });
-        }
-      })
-      .catch((error) => {
-        error = error;
-        console.error('Error:', error);
-      });
-  };
+  // const submitEmailForm = async () => {
+  //   await registrationStart(email)
+  //     .then((response) => {
+  //       if (response.status === 200) {
+  //         response.json().then((data) => {
+  //           userStore.set({
+  //             email: email,
+  //             displayName: displayName,
+  //             username: username,
+  //           });
+  //           challenge = data.challenge;
+  //           emailVerified = true;
+  //         });
+  //       } else if (response.status === 409) {
+  //         triggerError('Account already exists');
+  //       } else {
+  //         response.json().then((data) => {
+  //           console.log(data);
+  //         });
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       error = error;
+  //       console.error('Error:', error);
+  //     });
+  // };
 
   const submitConfirmationForm = async () => {
     try {
-      registrationVerify(password, challenge).then((response) => {
+      userStore.set({email: email, username: username, displayName: displayName})
+      register(user, password).then((response) => {
         if (response.status === 200) {
           response.json().then((json) => {
             userStore.set({
@@ -96,7 +100,7 @@
     {/if}
 
     <Stepper on:complete={registrationSubmitHandler}>
-      <Step locked={!emailVerified}>
+      <Step locked={!validEmail}>
         <svelte:fragment slot="header">Basic Information</svelte:fragment>
 
         <label class="label">
@@ -108,6 +112,19 @@
             type="text"
             aria-label="Display Name"
             placeholder="Jay Smith"
+            required
+          />
+        </label>
+
+        <label class="label">
+          <span>Username</span>
+          <input
+            class="input"
+            bind:value={username}
+            name="username"
+            type="text"
+            aria-label="Username"
+            placeholder="jsmith"
             required
           />
         </label>
@@ -128,17 +145,6 @@
               placeholder="jaysmith@example.com"
               required
             />
-            {#if !emailVerified}
-              <button
-                class="btn sm:w-full px-10 ml-auto variant-ghost-secondary"
-                disabled={!validEmail}
-                on:click={verifyEmail}>Verify</button
-              >
-            {:else}
-              <button class="btn sm:w-full px-10 ml-auto variant-filled-secondary" disabled
-                >Verified!</button
-              >
-            {/if}
           </div>
         </label>
       </Step>
