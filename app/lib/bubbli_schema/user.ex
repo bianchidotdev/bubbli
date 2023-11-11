@@ -1,8 +1,21 @@
-defmodule Bubbli.Account.User do
+defmodule BubbliSchema.User do
   @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset
+
+  @type t :: %__MODULE__{
+          id: binary(),
+          email: String.t(),
+          is_active: boolean(),
+          display_name: String.t(),
+          username: String.t(),
+          master_public_key: String.t(),
+          master_password_hash: String.t(),
+          inserted_at: NaiveDateTime.t(),
+          updated_at: NaiveDateTime.t(),
+          client_keys: [BubbliSchema.ClientKey.t()]
+        }
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @public_fields [
@@ -39,12 +52,12 @@ defmodule Bubbli.Account.User do
 
     timestamps()
 
-    has_many(:client_keys, Bubbli.Account.ClientKey)
+    has_many(:client_keys, BubbliSchema.ClientKey)
 
-    has_many(:authentication_challenges, Bubbli.Account.AuthenticationChallenge,
-      references: :email,
-      foreign_key: :email
-    )
+    # has_many(:authentication_challenges, Bubbli.Accounts.AuthenticationChallenge,
+    #   references: :email,
+    #   foreign_key: :email
+    # )
   end
 
   @doc false
@@ -74,9 +87,7 @@ defmodule Bubbli.Account.User do
   # this mimics bitwardens server-side password hashing model
   # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
   # hashing defaults: https://bitwarden.com/help/kdf-algorithms/#argon2id
-  defp put_pass_hash(
-    %Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash}} = changeset
-  ) do
+  defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash}} = changeset) do
     # TODO: ensure the right opts are used
     change(changeset, %{master_password_hash: Argon2.hash_pwd_salt(password_hash)})
   end

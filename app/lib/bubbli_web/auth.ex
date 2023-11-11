@@ -11,7 +11,7 @@ defmodule BubbliWeb.Plug.Auth do
   def call(conn, _opts) do
     with {:ok, token} <- get_auth_token(conn),
          {:ok, data} <- BubbliWeb.Token.verify(token) do
-      assign(conn, :current_user, Bubbli.Account.get_user(data.user_id))
+      assign(conn, :current_user, Bubbli.get_user(data.user_id))
     else
       {:error, error} ->
         Logger.info("Error authenticating request, #{error}")
@@ -25,13 +25,13 @@ defmodule BubbliWeb.Plug.Auth do
   end
 
   def get_auth_token(conn) do
-    with ["Bearer " <> token] <- get_req_header(conn, "authorization") do
-      {:ok, token}
-    else
+    case get_req_header(conn, "authorization") do
+      ["Bearer" <> token] ->
+        {:ok, token}
+
       _ ->
-        with {:ok, token} <- Map.fetch(conn.req_cookies, "authorization") do
-          {:ok, token}
-        else
+        case Map.fetch(conn.req_cookies, "authorization") do
+          {:ok, token} -> {:ok, token}
           _ -> {:error, :notfound}
         end
     end

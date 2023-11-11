@@ -177,7 +177,7 @@ export const encryptSymmetricKey = async (
   encryptionKey: CryptoKey,
   cryptoKey: CryptoKey,
   iv: Uint8Array
-): Uint8Array => {
+): Promise<ArrayBuffer> => {
   return await crypto.subtle.wrapKey('raw', cryptoKey, encryptionKey, {
     name: 'AES-GCM',
     iv: iv

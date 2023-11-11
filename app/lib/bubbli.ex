@@ -6,4 +6,21 @@ defmodule Bubbli do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  use Boundary, deps: [BubbliSchema, Ecto.Repo, Ecto.Query], exports: []
+
+  alias Bubbli.Accounts
+
+  defdelegate list_users(), to: Accounts
+  defdelegate user_exists?(email), to: Accounts
+  defdelegate get_user(id), to: Accounts
+  defdelegate get_user!(id), to: Accounts
+  defdelegate get_user_by(query), to: Accounts
+  defdelegate verify_user(user, password), to: Accounts
+  defdelegate get_client_key_by_user_and_type(user, type), to: Accounts
+  defdelegate register_user(attrs), to: Accounts
+  defdelegate update_user(user, attrs), to: Accounts
+  defdelegate delete_user(user), to: Accounts
+  defdelegate change_user(user, attrs), to: Accounts
+
+  defdelegate create_client_key(attrs), to: Accounts
 end

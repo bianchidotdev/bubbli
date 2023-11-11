@@ -1,8 +1,19 @@
-defmodule Bubbli.Account.ClientKey do
+defmodule BubbliSchema.ClientKey do
   @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset
+
+  @type t :: %__MODULE__{
+          id: binary(),
+          type: :password | :recovery | :device,
+          # name: String.t(),
+          encryption_iv: String.t(),
+          encrypted_private_key: String.t(),
+          inserted_at: NaiveDateTime.t(),
+          updated_at: NaiveDateTime.t(),
+          user: BubbliSchema.User.t()
+        }
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -16,7 +27,7 @@ defmodule Bubbli.Account.ClientKey do
 
     timestamps()
 
-    belongs_to(:user, Bubbli.Account.User, type: :binary_id, primary_key: true)
+    belongs_to(:user, BubbliSchema.User, type: :binary_id, primary_key: true)
   end
 
   @doc false

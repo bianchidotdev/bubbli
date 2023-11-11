@@ -9,7 +9,26 @@ defmodule Bubbli.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      compilers: [:boundary] ++ Mix.compilers(),
+      boundary: [
+        default: [
+          check: [
+            apps: [:phoenix, :ecto, {:mix, :runtime}]
+          ]
+        ]
+      ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
+      dialyzer: [
+        # Put the project-level PLT in the priv/ directory (instead of the default _build/ location)
+        plt_file: {:no_warn, "priv/plts/project.plt"}
+      ]
     ]
   end
 
@@ -36,7 +55,7 @@ defmodule Bubbli.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_live_dashboard, "~> 0.8"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -49,8 +68,15 @@ defmodule Bubbli.MixProject do
       {:guardian, "~> 2.0"},
       {:timex, "~> 3.0"},
       {:bandit, "~> 1.0-pre"},
-      {:corsica, "~> 1.0"},
-      {:argon2_elixir, "~> 3.2"},
+      {:corsica, "~> 2.1"},
+      {:argon2_elixir, "~> 4.0"},
+      # non-prod deps
+      {:boundary, "~> 0.10", runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
       {:styler, "~> 0.8", only: [:dev, :test], runtime: false}
     ]
@@ -70,7 +96,8 @@ defmodule Bubbli.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      check: ["format", "credo --strict", "compile --warnings-as-errors", "dialyzer", "docs"]
     ]
   end
 end

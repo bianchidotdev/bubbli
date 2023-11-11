@@ -1,7 +1,7 @@
-defmodule Bubbli.AccountFixtures do
+defmodule Bubbli.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Bubbli.Account` context.
+  entities via the `Bubbli.Accounts` context.
   """
 
   @client_key_params [
@@ -32,7 +32,7 @@ defmodule Bubbli.AccountFixtures do
         encrypted_master_private_keys: %{"ckey_1234" => "test"},
         master_public_key: "test"
       })
-      |> Bubbli.Account.create_user()
+      |> Bubbli.Accounts.create_user()
 
     user
   end
@@ -49,7 +49,7 @@ defmodule Bubbli.AccountFixtures do
         encd_user_enc_key: Base.encode64("foobar"),
         master_password_hash: Base.encode64("foobar")
       })
-      |> Bubbli.Account.register_user()
+      |> Bubbli.Accounts.register_user()
 
     user
   end

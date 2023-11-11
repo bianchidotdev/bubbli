@@ -1,5 +1,5 @@
 [tools]
-elixir = "1.15.5-otp-26"
+elixir = "1.15.7-otp-26"
 erlang = "26"
 node = "20"
 go = "1.20"

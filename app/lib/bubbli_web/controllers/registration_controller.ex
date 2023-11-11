@@ -1,7 +1,7 @@
 defmodule BubbliWeb.RegistrationController do
   use BubbliWeb, :controller
 
-  alias Bubbli.Account
+  import Ecto.Changeset
 
   require Logger
 
@@ -11,49 +11,67 @@ defmodule BubbliWeb.RegistrationController do
     conn |> put_status(:ok) |> render(:authenticated, current_user: conn.assigns[:current_user])
   end
 
-  def register(conn, %{
-        "email" => email,
-        "display_name" => display_name,
-        "username" => username,
-        "public_key" => public_PEM,
-        "client_keys" => client_keys,
-        "encrypted_user_encryption_key" => encd_user_enc_key,
-        "master_password_hash" => password_hash_base64
-      }) do
-    with {:ok, password_hash} <- Base.decode64(password_hash_base64),
-         {:valid_public_key_check, :ok} <- {:valid_public_key_check, validate_public_key(public_PEM)},
-         {:user_exists_check, false} <- {:user_exists_check, Account.user_exists?(email)},
-         {:ok, user} <-
-           Account.register_user(%{
-             email: email,
-             display_name: display_name,
-             username: username,
-             master_public_key: public_PEM,
-             client_keys: client_keys,
-             encd_user_enc_key: encd_user_enc_key,
-             master_password_hash: password_hash
-           }),
-         Logger.info("Successfully created user"),
-         token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
-      conn
-      |> Plug.Conn.put_resp_cookie("authorization", token,
-        http_only: true,
-        same_site: "Strict",
-        secure: true,
-        max_age: 60 * 60 * 24
-      )
-      |> put_status(200)
-      |> render(:successfully_registered, user_id: user.id)
-    else
-      {:valid_public_key_check, :error} ->
-        conn |> put_status(400) |> render(:invalid_public_key)
+  def register(conn, params) do
+    types = %{
+      email: :string,
+      display_name: :string,
+      username: :string,
+      public_key: :string,
+      client_keys: {:array, :map},
+      encrypted_user_encryption_key: :string,
+      master_password_hash: :string
+    }
 
-      {:user_exists_check, true} ->
-        conn |> put_status(409) |> render(:user_exists)
+    {%{}, types}
+    |> cast(params, Map.keys(types))
+    |> validate_required(
+      ~w/email display_name username public_key client_keys encrypted_user_encryption_key master_password_hash/a
+    )
+    |> apply_action(:insert)
+    |> case do
+      {:ok, normalized_input} ->
+        with {:ok, password_hash} <- Base.decode64(normalized_input.master_password_hash),
+             {:valid_public_key_check, :ok} <-
+               {:valid_public_key_check, validate_public_key(normalized_input.public_key)},
+             {:user_exists_check, false} <- {:user_exists_check, Bubbli.user_exists?(normalized_input.email)},
+             {:ok, user} <-
+               Bubbli.register_user(%{
+                 email: normalized_input.email,
+                 display_name: normalized_input.display_name,
+                 username: normalized_input.username,
+                 master_public_key: normalized_input.public_key,
+                 client_keys: normalized_input.client_keys,
+                 encd_user_enc_key: normalized_input.encrypted_user_encryption_key,
+                 master_password_hash: password_hash
+               }),
+             Logger.info("Successfully created user"),
+             token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+          conn
+          |> Plug.Conn.put_resp_cookie("authorization", token,
+            http_only: true,
+            same_site: "Strict",
+            secure: true,
+            max_age: 60 * 60 * 24
+          )
+          |> put_status(200)
+          |> render(:successfully_registered, user_id: user.id)
+        else
+          {:valid_public_key_check, :error} ->
+            conn |> put_status(400) |> render(:invalid_public_key)
 
-      whoops ->
-        IO.inspect("Unexpected error: #{inspect(whoops)}")
-        conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"500")
+          {:user_exists_check, true} ->
+            conn |> put_status(409) |> render(:user_exists)
+
+          whoops ->
+            Logger.error("Unexpected error: #{inspect(whoops)}")
+            conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"500")
+        end
+
+      {:error, changeset} ->
+        conn
+        |> put_status(400)
+        |> put_view(json: BubbliWeb.ErrorJSON)
+        |> render(:"400", changeset: changeset)
     end
   end
 

@@ -144,7 +144,7 @@ export const register = async (user, password) => {
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
       client_keys: clientKeys,
-      encrypted_user_encryption_key: encryptedUserEncryptionKey
+      encrypted_user_encryption_key: base64EncodeArrayBuffer(encryptedUserEncryptionKey)
     })
   });
 };

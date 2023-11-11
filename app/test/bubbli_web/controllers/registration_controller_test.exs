@@ -1,9 +1,9 @@
 defmodule BubbliWeb.RegistrationControllerTest do
   use BubbliWeb.ConnCase
 
-  import Bubbli.AccountFixtures
+  import Bubbli.AccountsFixtures
 
-  # alias Bubbli.Account
+  # alias Bubbli.Accounts
 
   @start_attrs %{
     email: "testingstart@example.com"

@@ -2,7 +2,7 @@ defmodule Bubbli.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-
+  use Boundary, top_level?: true, deps: [Bubbli, BubbliWeb]
   use Application
 
   @impl true
