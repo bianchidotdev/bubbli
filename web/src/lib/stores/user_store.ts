@@ -5,8 +5,7 @@ export interface User {
   email: string;
   id: string;
   salt: null | Uint8Array;
-  passwordBasedEncryptionKey: null | CryptoKey;
-  clientKeyPair: null | CryptoKeyPair;
+  clientPublicKey: null | CryptoKey
   displayName: string;
   username: string;
 }
@@ -15,8 +14,7 @@ export const userStore: Writable<User | null> = localStorageStore('currentUser',
   email: '',
   id: '',
   salt: null,
-  passwordBasedEncryptionKey: null,
-  clientKeyPair: null,
+  clientPublicKey: null,
   displayName: '',
   username: ''
 });

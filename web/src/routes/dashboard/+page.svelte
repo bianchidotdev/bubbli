@@ -2,14 +2,14 @@
   import { get } from 'svelte/store';
   import { userStore } from '$lib/stores/user_store';
   import {
-    encryptionKeyStore,
+    getKey,
     masterEncryptionKeyConst,
     masterPrivateKeyConst
   } from '$lib/stores/encryption_key_store';
   const user = get(userStore);
-  const encryptionKey = encryptionKeyStore.get(masterEncryptionKeyConst);
-  const privateKey = encryptionKeyStore.get(masterPrivateKeyConst);
-  console.log(encryptionKey, privateKey);
+  export let data;
+  const encryptionKey = data.encryptionKey
+  const privateKey = data.privateKey
 </script>
 
 <div class="flex flex-row justify-center items-center mb-4">

@@ -1,5 +1,5 @@
 import { BASE_API_URI } from '$lib/constants';
-import { userStore } from '$lib/stores/user_store';
+import { userStore, type User } from '$lib/stores/user_store';
 import { fromByteArray } from 'base64-js';
 import { invalidateAll } from '$app/navigation';
 
@@ -16,14 +16,16 @@ import {
 } from '$lib/crypto';
 
 import {
-  encryptionKeyStore,
+  storeKey,
+  clearKeys,
   masterPrivateKeyConst,
-  masterEncryptionKeyConst
+  masterEncryptionKeyConst,
+  getKey
 } from '$lib/stores/encryption_key_store';
 
 const encoder = new TextEncoder();
 
-export const getCurrentUser = async (fetchFn) => {
+export const getCurrentUser = async (fetchFn: Function) => {
   const res = await fetchFn(`${BASE_API_URI}/current_user/`, {
     credentials: 'include'
   });
@@ -50,12 +52,12 @@ export const logOutUser = async () => {
     });
 
   userStore.set({});
-  encryptionKeyStore.clear();
+  clearKeys();
   invalidateAll();
 };
 
 const emailRegex = /^.+@.+\..+$/;
-export const validateEmail = (email) => {
+export const validateEmail = (email: string) => {
   return !!email.match(emailRegex);
 };
 
@@ -73,7 +75,7 @@ export const validateEmail = (email) => {
 //   });
 // };
 
-export const register = async (user, password) => {
+export const register = async (user: User, password: string) => {
   const salt = encoder.encode(user.email);
   const privateKeyEncryptionIV = generateEncryptionIV();
   // const recoveryKeyEncryptionIV = generateEncryptionIV();
@@ -90,9 +92,6 @@ export const register = async (user, password) => {
   //   salt
   // );
 
-  // TODO: I don't have to generate a random symmetric key and encrypt it here
-  //   because it'll get generated for each encryption context
-  //   though maybe it's worth generating the user's timeline at this step
   const clientKeyPair = await generateClientKeyPair();
   const pemExportedPublicKey = await exportPublicKeyAsPEM(clientKeyPair.publicKey);
   const pwEncPrivateKey = await encryptAsymmetricKey(
@@ -118,7 +117,10 @@ export const register = async (user, password) => {
     // }
   ];
 
-  const userSymmetricEncryptionKey = await generateSymmetricEncryptionKey(salt);
+  // TODO: I don't have to generate a random symmetric key and encrypt it here
+  //   because it'll get generated for each encryption context
+  //   though maybe it's worth generating the user's timeline at this step
+  const userSymmetricEncryptionKey = await generateSymmetricEncryptionKey();
   console.log('wrapping user encryption key');
   const encryptedUserEncryptionKey = await encryptSymmetricKey(
     encryptionKey,
@@ -128,8 +130,8 @@ export const register = async (user, password) => {
   console.log('wrapped user encryption key');
 
   console.log(encryptionKey, clientKeyPair.privateKey);
-  encryptionKeyStore.set(masterEncryptionKeyConst, encryptionKey);
-  encryptionKeyStore.set(masterPrivateKeyConst, clientKeyPair.privateKey);
+  await storeKey(masterEncryptionKeyConst, encryptionKey);
+  await storeKey(masterPrivateKeyConst, clientKeyPair.privateKey);
   userStore.set({ ...user, ...{ salt: salt } });
   return fetch(`${BASE_API_URI}/auth/register`, {
     method: 'POST',
@@ -149,13 +151,13 @@ export const register = async (user, password) => {
   });
 };
 
-export const login = async (email, password) => {
+export const login = async (email: string, password: string) => {
   const salt = encoder.encode(email);
   const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
-  encryptionKeyStore.set('masterEncryptionKey', encryptionKey);
+  await storeKey(masterEncryptionKeyConst, encryptionKey);
   return fetch(`${BASE_API_URI}/auth/login`, {
     method: 'POST',
     mode: 'cors',
@@ -174,7 +176,7 @@ export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey,
   encryptedPrivateKeyIV
 ) => {
-  const encryptionKey = encryptionKeyStore.get('masterEncryptionKey');
+  const encryptionKey = await getKey(masterEncryptionKeyConst);
   if (!encryptionKey || !encryptedPrivateKey || !encryptedPrivateKeyIV) {
     return { error: 'Missing required keys' };
   }
@@ -185,6 +187,6 @@ export const decryptAndLoadMasterPrivateKey = async (
     encryptedPrivateKeyIV
   );
 
-  encryptionKeyStore.set('masterPrivateKey', masterPrivateKey);
+  await storeKey(masterPrivateKeyConst, masterPrivateKey);
   console.log(masterPrivateKey);
 };
