@@ -1,5 +1,5 @@
 import { BASE_API_URI } from '$lib/constants';
-import { userStore, type User } from '$lib/stores/user_store';
+import { userStore, type User, clearUserStore } from '$lib/stores/user_store';
 import { fromByteArray } from 'base64-js';
 import { invalidateAll } from '$app/navigation';
 
@@ -30,7 +30,8 @@ export const getCurrentUser = async (fetchFn: Function) => {
     credentials: 'include'
   });
   if (res.status === 200) {
-    res.json().then((data) => {
+    // TODO: type API responses
+    res.json().then((data: any) => {
       console.log(data);
       return data.user;
     });
@@ -51,7 +52,7 @@ export const logOutUser = async () => {
       console.log('Error clearing out login state', error);
     });
 
-  userStore.set({});
+  clearUserStore();
   clearKeys();
   invalidateAll();
 };
@@ -173,8 +174,8 @@ export const login = async (email: string, password: string) => {
 };
 
 export const decryptAndLoadMasterPrivateKey = async (
-  encryptedPrivateKey,
-  encryptedPrivateKeyIV
+  encryptedPrivateKey: Uint8Array,
+  encryptedPrivateKeyIV: Uint8Array
 ) => {
   const encryptionKey = await getKey(masterEncryptionKeyConst);
   if (!encryptionKey || !encryptedPrivateKey || !encryptedPrivateKeyIV) {

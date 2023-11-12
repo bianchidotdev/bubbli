@@ -1,5 +1,6 @@
 import { fromByteArray, toByteArray } from 'base64-js';
 import { argon2id } from 'hash-wasm';
+import type { IArgon2Options } from 'hash-wasm';
 import { generateMnemonic } from 'bip39';
 
 const encoder = new TextEncoder();
@@ -13,7 +14,7 @@ const symmetricKeyParams = {
   length: 256
 };
 
-const clientKeyUsages = ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'];
+const clientKeyUsages: KeyUsage[] = ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'];
 
 const asymmetricKeyPairParams = {
   name: 'RSA-OAEP',
@@ -23,7 +24,7 @@ const asymmetricKeyPairParams = {
 };
 
 // https://bitwarden.com/help/kdf-algorithms/#argon2id
-const argon2Options = {
+const argon2Options: Partial<IArgon2Options> = {
   parallelism: 4,
   iterations: 3,
   memorySize: 65536, // use 64MiB memory
@@ -82,8 +83,9 @@ const argon2Options = {
 export const generatePasswordBasedKeysArgon2 = async (
   pw: string,
   salt: Uint8Array
-): { encryptionKey: CryptoKey; masterPasswordHash: string } => {
-  const keyMaterial = await argon2id({
+): Promise<{ encryptionKey: CryptoKey; masterPasswordHash: string; }> => {
+  // @ts-ignore
+  const keyMaterial: Uint8Array = await argon2id({
     ...argon2Options,
     ...{
       password: pw,
@@ -123,7 +125,7 @@ export const generateClientKeyPair = async () => {
   return await crypto.subtle.generateKey(asymmetricKeyPairParams, true, ['encrypt', 'decrypt']);
 };
 
-export const generateSymmetricEncryptionKey = async (): CryptoKey => {
+export const generateSymmetricEncryptionKey = async (): Promise<CryptoKey> => {
   return await crypto.subtle.generateKey(symmetricKeyParams, true, ['encrypt', 'decrypt']);
 };
 
@@ -144,7 +146,7 @@ export const encryptAsymmetricKey = async (
   encryptionKey: CryptoKey,
   cryptoKey: CryptoKey,
   iv: Uint8Array
-): UInt8Array => {
+): Promise<ArrayBuffer> => {
   console.log(cryptoKey);
   return await crypto.subtle.wrapKey('pkcs8', cryptoKey, encryptionKey, {
     name: 'AES-GCM',
@@ -156,7 +158,7 @@ export const decryptAsymmetricKey = async (
   encryptionKey: CryptoKey,
   encryptedAsymmetricKey: Uint8Array,
   iv: Uint8Array
-): CryptoKey => {
+): Promise<CryptoKey> => {
   return await crypto.subtle.unwrapKey(
     'pkcs8',
     encryptedAsymmetricKey,

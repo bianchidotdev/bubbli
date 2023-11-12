@@ -10,11 +10,16 @@ export interface User {
   username: string;
 }
 
-export const userStore: Writable<User | null> = localStorageStore('currentUser', {
+const initialUser = {
   email: '',
   id: '',
   salt: null,
   clientPublicKey: null,
   displayName: '',
   username: ''
-});
+}
+export const userStore: Writable<User | null> = localStorageStore('currentUser', initialUser);
+
+export const clearUserStore = () => {
+  userStore.set(initialUser);
+}
