@@ -104,7 +104,7 @@ defmodule Bubbli.Accounts do
       with {:ok, user} <- create_user(Map.put(attrs, :is_active, true)),
            _client_keys <-
              Enum.map(client_keys_attrs, fn key_attrs ->
-               key_attrs = Map.put(key_attrs, "user_id", user.id)
+               key_attrs = Map.put(key_attrs, :user_id, user.id)
                create_client_key(key_attrs)
              end) do
         # TODO: create timeline (and encryption context)

@@ -26,6 +26,7 @@ defmodule Bubbli.AccountsFixtures do
       |> Enum.into(%{
         email: unique_user_email(),
         display_name: "test",
+        username: "test",
         is_active: true,
         salt: "testsalt",
         master_password_hash: Base.encode64("foobar"),

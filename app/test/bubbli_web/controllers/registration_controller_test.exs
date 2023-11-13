@@ -1,65 +1,48 @@
 defmodule BubbliWeb.RegistrationControllerTest do
-  use BubbliWeb.ConnCase
+  use BubbliWeb.ConnCase, async: true
 
   import Bubbli.AccountsFixtures
 
-  # alias Bubbli.Accounts
+  alias BubbliWeb.RegistrationController
 
-  @start_attrs %{
-    email: "testingstart@example.com"
-  }
-  @confirm_attrs %{
-    email: "testingconfirm@example.com",
-    display_name: "test mctesterson",
-    salt: Base.encode64(Argon2.Base.gen_salt()),
+  @valid_attrs %{
+    email: "test@example.com",
+    display_name: "Test User",
+    username: "testuser",
     public_key: sample_public_key(),
     client_keys: [
       %{
-        "type" => "password",
-        "encryption_iv" => Base.encode64("encryptioniv"),
-        "encrypted_private_key" => Base.encode64("private_key")
+        encrypted_private_key: Base.encode64("private_key"),
+        encryption_iv: Base.encode64("iv"),
+        type: "password"
       }
     ],
-    encrypted_user_encryption_key: Base.encode64("foobar"),
-    master_password_hash: Base.encode64("foobar")
+    encrypted_user_encryption_key: Base.encode64("user_encryption_key"),
+    master_password_hash: Base.encode64("password_hash")
   }
-
   @invalid_attrs %{}
 
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  setup do
+    conn = build_conn()
+    {:ok, conn: conn}
   end
 
-  describe "start" do
+  describe "register" do
     test "verifies user does not exist", %{conn: conn} do
-      _existing_user = user_fixture(@start_attrs)
-      conn = post(conn, ~p"/api/v1/registration/start", @start_attrs)
+      _existing_user = user_fixture(@valid_attrs)
+      conn = post(conn, ~p"/api/v1/auth/register", @valid_attrs)
       assert json_response(conn, 409)["success"] == false
       assert json_response(conn, 409)["errors"] == ["email_already_registered"]
     end
 
     test "returns an ok if user does not already exist", %{conn: conn} do
-      conn = post(conn, ~p"/api/v1/registration/start", @start_attrs)
-      assert json_response(conn, 200)["success"]
-    end
-  end
-
-  describe "confirm" do
-    test "verifies user does not exist", %{conn: conn} do
-      _existing_user = user_registration_fixture(@confirm_attrs)
-      conn = post(conn, ~p"/api/v1/registration/confirm", @confirm_attrs)
-      assert json_response(conn, 409)["success"] == false
-      assert json_response(conn, 409)["errors"] == ["email_already_registered"]
-    end
-
-    test "returns an ok if user does not already exist", %{conn: conn} do
-      conn = post(conn, ~p"/api/v1/registration/confirm", @confirm_attrs)
+      conn = post(conn, ~p"/api/v1/auth/register", @valid_attrs)
       assert json_response(conn, 200)["success"]
     end
 
     test "with a malformatted public key", %{conn: conn} do
-      attrs = Map.put(@confirm_attrs, :public_key, "test")
-      conn = post(conn, ~p"/api/v1/registration/confirm", attrs)
+      attrs = Map.put(@valid_attrs, :public_key, "test")
+      conn = post(conn, ~p"/api/v1/auth/register", attrs)
       assert json_response(conn, 400)["errors"] == %{"message" => "invalid public key"}
     end
   end

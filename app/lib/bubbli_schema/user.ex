@@ -43,8 +43,9 @@ defmodule BubbliSchema.User do
 
     # cryptography
     # field(:encrypted_master_private_keys, :map, redact: true)
+    # PEM encoded
     field(:master_public_key, :string)
-    field(:master_password_hash, :string)
+    field(:master_password_hash, :binary)
 
     # user attributes
     field(:display_name, :string)

@@ -19,6 +19,7 @@ defmodule Bubbli do
   defdelegate get_client_key_by_user_and_type(user, type), to: Accounts
   defdelegate register_user(attrs), to: Accounts
   defdelegate update_user(user, attrs), to: Accounts
+  defdelegate change_user(user), to: Accounts
   defdelegate delete_user(user), to: Accounts
   defdelegate change_user(user, attrs), to: Accounts
 

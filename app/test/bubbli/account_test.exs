@@ -12,8 +12,10 @@ defmodule Bubbli.AccountsTest do
       email: "testabcd@example.com",
       is_active: true,
       display_name: "test",
+      username: "test",
       master_public_key: "test",
-      encrypted_master_private_keys: %{"test" => "test"},
+      client_keys: [],
+      encd_user_enc_key: %{"test" => "test"},
       salt: "testtesttesttest",
       master_password_hash: "test"
     }
@@ -24,19 +26,14 @@ defmodule Bubbli.AccountsTest do
       assert Bubbli.list_users() == [user]
     end
 
+    test "register_user/1 creates a user" do
+      assert {:ok, %User{} = user} = Bubbli.register_user(@create_attrs)
+      assert user == Bubbli.get_user!(user.id)
+    end
+
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
       assert Bubbli.get_user!(user.id) == user
-    end
-
-    test "create_user/1 with valid data creates a user" do
-      assert {:ok, %User{} = user} = Bubbli.create_user(@create_attrs)
-      assert user.email == "testabcd@example.com"
-      assert user.is_active == true
-    end
-
-    test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Bubbli.create_user(@invalid_attrs)
     end
 
     test "update_user/2 with valid data updates the user" do
