@@ -1,10 +1,8 @@
 defmodule Bubbli.AccountsTest do
   use Bubbli.DataCase
 
-  alias Bubbli.Accounts
-
   describe "users" do
-    import Bubbli.AccountsFixtures
+    import BubbliFixtures.AccountsFixtures
 
     alias BubbliSchema.User
 

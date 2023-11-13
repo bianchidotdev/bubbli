@@ -3,7 +3,7 @@ defmodule BubbliWeb.ErrorJSON do
   # you may add your own clauses, such as:
   #
   # def render("500.json", _assigns) do
-  #   %{errors: %{detail: "Internal Server Error"}}
+  #   %{errors: %{message: "Internal Server Error"}}
   # end
 
   # By default, Phoenix returns the status message from
@@ -11,10 +11,10 @@ defmodule BubbliWeb.ErrorJSON do
   # "Not Found".
 
   def render("401.json", _assigns) do
-    %{errors: %{detail: "unauthorized"}}
+    %{errors: %{message: "unauthorized"}}
   end
 
   def render(template, _assigns) do
-    %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
+    %{errors: %{message: Phoenix.Controller.status_message_from_template(template)}}
   end
 end

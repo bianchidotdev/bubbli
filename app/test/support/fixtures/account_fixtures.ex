@@ -1,8 +1,10 @@
-defmodule Bubbli.AccountsFixtures do
+defmodule BubbliFixtures.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Bubbli.Accounts` context.
   """
+
+  use Boundary, check: [in: false, out: false]
 
   @client_key_params [
     %{

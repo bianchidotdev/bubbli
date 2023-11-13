@@ -76,7 +76,6 @@ defmodule Bubbli.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
-      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
       {:styler, "~> 0.8", only: [:dev, :test], runtime: false}
     ]

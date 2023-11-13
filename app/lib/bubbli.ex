@@ -24,4 +24,7 @@ defmodule Bubbli do
   defdelegate change_user(user, attrs), to: Accounts
 
   defdelegate create_client_key(attrs), to: Accounts
+
+  # TODO: Create new context for user content
+  # defdelegate get_reactions_by_reactable(reactable_type, reactible_id), to: ???
 end

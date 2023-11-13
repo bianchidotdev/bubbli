@@ -42,7 +42,6 @@ defmodule BubbliSchema.User do
     field(:is_active, :boolean, default: false)
 
     # cryptography
-    # field(:encrypted_master_private_keys, :map, redact: true)
     # PEM encoded
     field(:master_public_key, :string)
     field(:master_password_hash, :binary)
@@ -54,11 +53,6 @@ defmodule BubbliSchema.User do
     timestamps()
 
     has_many(:client_keys, BubbliSchema.ClientKey)
-
-    # has_many(:authentication_challenges, Bubbli.Accounts.AuthenticationChallenge,
-    #   references: :email,
-    #   foreign_key: :email
-    # )
   end
 
   @doc false

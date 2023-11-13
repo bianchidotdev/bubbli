@@ -2,5 +2,18 @@ defmodule BubbliSchema do
   @moduledoc """
   Top level schema module
   """
-  use Boundary, deps: [Ecto, Ecto.Changeset, Ecto.Query], exports: [User, ClientKey]
+  use Boundary,
+    deps: [
+      Ecto,
+      Ecto.Changeset,
+      Ecto.Query
+    ],
+    exports: [
+      User,
+      ClientKey,
+      Post,
+      Comment,
+      Reaction,
+      Keyword
+    ]
 end

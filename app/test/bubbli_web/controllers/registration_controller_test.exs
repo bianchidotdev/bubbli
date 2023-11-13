@@ -1,9 +1,7 @@
 defmodule BubbliWeb.RegistrationControllerTest do
   use BubbliWeb.ConnCase, async: true
 
-  import Bubbli.AccountsFixtures
-
-  alias BubbliWeb.RegistrationController
+  import BubbliFixtures.AccountsFixtures
 
   @valid_attrs %{
     email: "test@example.com",
@@ -44,6 +42,11 @@ defmodule BubbliWeb.RegistrationControllerTest do
       attrs = Map.put(@valid_attrs, :public_key, "test")
       conn = post(conn, ~p"/api/v1/auth/register", attrs)
       assert json_response(conn, 400)["errors"] == %{"message" => "invalid public key"}
+    end
+
+    test "with invalid attributes", %{conn: conn} do
+      conn = post(conn, ~p"/api/v1/auth/register", @invalid_attrs)
+      assert json_response(conn, 400)["errors"] == %{"message" => "Bad Request"}
     end
   end
 end

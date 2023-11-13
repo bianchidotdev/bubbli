@@ -77,6 +77,8 @@ defmodule BubbliWeb.RegistrationController do
     end
   end
 
+  defp cast_client_keys(%{valid?: false} = changeset), do: changeset
+
   defp cast_client_keys(changeset) do
     client_keys = get_field(changeset, :client_keys)
 
