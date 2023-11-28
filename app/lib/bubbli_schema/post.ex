@@ -9,8 +9,8 @@ defmodule BubbliSchema.Post do
           deleted_at: NaiveDateTime.t(),
           content: String.t(),
           user: BubbliSchema.User.t(),
-          comments: [BubbliSchema.Comment.t()],
-          attachments: [BubbliSchema.Attachment.t()],
+          # comments: [BubbliSchema.Comment.t()],
+          # attachments: [BubbliSchema.Attachment.t()],
           # reactions: [BubbliSchema.Reaction.t()],
           inserted_at: NaiveDateTime.t(),
           updated_at: NaiveDateTime.t()
@@ -24,16 +24,17 @@ defmodule BubbliSchema.Post do
 
     timestamps()
 
-    belongs_to(:user, BubbliSchema.User, type: :binary_id, primary_key: true)
-    has_many(:comments, BubbliSchema.Comment, on_delete: :delete_all)
-    has_many(:attachments, BubbliSchema.Attachment, on_delete: :delete_all)
-    many_to_many(:keywords, BubbliSchema.Keyword, join_through: "posts_keywords")
+    belongs_to(:user, BubbliSchema.User, type: :binary_id, primary_key: true, foreign_key: :author_id)
+    # has_many(:comments, BubbliSchema.Comment, on_delete: :delete_all)
+    # has_many(:attachments, BubbliSchema.Attachment, on_delete: :delete_all)
+    # many_to_many(:keywords, BubbliSchema.Keyword, join_through: "posts_keywords")
   end
 
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:content, :user_id])
-    |> validate_required([:content, :user_id])
-    |> foreign_key_constraint(:user_id)
+    |> cast(attrs, [:content, :author_id, :timeline_id])
+    |> validate_required([:content, :author_id, :timeline_id])
+    |> foreign_key_constraint(:author_id)
+    |> foreign_key_constraint(:timeline_id)
   end
 end

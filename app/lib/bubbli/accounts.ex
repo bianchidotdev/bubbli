@@ -5,7 +5,9 @@ defmodule Bubbli.Accounts do
 
   import Ecto.Query, warn: false
 
+  alias Bubbli.EncryptionContexts
   alias Bubbli.Repo
+  alias Bubbli.Timelines
 
   # alias Bubbli.Accounts.AuthenticationChallenge
   alias BubbliSchema.ClientKey
@@ -58,17 +60,6 @@ defmodule Bubbli.Accounts do
     end
   end
 
-  # def create_auth_challenge(email) do
-  #   # cryptographic challenge reference docs: https://www.w3.org/TR/webauthn-2/#sctn-cryptographic-challenges
-  #   challenge_string = 32 |> :crypto.strong_rand_bytes() |> Base.url_encode64()
-  #   # TODO(bianchi): move auth timeout window into configuration
-  #   expiry_time = DateTime.utc_now() |> Timex.shift(minutes: 5) |> DateTime.truncate(:second)
-
-  #   %AuthenticationChallenge{challenge_string: challenge_string, expires_at: expiry_time}
-  #   |> AuthenticationChallenge.changeset(%{email: email})
-  #   |> Repo.insert()
-  # end
-
   @spec user_exists?(String.t()) :: boolean()
   def user_exists?(email) do
     query = from(u in User, where: u.email == ^email)
@@ -99,18 +90,33 @@ defmodule Bubbli.Accounts do
   end
 
   @spec register_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def register_user(%{client_keys: client_keys_attrs, encd_user_enc_key: _user_enc_key} = attrs) do
+  def register_user(%{client_keys: client_keys_attrs, encd_user_enc_key: user_enc_key} = attrs) do
     Repo.transact(fn ->
       with {:ok, user} <- create_user(Map.put(attrs, :is_active, true)),
-           _client_keys <-
-             Enum.map(client_keys_attrs, fn key_attrs ->
-               key_attrs = Map.put(key_attrs, :user_id, user.id)
-               create_client_key(key_attrs)
-             end) do
-        # TODO: create timeline (and encryption context)
+           {:ok, _client_keys} <- create_client_keys(client_keys_attrs),
+           {:ok, encryption_context} <-
+             EncryptionContexts.register_encryption_context(%{encrypted_encryption_key: user_enc_key}),
+           {:ok, _timeline} <-
+             Timelines.create_timeline(%{type: :user, user_id: user.id, encryption_context_id: encryption_context.id}) do
         {:ok, user}
       end
     end)
+  end
+
+  def create_client_keys(attrs_list \\ []) do
+    client_key_tuples =
+      Enum.map(attrs_list, fn attrs ->
+        create_client_key(attrs)
+      end)
+
+    if Enum.all?(client_key_tuples, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok, Enum.map(client_key_tuples, fn {:ok, client_key} -> client_key end)}
+    else
+      {:error, :invalid_client_keys}
+    end
   end
 
   def create_client_key(attrs \\ %{}) do

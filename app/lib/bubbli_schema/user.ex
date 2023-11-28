@@ -53,6 +53,7 @@ defmodule BubbliSchema.User do
     timestamps()
 
     has_many(:client_keys, BubbliSchema.ClientKey)
+    has_many(:timelines, BubbliSchema.Timeline)
   end
 
   @doc false

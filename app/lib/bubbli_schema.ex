@@ -12,8 +12,8 @@ defmodule BubbliSchema do
       User,
       ClientKey,
       Post,
-      Comment,
-      Reaction,
-      Keyword
+      EncryptionContext,
+      EncryptionKey,
+      Timeline
     ]
 end
