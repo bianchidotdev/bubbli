@@ -10,12 +10,15 @@ defmodule BubbliWeb.RegistrationControllerTest do
     public_key: sample_public_key(),
     client_keys: [
       %{
-        encrypted_private_key: Base.encode64("private_key"),
+        protected_private_key: Base.encode64("private_key"),
         encryption_iv: Base.encode64("iv"),
         type: "password"
       }
     ],
-    encrypted_user_encryption_key: Base.encode64("user_encryption_key"),
+    timeline_key: %{
+      encryption_iv: Base.encode64("iv"),
+      protected_encryption_key: Base.encode64("encrypted_timeline_key")
+    },
     master_password_hash: Base.encode64("password_hash")
   }
   @invalid_attrs %{}

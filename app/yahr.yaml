@@ -17,7 +17,7 @@ requests:
           email: "test26@example.com"
           challenge: "Pauum46zxK6AvDxydC4W63WNe09lwyaRzAgvE0vQA7c="
           signed_challenge: "Qnt4NRknH2zGg89q1hqrLnlZULUAMCsQ1fgkJSo4bhC1vKgx3Jk3YLJNK1wcWM2ENvILE+4B8y5J1Xs54DJXb/J1DYJB1WN2dZsHYTxq17YtaDBsjbhzajwX609Xkg9W"
-          encrypted_private_key: "kdyUpy9SyH5hQmducs9VWgMlxhvqAMdJbJAmQVWzeHg3iQlGMuKwRizrTiI7mZtZPqTloZ82EWS4Dje62Y+kj0rSucRTer9sFLfKk5mfnFNgbl07I6RS0nilzWQi6Xa0PmZGxNK+pbe8ezRLCn3fVoztHJiVZkRuINo788vo7NOWt9ClJn9g4KhAzlVJsqaVhUxqEG1Kqf/vK+ASBN/a2cG4c1Rr/N0P0jTNJhgQUNBC0HxiQ3McHcwnavwejAklqj+xXc2tMj1E"
+          protected_private_key: "kdyUpy9SyH5hQmducs9VWgMlxhvqAMdJbJAmQVWzeHg3iQlGMuKwRizrTiI7mZtZPqTloZ82EWS4Dje62Y+kj0rSucRTer9sFLfKk5mfnFNgbl07I6RS0nilzWQi6Xa0PmZGxNK+pbe8ezRLCn3fVoztHJiVZkRuINo788vo7NOWt9ClJn9g4KhAzlVJsqaVhUxqEG1Kqf/vK+ASBN/a2cG4c1Rr/N0P0jTNJhgQUNBC0HxiQ3McHcwnavwejAklqj+xXc2tMj1E"
           public_key: "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAErgziC/r9/zxiIzawbiUkhMAfaAZxuvv5qw2BEt52aiKP6KsO7pqajq5L3atGMMnLwjAnEyCcKgYJYZQCcv883k+CBa13OQZPsh2DftQSwDjBYyiKHLcUFXWsTMSOaAnn\n-----END PUBLIC KEY-----"
           salt: "u8xQdrBRSJfcxrxHX1v9rVGjWleEhjz7zQtIknSK6z8="
         headers:

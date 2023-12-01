@@ -6,7 +6,7 @@ defmodule Bubbli.Repo.Migrations.AddClientKeysTable do
       add(:id, :uuid, primary_key: true)
       add(:type, :string, null: false)
       add(:encryption_iv, :bytea, null: false)
-      add(:encrypted_private_key, :bytea, null: false)
+      add(:protected_private_key, :bytea, null: false)
 
       add(:user_id, references(:users, type: :uuid), null: false)
 

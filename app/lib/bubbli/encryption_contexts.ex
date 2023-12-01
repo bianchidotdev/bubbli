@@ -45,23 +45,34 @@ defmodule Bubbli.EncryptionContexts do
 
   ## Examples
 
-      iex> register_encryption_context(%{encrypted_encryption_key: value})
+      iex> register_encryption_context(%{protected_encryption_key: value})
       {:ok, %encryption_context{}}
 
-      iex> register_encryption_context(%{encrypted_encryption_key: nil})
+      iex> register_encryption_context(%{protected_encryption_key: nil})
       {:error, %Ecto.Changeset{}}
 
   """
-  def register_encryption_context(%{encrypted_encryption_key: encd_enc_key}) do
+  def register_encryption_context(%{
+        protected_encryption_key_map: protected_encryption_key_map,
+        user_id: user_id,
+        timeline_id: timeline_id
+      }) do
     Repo.transact(fn ->
-      with {:ok, encryption_context} <- create_encryption_context(),
-           {:ok, _encryption_key} <- create_encryption_key(%{encrypted_encryption_key: encd_enc_key}) do
+      with {:ok, encryption_context} <- create_encryption_context(%{timeline_id: timeline_id}),
+           # TODO: cast_assoc for encryption_key
+           {:ok, _encryption_key} <-
+             create_encryption_key(%{
+               protected_encryption_key: protected_encryption_key_map.protected_encryption_key,
+               encryption_iv: protected_encryption_key_map.encryption_iv,
+               user_id: user_id,
+               encryption_context_id: encryption_context.id
+             }) do
         {:ok, encryption_context}
       end
     end)
   end
 
-  defp create_encryption_context(attrs \\ %{}) do
+  defp create_encryption_context(attrs) do
     %EncryptionContext{}
     |> EncryptionContext.changeset(attrs)
     |> Repo.insert()

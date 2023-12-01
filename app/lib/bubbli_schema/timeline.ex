@@ -4,10 +4,18 @@ defmodule BubbliSchema.Timeline do
 
   import Ecto.Changeset
 
+  @required_attrs [
+    :type,
+    :user_id
+    # :group_id
+  ]
+  @optional_attrs []
+  @attrs @required_attrs ++ @optional_attrs
+
   @type t :: %__MODULE__{
           id: binary(),
           type: Enum.t(),
-          user_id: binary(),
+          user: BubbliSchema.User.t(),
           # group_id: binary(),
           encryption_context: BubbliSchema.EncryptionContext.t(),
           inserted_at: NaiveDateTime.t(),
@@ -15,6 +23,7 @@ defmodule BubbliSchema.Timeline do
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
 
   schema "timelines" do
     field(:type, Ecto.Enum, values: [:user, :group])
@@ -29,8 +38,9 @@ defmodule BubbliSchema.Timeline do
   def changeset(timeline, attrs) do
     timeline
     # , :group_id])
-    |> cast(attrs, [:type, :user_id])
-    |> validate_required([:type])
+    |> cast(attrs, @attrs)
+    # , :group_id]
+    |> validate_required(@required_attrs)
 
     # TODO: validate that only one of user_id or group_id is present
     # TODO: validate one of user_id or group_id is present

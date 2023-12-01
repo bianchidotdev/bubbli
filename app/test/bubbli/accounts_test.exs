@@ -13,7 +13,10 @@ defmodule Bubbli.AccountsTest do
       username: "test",
       master_public_key: "test",
       client_keys: [],
-      encd_user_enc_key: %{"test" => "test"},
+      timeline_key_map: %{
+        encryption_iv: "test",
+        protected_encryption_key: "test"
+      },
       salt: "testtesttesttest",
       master_password_hash: "test"
     }

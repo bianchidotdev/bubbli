@@ -4,8 +4,15 @@ defmodule BubbliSchema.EncryptionContext do
 
   import Ecto.Changeset
 
+  @required_attrs [
+    :timeline_id
+  ]
+  @optional_attrs []
+  @attrs @required_attrs ++ @optional_attrs
+
   @type t :: %__MODULE__{
           id: binary(),
+          timeline: BubbliSchema.Timeline.t(),
           inserted_at: NaiveDateTime.t(),
           updated_at: NaiveDateTime.t()
         }
@@ -21,7 +28,7 @@ defmodule BubbliSchema.EncryptionContext do
 
   def changeset(encryption_context, attrs) do
     encryption_context
-    |> cast(attrs, [:reference_id, :reference_type, :encrypted_encryption_key])
-    |> validate_required([:reference_id, :reference_type, :encrypted_encryption_key])
+    |> cast(attrs, @attrs)
+    |> validate_required(@required_attrs)
   end
 end

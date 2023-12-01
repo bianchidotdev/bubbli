@@ -67,6 +67,7 @@ defmodule BubbliSchema.User do
       :master_password_hash,
       :username
     ])
+    # TODO: cast assoc for client_keys
     |> validate_required([
       :email,
       :is_active,

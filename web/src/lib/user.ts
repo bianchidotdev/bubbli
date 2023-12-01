@@ -109,12 +109,12 @@ export const register = async (user: User, password: string) => {
     {
       type: 'password',
       encryption_iv: fromByteArray(privateKeyEncryptionIV),
-      encrypted_private_key: base64EncodeArrayBuffer(pwEncPrivateKey)
+      protected_private_key: base64EncodeArrayBuffer(pwEncPrivateKey)
     }
     // {
     //   type: 'recovery',
     //   encryption_iv: fromByteArray(recoveryKeyEncryptionIV),
-    //   encrypted_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
+    //   protected_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
     // }
   ];
 
@@ -147,7 +147,10 @@ export const register = async (user: User, password: string) => {
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
       client_keys: clientKeys,
-      encrypted_user_encryption_key: base64EncodeArrayBuffer(encryptedUserEncryptionKey)
+      timeline_key: {
+        encryption_iv: fromByteArray(userKeyEncryptionIV),
+        protected_encryption_key: base64EncodeArrayBuffer(encryptedUserEncryptionKey)
+      },
     })
   });
 };

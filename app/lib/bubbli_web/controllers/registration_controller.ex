@@ -20,16 +20,15 @@ defmodule BubbliWeb.RegistrationController do
       username: :string,
       public_key: :string,
       client_keys: {:array, :map},
-      encrypted_user_encryption_key: Base64EncodedBinary,
+      timeline_key: {:map, :string},
       master_password_hash: Base64EncodedBinary
     }
 
     {%{}, types}
     |> cast(params, Map.keys(types))
-    |> validate_required(
-      ~w/email display_name username public_key client_keys encrypted_user_encryption_key master_password_hash/a
-    )
+    |> validate_required(~w/email display_name username public_key client_keys timeline_key master_password_hash/a)
     |> cast_client_keys()
+    |> cast_timeline_key()
     |> apply_action(:insert)
     |> case do
       {:ok, normalized_input} ->
@@ -43,7 +42,7 @@ defmodule BubbliWeb.RegistrationController do
                  username: normalized_input.username,
                  master_public_key: normalized_input.public_key,
                  client_keys: normalized_input.client_keys,
-                 encd_user_enc_key: normalized_input.encrypted_user_encryption_key,
+                 timeline_key_map: normalized_input.timeline_key,
                  master_password_hash: normalized_input.master_password_hash
                }),
              Logger.info("Successfully created user"),
@@ -93,7 +92,7 @@ defmodule BubbliWeb.RegistrationController do
 
   defp cast_client_key(client_key) do
     types = %{
-      encrypted_private_key: Base64EncodedBinary,
+      protected_private_key: Base64EncodedBinary,
       encryption_iv: Base64EncodedBinary,
       type: :string
     }
@@ -104,6 +103,26 @@ defmodule BubbliWeb.RegistrationController do
       |> Ecto.Changeset.validate_required(Map.keys(types))
 
     changeset
+  end
+
+  defp cast_timeline_key(%{valid?: false} = changeset), do: changeset
+
+  defp cast_timeline_key(changeset) do
+    timeline_key = get_field(changeset, :timeline_key)
+
+    types = %{
+      encryption_iv: Base64EncodedBinary,
+      protected_encryption_key: Base64EncodedBinary
+    }
+
+    timeline_changeset =
+      {%{}, types}
+      |> Ecto.Changeset.cast(timeline_key, Map.keys(types))
+      |> Ecto.Changeset.validate_required(Map.keys(types))
+
+    Logger.error(timeline_changeset.errors)
+
+    put_change(changeset, :timeline_key, timeline_changeset.changes)
   end
 
   defp validate_public_key(public_PEM) do

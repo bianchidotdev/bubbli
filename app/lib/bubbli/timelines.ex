@@ -41,7 +41,7 @@ defmodule Bubbli.Timelines do
 
   ## Examples
 
-      iex> create_timeline(%{user_id: value, type: :user, encrypted_encryption_key: encd_enc_key})
+      iex> create_timeline(%{user_id: value, type: :user, protected_encryption_key: protected_encryption_key})
       {:ok, %Timeline{}}
 
       iex> create_timeline(%{field: bad_value})

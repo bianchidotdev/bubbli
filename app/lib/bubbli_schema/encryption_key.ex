@@ -6,10 +6,9 @@ defmodule BubbliSchema.EncryptionKey do
 
   @required_attrs [
     :encryption_iv,
-    :encrypted_symmetric_key,
     :user_id,
     :encryption_context_id,
-    :encrypted_encryption_key
+    :protected_encryption_key
   ]
   @optional_attrs []
   @attrs @required_attrs ++ @optional_attrs
@@ -17,7 +16,7 @@ defmodule BubbliSchema.EncryptionKey do
   @type t :: %__MODULE__{
           id: binary(),
           encryption_iv: binary(),
-          encrypted_symmetric_key: binary(),
+          protected_encryption_key: binary(),
           user_id: binary(),
           encryption_context_id: binary(),
           inserted_at: NaiveDateTime.t(),
@@ -25,15 +24,14 @@ defmodule BubbliSchema.EncryptionKey do
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
 
   schema "encryption_keys" do
     field(:encryption_iv, :binary)
-    field(:encrypted_symmetric_key, :binary)
+    field(:protected_encryption_key, :binary)
 
     belongs_to(:encryption_context, BubbliSchema.EncryptionContext, type: :binary_id, primary_key: true)
     belongs_to(:user, BubbliSchema.User, type: :binary_id, primary_key: true)
-
-    field(:encrypted_encryption_key, :binary)
 
     timestamps()
   end

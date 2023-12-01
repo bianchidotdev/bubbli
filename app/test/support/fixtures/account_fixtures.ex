@@ -9,7 +9,7 @@ defmodule BubbliFixtures.AccountsFixtures do
   @client_key_params [
     %{
       "type" => "password",
-      "encrypted_private_key" => Base.encode64("foobar"),
+      "protected_private_key" => Base.encode64("foobar"),
       "encryption_iv" => Base.encode64("foobar")
     }
   ]

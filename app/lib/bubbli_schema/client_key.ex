@@ -9,7 +9,7 @@ defmodule BubbliSchema.ClientKey do
           type: :password | :recovery | :device,
           # name: String.t(),
           encryption_iv: String.t(),
-          encrypted_private_key: String.t(),
+          protected_private_key: String.t(),
           inserted_at: NaiveDateTime.t(),
           updated_at: NaiveDateTime.t(),
           user: BubbliSchema.User.t()
@@ -23,7 +23,7 @@ defmodule BubbliSchema.ClientKey do
     # field(:name, :string)
 
     field(:encryption_iv, :string)
-    field(:encrypted_private_key, :string, redact: true)
+    field(:protected_private_key, :string, redact: true)
 
     timestamps()
 
@@ -33,8 +33,8 @@ defmodule BubbliSchema.ClientKey do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:type, :encryption_iv, :encrypted_private_key, :user_id])
-    |> validate_required([:type, :encryption_iv, :encrypted_private_key, :user_id])
+    |> cast(attrs, [:type, :encryption_iv, :protected_private_key, :user_id])
+    |> validate_required([:type, :encryption_iv, :protected_private_key, :user_id])
     |> foreign_key_constraint(:user_id)
   end
 end

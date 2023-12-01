@@ -90,23 +90,27 @@ defmodule Bubbli.Accounts do
   end
 
   @spec register_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def register_user(%{client_keys: client_keys_attrs, encd_user_enc_key: user_enc_key} = attrs) do
+  def register_user(%{client_keys: client_keys_attrs, timeline_key_map: timeline_key_map} = attrs) do
     Repo.transact(fn ->
       with {:ok, user} <- create_user(Map.put(attrs, :is_active, true)),
-           {:ok, _client_keys} <- create_client_keys(client_keys_attrs),
-           {:ok, encryption_context} <-
-             EncryptionContexts.register_encryption_context(%{encrypted_encryption_key: user_enc_key}),
-           {:ok, _timeline} <-
-             Timelines.create_timeline(%{type: :user, user_id: user.id, encryption_context_id: encryption_context.id}) do
+           {:ok, _client_keys} <- create_client_keys(client_keys_attrs, user.id),
+           {:ok, timeline} <-
+             Timelines.create_timeline(%{type: :user, user_id: user.id}),
+           {:ok, _encryption_context} <-
+             EncryptionContexts.register_encryption_context(%{
+               protected_encryption_key_map: timeline_key_map,
+               user_id: user.id,
+               timeline_id: timeline.id
+             }) do
         {:ok, user}
       end
     end)
   end
 
-  def create_client_keys(attrs_list \\ []) do
+  def create_client_keys(attrs_list \\ [], user_id) do
     client_key_tuples =
       Enum.map(attrs_list, fn attrs ->
-        create_client_key(attrs)
+        create_client_key(Map.put(attrs, :user_id, user_id))
       end)
 
     if Enum.all?(client_key_tuples, fn
