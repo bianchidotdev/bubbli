@@ -120,8 +120,6 @@ defmodule BubbliWeb.RegistrationController do
       |> Ecto.Changeset.cast(timeline_key, Map.keys(types))
       |> Ecto.Changeset.validate_required(Map.keys(types))
 
-    Logger.error(timeline_changeset.errors)
-
     put_change(changeset, :timeline_key, timeline_changeset.changes)
   end
 

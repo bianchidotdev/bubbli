@@ -8,9 +8,9 @@ defmodule BubbliFixtures.AccountsFixtures do
 
   @client_key_params [
     %{
-      "type" => "password",
-      "protected_private_key" => Base.encode64("foobar"),
-      "encryption_iv" => Base.encode64("foobar")
+      type: "password",
+      protected_private_key: "foobar",
+      encryption_iv: "foobar"
     }
   ]
 
@@ -46,11 +46,15 @@ defmodule BubbliFixtures.AccountsFixtures do
       |> Enum.into(%{
         email: unique_user_email(),
         client_keys: @client_key_params,
+        username: Faker.Internet.user_name(),
         display_name: "test mctesterson",
         salt: Argon2.Base.gen_salt(),
+        master_password_hash: "foobar",
         master_public_key: sample_public_key(),
-        encd_user_enc_key: Base.encode64("foobar"),
-        master_password_hash: Base.encode64("foobar")
+        timeline_key_map: %{
+          encryption_iv: "test",
+          protected_encryption_key: "test"
+        },
       })
       |> Bubbli.Accounts.register_user()
 

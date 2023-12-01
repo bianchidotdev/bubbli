@@ -8,7 +8,7 @@ defmodule BubbliSchema.Post do
           id: binary(),
           deleted_at: NaiveDateTime.t(),
           content: String.t(),
-          user: BubbliSchema.User.t(),
+          author: BubbliSchema.User.t(),
           # comments: [BubbliSchema.Comment.t()],
           # attachments: [BubbliSchema.Attachment.t()],
           # reactions: [BubbliSchema.Reaction.t()],
@@ -24,7 +24,8 @@ defmodule BubbliSchema.Post do
 
     timestamps()
 
-    belongs_to(:user, BubbliSchema.User, type: :binary_id, primary_key: true, foreign_key: :author_id)
+    belongs_to(:author, BubbliSchema.User, type: :binary_id, primary_key: true)
+    belongs_to(:timeline, BubbliSchema.Timeline, type: :binary_id, primary_key: true)
     # has_many(:comments, BubbliSchema.Comment, on_delete: :delete_all)
     # has_many(:attachments, BubbliSchema.Attachment, on_delete: :delete_all)
     # many_to_many(:keywords, BubbliSchema.Keyword, join_through: "posts_keywords")
