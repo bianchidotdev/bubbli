@@ -32,6 +32,10 @@ config :bubbli, BubbliWeb.Endpoint,
 
 config :bubbli, :signing_salt, "testsigningsalt"
 
+config :waffle,
+  storage: Waffle.Storage.Local,
+  asset_host: "http://static.example.com"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

@@ -7,7 +7,7 @@ defmodule BubbliSchema.Post do
   @type t :: %__MODULE__{
           id: binary(),
           deleted_at: NaiveDateTime.t(),
-          content: String.t(),
+          protected_content: String.t(),
           author: BubbliSchema.User.t(),
           # comments: [BubbliSchema.Comment.t()],
           # attachments: [BubbliSchema.Attachment.t()],
@@ -16,11 +16,18 @@ defmodule BubbliSchema.Post do
           updated_at: NaiveDateTime.t()
         }
 
+  # @derive {
+  #   Flop.Schema,
+  #   filterable: [:author, :timeline],
+  #   sortable: [:inserted_at]
+  # }
+
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "posts" do
     field(:deleted_at, :utc_datetime)
-    field(:content, :string)
+    field(:protected_content, :string)
+    # TODO: migrate encrypted content to remote storage + store references
 
     timestamps()
 
@@ -33,8 +40,8 @@ defmodule BubbliSchema.Post do
 
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:content, :author_id, :timeline_id])
-    |> validate_required([:content, :author_id, :timeline_id])
+    |> cast(attrs, [:protected_content, :author_id, :timeline_id])
+    |> validate_required([:protected_content, :author_id, :timeline_id])
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:timeline_id)
   end

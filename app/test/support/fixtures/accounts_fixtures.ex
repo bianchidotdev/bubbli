@@ -19,6 +19,7 @@ defmodule BubbliFixtures.AccountsFixtures do
   """
   def unique_user_email, do: "someemail#{System.unique_integer([:positive])}@example.com"
 
+  # TODO: refactor into Bubbli.Factory
   @doc """
   Generate a user.
   """
@@ -54,7 +55,7 @@ defmodule BubbliFixtures.AccountsFixtures do
         timeline_key_map: %{
           encryption_iv: "test",
           protected_encryption_key: "test"
-        },
+        }
       })
       |> Bubbli.Accounts.register_user()
 

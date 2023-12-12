@@ -6,7 +6,7 @@ defmodule Bubbli.Repo.Migrations.AddPosts do
       add(:id, :uuid, primary_key: true)
       add(:deleted_at, :utc_datetime)
 
-      add(:content, :bytea, null: false)
+      add(:protected_content, :bytea, null: false)
       add(:author_id, references(:users, type: :uuid), null: false)
       add(:timeline_id, references(:timelines, type: :uuid), null: false)
 

@@ -21,6 +21,31 @@ defmodule Bubbli.Posts do
     Repo.all(Post)
   end
 
+  def get_posts_for_timeline(timeline_id) do
+    query =
+      from(p in Post,
+        where: p.timeline_id == ^timeline_id
+      )
+
+    Repo.all(query)
+  end
+
+  def get_posts_for_user(user) do
+    # TODO: replace with flop
+    query =
+      from(p in Post,
+        where:
+          p.timeline_id in subquery(
+            from(t in BubbliSchema.Timeline,
+              where: t.user_id == ^user.id,
+              select: t.id
+            )
+          )
+      )
+
+    Repo.all(query)
+  end
+
   def get_post(id), do: Repo.get(Post, id)
 
   @doc """

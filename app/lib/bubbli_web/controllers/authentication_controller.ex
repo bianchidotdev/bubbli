@@ -6,6 +6,7 @@ defmodule BubbliWeb.AuthenticationController do
   action_fallback(BubbliWeb.FallbackController)
 
   def login(conn, %{"email" => email, "master_password_hash" => pw_hash_base64, "client_key_type" => client_key_type}) do
+    # TODO: convert to ecto schemaless payload validation
     {:ok, password_hash} = Base.decode64(pw_hash_base64)
 
     with {:ok, user} <- Bubbli.get_user_by(email: email),
@@ -14,6 +15,7 @@ defmodule BubbliWeb.AuthenticationController do
          token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
       conn
       |> put_status(:ok)
+      # TODO(urgent): this is wrong and not setting a cookie
       |> put_resp_header("authorization", token)
       |> render(:successfully_authenticated, %{user: user, client_key: client_key})
     else

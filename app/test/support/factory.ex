@@ -1,4 +1,5 @@
 defmodule Bubbli.Factory do
+  @moduledoc false
   alias Bubbli.Repo
 
   def build(:user) do
@@ -6,7 +7,7 @@ defmodule Bubbli.Factory do
   end
 
   def build(:post) do
-    %BubbliSchema.Post{content: Faker.Lorem.paragraph()}
+    %BubbliSchema.Post{protected_content: Faker.Lorem.paragraph()}
   end
 
   def build(factory_name, attrs) do

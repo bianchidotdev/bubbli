@@ -25,6 +25,13 @@ defmodule BubbliWeb.Router do
     get("/current_user", UserController, :show)
     get("/test", RegistrationController, :test)
     # delete "/auth/logout", AuthenticationController, :delete
+    # get("/dashboard", DashboardController, :show)
+
+    get("/timelines/home", TimelineController, :home)
+
+    scope "/timelines/:timeline_id" do
+      resources("/posts", PostController, only: [:index, :show, :update, :delete])
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
