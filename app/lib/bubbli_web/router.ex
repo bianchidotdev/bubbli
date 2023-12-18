@@ -30,7 +30,7 @@ defmodule BubbliWeb.Router do
     get("/timelines/home", TimelineController, :home)
 
     scope "/timelines/:timeline_id" do
-      resources("/posts", PostController, only: [:index, :show, :update, :delete])
+      resources("/posts", PostController, only: [:index, :show, :create, :update, :delete])
     end
   end
 

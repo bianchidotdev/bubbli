@@ -6,6 +6,7 @@ import { getCurrentUser } from '$lib/user';
 export const ssr = false;
 
 export const load: LayoutLoad = async () => {
+  // TODO: actually confirm that the user has a current access token
   let user = get(userStore);
   if (user && user.email && user.email !== '') {
     console.log('already logged in as ', user.email);

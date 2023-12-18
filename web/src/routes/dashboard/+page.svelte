@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
 
   import Post from '$lib/components/Post.svelte';
+  import PostInput from '$lib/components/PostInput.svelte';
 
   import { fetchHome } from "$lib/timelines"
 
@@ -22,17 +23,6 @@
 	});
 </script>
 
-<p>Hello {JSON.stringify(user)}</p>
+<PostInput timeline=timeline/>
 
 <Post author=author content=content />
-
-<p>
-  Private Key: {privateKey && privateKey.type} - {privateKey &&
-    privateKey.algorithm &&
-    privateKey.algorithm.name}
-</p>
-<p>
-  Encryption Key: {encryptionKey && encryptionKey.type} - {encryptionKey &&
-    encryptionKey.algorithm &&
-    encryptionKey.algorithm.name}
-</p>

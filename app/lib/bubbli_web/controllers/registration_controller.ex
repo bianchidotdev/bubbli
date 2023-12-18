@@ -54,7 +54,7 @@ defmodule BubbliWeb.RegistrationController do
             secure: true,
             max_age: 60 * 60 * 24
           )
-          |> put_status(200)
+          |> put_status(:ok)
           |> render(:successfully_registered, user_id: user.id)
         else
           {:valid_public_key_check, :error} ->

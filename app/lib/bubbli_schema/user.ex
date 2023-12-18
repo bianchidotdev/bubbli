@@ -54,7 +54,7 @@ defmodule BubbliSchema.User do
 
     has_many(:client_keys, BubbliSchema.ClientKey)
     has_many(:timelines, BubbliSchema.Timeline)
-    has_one(:timeline, BubbliSchema.Timeline, where: [type: :user])
+    has_one(:home_timeline, BubbliSchema.Timeline, where: [type: :user])
   end
 
   @doc false

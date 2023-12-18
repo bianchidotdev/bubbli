@@ -50,5 +50,8 @@
     "vitest": "^0.32.0",
     "zod": "^3.22.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "svelte-autoresize-textarea": "^0.0.6"
+  }
 }

@@ -15,8 +15,12 @@ defmodule BubbliWeb.AuthenticationController do
          token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
       conn
       |> put_status(:ok)
-      # TODO(urgent): this is wrong and not setting a cookie
-      |> put_resp_header("authorization", token)
+      |> Plug.Conn.put_resp_cookie("authorization", token,
+        http_only: true,
+        same_site: "Strict",
+        secure: true,
+        max_age: 60 * 60 * 24
+      )
       |> render(:successfully_authenticated, %{user: user, client_key: client_key})
     else
       {:error, :user_not_found} ->

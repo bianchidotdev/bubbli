@@ -12,6 +12,7 @@ defmodule BubbliWeb.PostController do
 
     types = %{
       timeline_id: :string,
+      # TODO: maybe content is treated as just an attachment?
       protected_content: :string
       # TODO: attachments
     }
@@ -22,9 +23,16 @@ defmodule BubbliWeb.PostController do
     |> apply_action(:insert)
     |> case do
       {:ok, normalized_input} ->
-        # TODO
+        # TODO create post
         Logger.info("normalized_input: #{inspect(normalized_input)}")
         Logger.debug("user: #{inspect(user)}")
+
+        Bubbli.Posts.create_post(%{
+          protected_content: normalized_input.protected_content,
+          author_id: user.id,
+          timeline_id: normalized_input.timeline_id
+        })
+
         :ok
 
       {:error, changeset} ->

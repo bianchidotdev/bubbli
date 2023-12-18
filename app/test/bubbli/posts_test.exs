@@ -6,8 +6,8 @@ defmodule Bubbli.PostsTest do
 
   setup do
     user = BubbliFixtures.AccountsFixtures.user_registration_fixture()
-    user = Repo.preload(user, :timeline)
-    post = Factory.insert!(:post, author_id: user.id, timeline_id: user.timeline.id)
+    user = Repo.preload(user, :home_timeline)
+    post = Factory.insert!(:post, author_id: user.id, timeline_id: user.home_timeline.id)
     {:ok, user: user, post: post}
 
     {:ok, %{post: post, user: user}}
@@ -19,7 +19,12 @@ defmodule Bubbli.PostsTest do
   end
 
   test "create valid post", ctx do
-    post_attrs = %{protected_content: Faker.Lorem.paragraph(), author_id: ctx.user.id, timeline_id: ctx.user.timeline.id}
+    post_attrs = %{
+      protected_content: Faker.Lorem.paragraph(),
+      author_id: ctx.user.id,
+      timeline_id: ctx.user.home_timeline.id
+    }
+
     assert {:ok, _post} = Posts.create_post(post_attrs)
   end
 
@@ -27,7 +32,7 @@ defmodule Bubbli.PostsTest do
     post_attrs = %{
       protected_content: Faker.Lorem.paragraph(),
       author_id: ctx.user.id,
-      timeline_id: ctx.user.timeline.id,
+      timeline_id: ctx.user.home_timeline.id,
       deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
 
@@ -38,7 +43,7 @@ defmodule Bubbli.PostsTest do
     post_attrs = %{
       protected_content: Faker.Lorem.paragraph(),
       author_id: Faker.UUID.v4(),
-      timeline_id: ctx.user.timeline.id
+      timeline_id: ctx.user.home_timeline.id
     }
 
     assert {:error, changeset} = Posts.create_post(post_attrs)
@@ -52,7 +57,7 @@ defmodule Bubbli.PostsTest do
   end
 
   test "create post with invalid protected_content", ctx do
-    post_attrs = %{author_id: ctx.user.id, timeline_id: ctx.user.timeline.id, protected_content: nil}
+    post_attrs = %{author_id: ctx.user.id, timeline_id: ctx.user.home_timeline.id, protected_content: nil}
     assert {:error, changeset} = Posts.create_post(post_attrs)
     assert {"can't be blank", _} = changeset.errors[:protected_content]
   end
