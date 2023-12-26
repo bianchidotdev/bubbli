@@ -8,6 +8,7 @@ defmodule Bubbli.Accounts do
   alias Bubbli.EncryptionContexts
   alias Bubbli.Repo
   alias Bubbli.Timelines
+  alias BubbliSchema.UserToken
 
   # alias Bubbli.Accounts.AuthenticationChallenge
   alias BubbliSchema.ClientKey
@@ -106,6 +107,33 @@ defmodule Bubbli.Accounts do
       end
     end)
   end
+
+  # API Tokens
+  @doc """
+  Creates a new api token for a user.
+
+  The token returned must be saved somewhere safe.
+  This token cannot be recovered from the database.
+  """
+  def create_user_api_token(user) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "api-token")
+    Repo.insert!(user_token)
+    encoded_token
+  end
+
+  @doc """
+  Fetches the user by API token.
+  """
+  def fetch_user_by_api_token(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "api-token"),
+         %User{} = user <- Repo.one(query) do
+      {:ok, user}
+    else
+      _ -> :error
+    end
+  end
+
+  # Client Keys
 
   def create_client_keys(attrs_list \\ [], user_id) do
     client_key_tuples =

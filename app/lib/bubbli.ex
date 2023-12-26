@@ -15,6 +15,8 @@ defmodule Bubbli do
   defdelegate get_user(id), to: Accounts
   defdelegate get_user!(id), to: Accounts
   defdelegate get_user_by(query), to: Accounts
+  defdelegate fetch_user_by_api_token(token), to: Accounts
+  defdelegate create_user_api_token(user), to: Accounts
   defdelegate verify_user(user, password), to: Accounts
   defdelegate get_client_key_by_user_and_type(user, type), to: Accounts
   defdelegate register_user(attrs), to: Accounts

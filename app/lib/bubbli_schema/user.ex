@@ -58,7 +58,7 @@ defmodule BubbliSchema.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
+  def changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [
       :email,
@@ -70,16 +70,40 @@ defmodule BubbliSchema.User do
     ])
     # TODO: cast assoc for client_keys
     |> validate_required([
-      :email,
       :is_active,
       :display_name,
       :username,
       :master_public_key,
-      :master_password_hash
     ])
-    |> validate_format(:email, ~r/@/)
-    |> unique_constraint(:email)
+    |> validate_email(opts)
+    |> validate_master_password_hash(opts)
+  end
+
+
+  defp validate_email(changeset, opts) do
+    changeset
+    |> validate_required([:email])
+    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
+    |> validate_length(:email, max: 160)
+    |> maybe_validate_unique_email(opts)
+  end
+
+  defp validate_master_password_hash(changeset, opts) do
+    changeset
+    |> validate_required([:master_password_hash])
+    # TODO: validate byte length
+    # |> validate_length(:password, min: 12, max: 72)
     |> put_pass_hash()
+  end
+
+  defp maybe_validate_unique_email(changeset, opts) do
+    if Keyword.get(opts, :validate_email, true) do
+      changeset
+      |> unsafe_validate_unique(:email, Bubbli.Repo)
+      |> unique_constraint(:email)
+    else
+      changeset
+    end
   end
 
   # this mimics bitwardens server-side password hashing model

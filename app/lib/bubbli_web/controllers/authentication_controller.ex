@@ -12,7 +12,7 @@ defmodule BubbliWeb.AuthenticationController do
     with {:ok, user} <- Bubbli.get_user_by(email: email),
          :ok <- Bubbli.verify_user(user, password_hash),
          {:ok, client_key} <- Bubbli.get_client_key_by_user_and_type(user, client_key_type),
-         token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+         token <- Bubbli.create_user_api_token(user) do
       conn
       |> put_status(:ok)
       |> Plug.Conn.put_resp_cookie("authorization", token,
@@ -35,12 +35,13 @@ defmodule BubbliWeb.AuthenticationController do
   def logout(conn, _) do
     conn
     |> put_status(:ok)
-    |> put_resp_cookie("authorization", "",
-      http_only: true,
-      same_site: "Strict",
-      secure: true,
-      max_age: 0
-    )
+    |> BubbliWeb.UserAuth.log_out_user()
+    # |> put_resp_cookie("authorization", "",
+    #   http_only: true,
+    #   same_site: "Strict",
+    #   secure: true,
+    #   max_age: 0
+    # )
     |> render(:logout)
   end
 end

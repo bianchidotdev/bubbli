@@ -46,7 +46,7 @@ defmodule BubbliWeb.RegistrationController do
                  master_password_hash: normalized_input.master_password_hash
                }),
              Logger.info("Successfully created user"),
-             token <- BubbliWeb.Token.sign(%{user_id: user.id}) do
+             token <- Bubbli.create_user_api_token(user) do
           conn
           |> Plug.Conn.put_resp_cookie("authorization", token,
             http_only: true,
