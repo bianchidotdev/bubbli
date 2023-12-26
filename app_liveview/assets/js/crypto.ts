@@ -29,15 +29,15 @@ const argon2Options: Partial<IArgon2Options> = {
   outputType: 'binary' // return standard encoded string containing parameters needed to verify the key
 };
 
-export const generatePasswordBasedKeysArgon2 = async (
+export const generatePassphraseBasedKeysArgon2 = async (
   pw: string,
   salt: Uint8Array
-): Promise<{ encryptionKey: CryptoKey; masterPasswordHash: string; }> => {
+): Promise<{ encryptionKey: CryptoKey; authenticationHash: string; }> => {
   // @ts-ignore
   const keyMaterial: Uint8Array = await argon2id({
     ...argon2Options,
     ...{
-      password: pw,
+      passphrase: pw,
       salt
     }
   });
@@ -59,7 +59,7 @@ export const generatePasswordBasedKeysArgon2 = async (
 
   const authenticationHash = fromByteArray(authenticationKeyMaterial);
 
-  return { encryptionKey: encryptionKey, masterPasswordHash: authenticationHash };
+  return { encryptionKey: encryptionKey, authenticationHash: authenticationHash };
 };
 
 export const generateSalt = () => {
@@ -78,12 +78,12 @@ export const generateSymmetricEncryptionKey = async (): Promise<CryptoKey> => {
   return await crypto.subtle.generateKey(symmetricKeyParams, true, ['encrypt', 'decrypt']);
 };
 
+// TODO: Why is encrypting asymmetric keys different from encrypting symmetric keys?
 export const encryptAsymmetricKey = async (
   encryptionKey: CryptoKey,
   cryptoKey: CryptoKey,
   iv: Uint8Array
 ): Promise<ArrayBuffer> => {
-  console.log(cryptoKey);
   return await crypto.subtle.wrapKey('pkcs8', cryptoKey, encryptionKey, {
     name: 'AES-GCM',
     iv: iv

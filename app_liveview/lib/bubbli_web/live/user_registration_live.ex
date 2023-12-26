@@ -18,27 +18,45 @@ defmodule BubbliWeb.UserRegistrationLive do
         </:subtitle>
       </.header>
 
+      <%!-- email: normalized_input.email,
+        display_name: normalized_input.display_name,
+        username: normalized_input.username,
+        master_public_key: normalized_input.public_key,
+        client_keys: normalized_input.client_keys,
+        timeline_key_map: normalized_input.timeline_key,
+        master_password_hash: normalized_input.master_password_hash --%>
       <.simple_form
         for={@form}
         id="registration_form"
-        phx-submit="save"
-        phx-change="validate"
         phx-trigger-action={@trigger_submit}
         action={~p"/users/log_in?_action=registered"}
         method="post"
+        phx-hook="RegistrationFormHook"
       >
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
+        <.input field={@form[:email]} type="email" label="Email" required phx-change="validate" />
+        <div phx-update="ignore" id="passphrase-div-for-ignore">
 
+          <.input field={@form[:passphrase]} type="password" label="Passphrase" required />
+        </div>
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.register_button />
         </:actions>
       </.simple_form>
     </div>
+    """
+  end
+
+  defp register_button(assigns) do
+    ~H"""
+          <.button 
+            phx-disable-with="Creating account..."
+            class="w-full"
+            phx-click={JS.dispatch("bubbli:")}
+          >Create an account</.button>
     """
   end
 
