@@ -5,9 +5,15 @@ defmodule Bubbli.Accounts.User do
   @foreign_key_type :binary_id
   schema "users" do
     field :email, :string
-    field :password, :string, virtual: true, redact: true
-    field :hashed_password, :string, redact: true
+    field :display_name, :string
+    field :username, :string
+    field :is_active, :boolean, default: false
     field :confirmed_at, :naive_datetime
+
+    field :authentication_hash, :binary, virtual: true, redact: true
+    field :hashed_authentication_hash, :string, redact: true
+
+    field :master_public_key, :binary
 
     timestamps(type: :utc_datetime)
   end
@@ -37,9 +43,9 @@ defmodule Bubbli.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :authentication_hash])
     |> validate_email(opts)
-    |> validate_password(opts)
+    |> validate_authentication_hash(opts)
   end
 
   defp validate_email(changeset, opts) do
@@ -50,27 +56,22 @@ defmodule Bubbli.Accounts.User do
     |> maybe_validate_unique_email(opts)
   end
 
-  defp validate_password(changeset, opts) do
+  defp validate_authentication_hash(changeset, opts) do
     changeset
-    |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 72)
-    # Examples of additional password validation:
-    # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
-    # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
-    # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+    |> validate_required([:authentication_hash])
     |> maybe_hash_password(opts)
   end
 
   defp maybe_hash_password(changeset, opts) do
     hash_password? = Keyword.get(opts, :hash_password, true)
-    password = get_change(changeset, :password)
+    password = get_change(changeset, :authentication_hash)
 
     if hash_password? && password && changeset.valid? do
       changeset
       # Hashing could be done with `Ecto.Changeset.prepare_changes/2`, but that
       # would keep the database transaction open longer and hurt performance.
-      |> put_change(:hashed_password, Argon2.hash_pwd_salt(password))
-      |> delete_change(:password)
+      |> put_change(:hashed_authentication_hash, Argon2.hash_pwd_salt(password))
+      |> delete_change(:authentication_hash)
     else
       changeset
     end
@@ -115,9 +116,9 @@ defmodule Bubbli.Accounts.User do
   """
   def password_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:password])
-    |> validate_confirmation(:password, message: "does not match password")
-    |> validate_password(opts)
+    |> cast(attrs, [:authentication_hash])
+    |> validate_confirmation(:authentication_hash, message: "does not match password")
+    |> validate_authentication_hash(opts)
   end
 
   @doc """
@@ -134,7 +135,7 @@ defmodule Bubbli.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Argon2.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%Bubbli.Accounts.User{hashed_password: hashed_password}, password)
+  def valid_password?(%Bubbli.Accounts.User{hashed_authentication_hash: hashed_password}, password)
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Argon2.verify_pass(password, hashed_password)
   end
@@ -151,7 +152,7 @@ defmodule Bubbli.Accounts.User do
     if valid_password?(changeset.data, password) do
       changeset
     else
-      add_error(changeset, :current_password, "is not valid")
+      add_error(changeset, :current_authentication_hash, "is not valid")
     end
   end
 end

@@ -3,12 +3,25 @@ defmodule Bubbli.Repo.Migrations.CreateUsersAuthTables do
 
   def change do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
+    # ensure we can generate salts, etc. on the postgres side
+    execute("CREATE EXTENSION IF NOT EXISTS \"pgcrypto\";")
 
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :email, :citext, null: false
-      add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
+      add :is_active, :boolean, default: false, null: false
+
+      # user attributes
+      add(:display_name, :string)
+      add(:username, :string)
+
+      # cryptography
+      add :hashed_authentication_hash, :string, null: false
+      # NOTE(bianchi): stored as binary blogs (independent of encoding)
+      # TODO: move to separate table
+      add(:master_public_key, :bytea)
+
       timestamps(type: :utc_datetime)
     end
 

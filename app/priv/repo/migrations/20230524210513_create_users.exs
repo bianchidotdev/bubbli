@@ -2,8 +2,6 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def change do
-    # ensure we can generate salts, etc. on the postgres side
-    execute("CREATE EXTENSION IF NOT EXISTS \"pgcrypto\";")
 
     create table(:users, primary_key: false) do
       add(:id, :uuid, primary_key: true)
@@ -11,7 +9,6 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
       add(:is_active, :boolean, default: false, null: false)
 
       # cryptography
-      # TODO(bianchi): figure out how to store (ie. structure + encoding)
       # NOTE(bianchi): stored as binary blogs (independent of encoding)
       add(:master_public_key, :bytea)
       add(:master_password_hash, :bytea)
