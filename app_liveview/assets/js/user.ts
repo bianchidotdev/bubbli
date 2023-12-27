@@ -1,5 +1,3 @@
-// TODO: figure out stores in liveview
-// import { userStore, type User, clearUserStore } from '$lib/stores/user_store';
 import { fromByteArray } from 'base64-js';
 
 import {
@@ -15,19 +13,18 @@ import {
 } from './crypto';
 
 // TODO: figure out storage
-// import {
-//   storeKey,
-//   clearKeys,
-//   masterPrivateKeyConst,
-//   masterEncryptionKeyConst,
-//   getKey
-// } from '$lib/stores/encryption_key_store';
+import {
+  storeKey,
+  clearKeys,
+  masterPrivateKeyConst,
+  masterEncryptionKeyConst,
+  getKey
+} from './encryption_key_store';
 
 const encoder = new TextEncoder();
 
 export const logOutUser = async () => {
-  // TODO: clear keys
-  // clearKeys();
+  clearKeys();
 };
 
 export const hydrateRegistration = async (email: string, passphrase: string) => {
@@ -65,14 +62,14 @@ export const hydrateRegistration = async (email: string, passphrase: string) => 
     userKeyEncryptionIV
   );
 
-  // TODO: Store keys
-  // await storeKey(masterEncryptionKeyConst, encryptionKey);
-  // await storeKey(masterPrivateKeyConst, clientKeyPair.privateKey);
+  await storeKey(masterEncryptionKeyConst, encryptionKey);
+  await storeKey(masterPrivateKeyConst, clientKeyPair.privateKey);
   // TODO: store salt - userStore.set({ ...user, ...{ salt: salt } });
 
 
   return {
     email: email,
+    // TODO: add display name and username
     // display_name: user.displayName,
     // username: user.username,
     public_key: pemExportedPublicKey,
@@ -92,7 +89,7 @@ export const login = async (email: string, passphrase: string) => {
     salt
   );
   // TODO: store key
-  // await storeKey(masterEncryptionKeyConst, encryptionKey);
+  await storeKey(masterEncryptionKeyConst, encryptionKey);
   return {
     email: email,
     authentication_hash: authenticationHash,
@@ -104,7 +101,6 @@ export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey: Uint8Array,
   encryptedPrivateKeyIV: Uint8Array
 ) => {
-  // TODO get key?
   const encryptionKey = await getKey(masterEncryptionKeyConst);
   if (!encryptionKey || !encryptedPrivateKey || !encryptedPrivateKeyIV) {
     return { error: 'Missing required keys' };
@@ -116,7 +112,6 @@ export const decryptAndLoadMasterPrivateKey = async (
     encryptedPrivateKeyIV
   );
 
-  // TODO: store key
-  // await storeKey(masterPrivateKeyConst, masterPrivateKey);
+  await storeKey(masterPrivateKeyConst, masterPrivateKey);
   console.log(masterPrivateKey);
 };

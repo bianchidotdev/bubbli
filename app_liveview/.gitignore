@@ -27,6 +27,8 @@ bubbli-*.tar
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
+# TODO: I don't know if this is appropriate, but it was trying to commit a bunch of junk
+/priv/static/
 
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
