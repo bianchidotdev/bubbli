@@ -93,7 +93,7 @@ export const login = async (email: string, passphrase: string) => {
   return {
     email: email,
     authentication_hash: authenticationHash,
-    client_key_type: 'passphrase'
+    client_key_type: 'password'
   }
 };
 

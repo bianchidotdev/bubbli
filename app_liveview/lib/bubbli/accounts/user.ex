@@ -18,6 +18,15 @@ defmodule Bubbli.Accounts.User do
     timestamps(type: :utc_datetime)
   end
 
+  @spec registration_changeset(
+          {map(), map()}
+          | %{
+              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
+              optional(atom()) => any()
+            },
+          :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()},
+          keyword()
+        ) :: Ecto.Changeset.t()
   @doc """
   A user changeset for registration.
 

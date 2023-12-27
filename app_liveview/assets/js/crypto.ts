@@ -37,7 +37,7 @@ export const generatePassphraseBasedKeysArgon2 = async (
   const keyMaterial: Uint8Array = await argon2id({
     ...argon2Options,
     ...{
-      passphrase: pw,
+      password: pw,
       salt
     }
   });

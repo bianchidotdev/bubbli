@@ -25,11 +25,12 @@ defmodule BubbliWeb.UserRegistrationLive do
         client_keys: normalized_input.client_keys,
         timeline_key_map: normalized_input.timeline_key,
         master_password_hash: normalized_input.master_password_hash --%>
+
+      <%!-- action={~p"/users/log_in?_action=registered"} --%>
       <.simple_form
         for={@form}
         id="registration_form"
         phx-trigger-action={@trigger_submit}
-        action={~p"/users/log_in?_action=registered"}
         method="post"
         phx-hook="RegistrationFormHook"
       >
@@ -52,7 +53,7 @@ defmodule BubbliWeb.UserRegistrationLive do
 
   defp register_button(assigns) do
     ~H"""
-          <.button 
+          <.button
             phx-disable-with="Creating account..."
             class="w-full"
             phx-click={JS.dispatch("bubbli:")}
