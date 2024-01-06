@@ -10,6 +10,7 @@ defmodule BubbliSchema.UserToken do
   # since someone with access to the email may take over the account.
   @reset_password_validity_in_days 1
   @confirm_validity_in_days 7
+  @api_token_validity_in_days 30
   @change_email_validity_in_days 7
   @session_validity_in_days 60
 
@@ -128,6 +129,7 @@ defmodule BubbliSchema.UserToken do
     end
   end
 
+  defp days_for_context("api-token"), do: @api_token_validity_in_days
   defp days_for_context("confirm"), do: @confirm_validity_in_days
   defp days_for_context("reset_password"), do: @reset_password_validity_in_days
 

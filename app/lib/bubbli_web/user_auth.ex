@@ -14,7 +14,7 @@ defmodule BubbliWeb.UserAuth do
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
   def fetch_api_user(conn, _opts) do
-    with ["Bearer " <> token] <- get_auth_token(conn),
+    with {:ok, token} <- get_auth_token(conn),
          {:ok, user} <- Bubbli.fetch_user_by_api_token(token) do
       assign(conn, :current_user, user)
     else

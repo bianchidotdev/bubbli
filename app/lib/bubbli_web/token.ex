@@ -23,7 +23,7 @@ defmodule BubbliWeb.Token do
       {:ok, data} ->
         {:ok, data}
 
-      error ->
+      {:error, error} ->
         Logger.warning("Got error verifying token: #{error}")
         {:error, :unauthenticated}
     end

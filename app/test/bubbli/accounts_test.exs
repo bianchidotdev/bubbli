@@ -1,11 +1,10 @@
 defmodule Bubbli.AccountsTest do
   use Bubbli.DataCase
+  import BubbliFixtures.AccountsFixtures
+
+  alias BubbliSchema.User
 
   describe "users" do
-    import BubbliFixtures.AccountsFixtures
-
-    alias BubbliSchema.User
-
     @create_attrs %{
       email: "testabcd@example.com",
       is_active: true,
@@ -61,6 +60,15 @@ defmodule Bubbli.AccountsTest do
     test "change_user/1 returns a user changeset" do
       user = user_fixture()
       assert %Ecto.Changeset{} = Bubbli.change_user(user)
+    end
+  end
+
+  describe "create_user_api_token/1 and fetch_user_by_api_token/1" do
+    test "creates and fetches by token" do
+      user = user_fixture()
+      token = Bubbli.create_user_api_token(user)
+      assert Bubbli.fetch_user_by_api_token(token) == {:ok, user}
+      assert Bubbli.fetch_user_by_api_token("invalid") == :error
     end
   end
 end
