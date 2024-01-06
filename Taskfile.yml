@@ -9,8 +9,8 @@ tasks:
 
   installdeps:
     cmds:
-      - brew install caddy rtx
-      - rtx install
+      - brew install caddy mise
+      - mise install
     preconditions:
       - which brew
 

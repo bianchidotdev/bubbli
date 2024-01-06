@@ -12,12 +12,12 @@ Requirements:
 * Go (for running Dagger CI)
 * Postgres 15
 
-Language versioning is managed using [`rtx`](https://github.com/jdx/rtx) and current versions can be installed with `rtx install` in the root Bubbli directory
+Language versioning is managed using [`mise`](https://github.com/jdx/mise) and current versions can be installed with `mise install` in the root Bubbli directory
 
 ``` sh
 # installs taskfile
 brew install go-task/tap/go-task
-# installs caddy, rtx, and all languages
+# installs caddy, mise, and all languages
 task installdeps
 # installs caddy local https certs
 task caddysetup

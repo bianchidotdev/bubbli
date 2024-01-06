@@ -29,7 +29,7 @@ func main() {
 		WithExposedPort(5432)
 
 	// set up elixir container
-	// TODO(bianchi): read versions from .rtx.toml
+	// TODO(bianchi): read versions from .mise.toml
 	elixir := client.Container().
 		From("hexpm/elixir:1.15.2-erlang-26.0.2-debian-bookworm-20230612-slim").
 		WithDirectory("/app", client.Host().Directory("app"), dagger.ContainerWithDirectoryOpts{
