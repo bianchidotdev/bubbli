@@ -26,14 +26,15 @@ func main() {
 		From("postgres:15-alpine").
 		WithEnvVariable("POSTGRES_USER", "postgres").
 		WithEnvVariable("POSTGRES_PASSWORD", "postgres").
-		WithExposedPort(5432)
+		WithExposedPort(5432).
+		AsService()
 
 	// set up elixir container
 	// TODO(bianchi): read versions from .mise.toml
 	elixir := client.Container().
-		From("hexpm/elixir:1.15.2-erlang-26.0.2-debian-bookworm-20230612-slim").
+		From("elixir:1.16"). // slim doesn't have make installed - should we use elixir or hexpm/elixir?
 		WithDirectory("/app", client.Host().Directory("app"), dagger.ContainerWithDirectoryOpts{
-			Exclude: []string{"app/priv/", "ci/", "web"},
+			Exclude: []string{"app/priv/", "app/build/", "app/deps/", "app/doc/", "ci/", "web"},
 		})
 
 	depsCache := client.CacheVolume("deps")
@@ -49,7 +50,8 @@ func main() {
 		WithMountedCache("/app/deps", depsCache).
 		WithMountedCache("/app/_build", buildCache).
 		WithExec([]string{"mix", "local.hex", "--force"}).
-		WithExec([]string{"mix", "deps.get"})
+		WithExec([]string{"mix", "deps.get"}).
+		WithExec([]string{"mix", "deps.compile"})
 
 		// TODO(bianchi): https://docs.dagger.io/7442989/cookbook/#perform-multi-stage-build
 

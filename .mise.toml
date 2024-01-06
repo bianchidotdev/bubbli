@@ -1,5 +1,5 @@
 [tools]
-elixir = "1.15"
+elixir = "1.16"
 erlang = "26"
 node = "20"
 go = "1.20"
