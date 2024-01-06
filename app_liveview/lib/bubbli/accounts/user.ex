@@ -57,6 +57,13 @@ defmodule Bubbli.Accounts.User do
     |> validate_authentication_hash(opts)
   end
 
+  # exists because the passphrase is never sent to the server
+  def registration_validation_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :authentication_hash])
+    |> validate_email(opts)
+end
+
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])

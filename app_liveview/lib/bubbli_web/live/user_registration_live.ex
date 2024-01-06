@@ -27,21 +27,21 @@ defmodule BubbliWeb.UserRegistrationLive do
         master_password_hash: normalized_input.master_password_hash --%>
 
       <%!-- action={~p"/users/log_in?_action=registered"} --%>
+      <%!-- phx-trigger-action={@trigger_submit} --%>
+      <%!-- phx-submit="ignore" --%>
       <.simple_form
         for={@form}
         id="registration_form"
-        phx-trigger-action={@trigger_submit}
-        method="post"
         phx-hook="RegistrationFormHook"
+        data-registration-successful={@registration_successful}
       >
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required phx-change="validate" />
+        <.input field={@form[:email]} type="email" label="Email" phx-change="validate" />
         <div phx-update="ignore" id="passphrase-div-for-ignore">
-
-          <.input field={@form[:passphrase]} type="password" label="Passphrase" required />
+          <.input field={@form[:passphrase]} type="password" label="Passphrase" />
         </div>
         <:actions>
           <.register_button />
@@ -53,11 +53,9 @@ defmodule BubbliWeb.UserRegistrationLive do
 
   defp register_button(assigns) do
     ~H"""
-          <.button
-            phx-disable-with="Creating account..."
-            class="w-full"
-            phx-click={JS.dispatch("bubbli:")}
-          >Create an account</.button>
+    <.button id={"registration-button"} phx-disable-with="Creating account..." class="w-full">
+      Create an account
+    </.button>
     """
   end
 
@@ -66,10 +64,15 @@ defmodule BubbliWeb.UserRegistrationLive do
 
     socket =
       socket
-      |> assign(trigger_submit: false, check_errors: false)
+      # TODO: why do I need to specify the attribute as string for it to be visible in the DOM?
+      |> assign(trigger_submit: false, registration_successful: ~c"false", check_errors: false)
       |> assign_form(changeset)
 
     {:ok, socket, temporary_assigns: [form: nil]}
+  end
+
+  def handle_event("ignore", _params, socket) do
+    {:noreply, socket}
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
@@ -82,7 +85,11 @@ defmodule BubbliWeb.UserRegistrationLive do
           )
 
         changeset = Accounts.change_user_registration(user)
-        {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}
+
+        {:noreply,
+         socket
+         |> assign(trigger_submit: true, registration_successful: ~c"true")
+         |> assign_form(changeset)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket |> assign(check_errors: true) |> assign_form(changeset)}
@@ -90,7 +97,8 @@ defmodule BubbliWeb.UserRegistrationLive do
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = Accounts.change_user_registration(%User{}, user_params)
+    changeset = Accounts.change_user_registration_validation(%User{}, user_params)
+    dbg(changeset)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 

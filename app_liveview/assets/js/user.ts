@@ -82,7 +82,7 @@ export const hydrateRegistration = async (email: string, passphrase: string) => 
   }
 };
 
-export const login = async (email: string, passphrase: string) => {
+export const hydrateLogin = async (email: string, passphrase: string) => {
   const salt = encoder.encode(email);
   const { encryptionKey, authenticationHash } = await generatePassphraseBasedKeysArgon2(
     passphrase,
@@ -96,6 +96,23 @@ export const login = async (email: string, passphrase: string) => {
     client_key_type: 'password'
   }
 };
+
+export const submitLogin = async (user) => {
+  let csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content")
+
+  const formData = new FormData()
+  formData.append('user[email]', user.email)
+  formData.append('user[authentication_hash]', user.authentication_hash)
+  formData.append('_csrf_token', csrfToken);
+  formData.append('_action', 'registered');
+
+  console.log("formData", formData)
+
+  return await fetch('/api/users/log_in', {
+    method: 'POST',
+    body: formData
+  })
+}
 
 export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey: Uint8Array,

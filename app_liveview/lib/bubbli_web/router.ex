@@ -24,9 +24,11 @@ defmodule BubbliWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", BubbliWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", BubbliWeb do
+    pipe_through :api
+
+    post "/users/log_in", UserSessionController, :create
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:bubbli, :dev_routes) do
@@ -58,7 +60,7 @@ defmodule BubbliWeb.Router do
       live "/users/reset_password/:token", UserResetPasswordLive, :edit
     end
 
-    post "/users/log_in", UserSessionController, :create
+    # post "/users/log_in", UserSessionController, :create
   end
 
   scope "/", BubbliWeb do

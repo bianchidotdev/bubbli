@@ -15,18 +15,24 @@ defmodule BubbliWeb.UserLoginLive do
         </:subtitle>
       </.header>
 
-      <.simple_form for={@form} id="login_form" action={~p"/users/log_in"} phx-update="ignore">
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
+      <%!-- action={~p"/users/log_in"} --%>
+      <.simple_form
+        for={@form}
+        id="login_form"
+        phx-update="ignore"
+        phx-hook="LoginFormHook"
+      >
+        <.input field={@form[:email]} type="email" label="Email"  />
+        <.input field={@form[:passphrase]} type="password" label="Passphrase"  />
 
         <:actions>
           <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
           <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
-            Forgot your password?
+            Forgot your passphrase?
           </.link>
         </:actions>
         <:actions>
-          <.button phx-disable-with="Signing in..." class="w-full">
+          <.button id={"login-button"} phx-disable-with="Signing in..." class="w-full">
             Sign in <span aria-hidden="true">→</span>
           </.button>
         </:actions>

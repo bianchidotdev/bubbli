@@ -80,17 +80,21 @@ defmodule Bubbli.Accounts do
     |> Repo.insert()
   end
 
+  def change_user_registration(%User{} = user, attrs \\ %{}) do
+    User.registration_changeset(user, attrs, hash_password: false, validate_email: false)
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
   ## Examples
 
-      iex> change_user_registration(user)
+      iex> change_user_registration_validation(user)
       %Ecto.Changeset{data: %User{}}
 
   """
-  def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false, validate_email: false)
+  def change_user_registration_validation(%User{} = user, attrs \\ %{}) do
+    User.registration_validation_changeset(user, attrs, hash_password: false, validate_email: false)
   end
 
   ## Settings
