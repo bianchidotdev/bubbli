@@ -22,10 +22,12 @@ defmodule BubbliSchema.User do
     :email,
     :is_active,
     :display_name,
-    :username
+    :username,
+    :home_timeline_id
   ]
 
   def serialize_for_api(user) do
+    user = %{user | home_timeline_id: user.home_timeline.id}
     Enum.reduce(Map.from_struct(user), %{}, fn
       {_, %Ecto.Association.NotLoaded{}}, acc -> acc
       {k, v}, acc when k in @public_fields -> Map.put(acc, k, v)
@@ -49,6 +51,7 @@ defmodule BubbliSchema.User do
     # user attributes
     field(:display_name, :string)
     field(:username, :string)
+    field(:home_timeline_id, :binary, virtual: true)
 
     timestamps()
 

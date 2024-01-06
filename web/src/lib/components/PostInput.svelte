@@ -1,18 +1,17 @@
 <script lang="ts">
   import { AutoResizeTextarea } from "svelte-autoresize-textarea";
-  // import { createPost } from "$lib/timelines";
+  import { createPost, type Timeline } from "$lib/timelines";
 
-  export let timeline;
-  let content = "";
+  // inputs
+  export let timeline_id: string;
+  export let content = "";
 
-  function onSubmit(event: Event) {
-    const formData = new FormData(event.currentTarget as HTMLFormElement);
-
-    const content = formData.get("content");
-    createPost(timeline, content);
+  const onSubmit = async (event: Event) => {
+    await createPost(timeline_id, content);
   }
 </script>
 
+<div class="container">
 <form class="w-full card p-4 text-token space-y-4" on:submit|preventDefault={onSubmit}>
   <label class="label">
     <span>Post an update</span>
@@ -24,6 +23,7 @@
       placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit."
       name="content"
       bind:value={content}
+      required
     />
 
     <div class="text-right">
@@ -31,3 +31,4 @@
     </div>
   </label>
 </form>
+</div>

@@ -3,6 +3,11 @@ import { argon2id } from 'hash-wasm';
 import type { IArgon2Options } from 'hash-wasm';
 import { generateMnemonic } from 'bip39';
 
+export type ProtectedContent = {
+  protected_content: ArrayBuffer;
+  iv: Uint8Array;
+};
+
 const encoder = new TextEncoder();
 
 // Desired key lengths for encryption and authentication (in bytes)
@@ -141,6 +146,37 @@ export const generateSymmetricEncryptionKey = async (): Promise<CryptoKey> => {
 //     encodedMessage
 //   );
 // };
+
+export const encryptMessage = async (
+  encryptionKey: CryptoKey,
+  message: string,
+  iv: Uint8Array
+) => {
+  const encodedMessage = encoder.encode(message);
+  return crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv
+    },
+    encryptionKey,
+    encodedMessage
+  );
+}
+
+export const decryptMessage = async (
+  encryptionKey: CryptoKey,
+  encryptedMessage: Uint8Array,
+  iv: Uint8Array
+) => {
+  return crypto.subtle.decrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv
+    },
+    encryptionKey,
+    encryptedMessage
+  );
+}
 
 export const encryptAsymmetricKey = async (
   encryptionKey: CryptoKey,

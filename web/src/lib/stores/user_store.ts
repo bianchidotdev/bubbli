@@ -8,6 +8,7 @@ export interface User {
   clientPublicKey: null | CryptoKey
   displayName: string;
   username: string;
+  home_timeline_id: null | string;
 }
 
 const initialUser = {
@@ -16,7 +17,8 @@ const initialUser = {
   salt: null,
   clientPublicKey: null,
   displayName: '',
-  username: ''
+  username: '',
+  home_timeline_id: null,
 }
 export const userStore: Writable<User | null> = localStorageStore('currentUser', initialUser);
 

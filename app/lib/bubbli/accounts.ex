@@ -27,7 +27,12 @@ defmodule Bubbli.Accounts do
     Repo.all(User)
   end
 
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id, preloads \\ []) do
+    User
+    |> Repo.get(id)
+    |> Repo.preload(preloads)
+
+  end
 
   @doc """
   Gets a single user.
@@ -43,7 +48,11 @@ defmodule Bubbli.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id, preloads \\ []) do
+    User
+    |> Repo.get!(id)
+    |> Repo.preload(preloads)
+  end
 
   @spec get_client_key_by_user_and_type(User.t(), String.t()) :: {:ok, ClientKey.t()} | {:error, :no_key_found}
   def get_client_key_by_user_and_type(user, type) do
@@ -74,6 +83,7 @@ defmodule Bubbli.Accounts do
         {:error, :user_not_found}
 
       %User{} = user ->
+        user = Repo.preload(user, :home_timeline)
         {:ok, user}
 
       error ->

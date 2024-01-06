@@ -12,8 +12,8 @@ defmodule Bubbli do
 
   defdelegate list_users(), to: Accounts
   defdelegate user_exists?(email), to: Accounts
-  defdelegate get_user(id), to: Accounts
-  defdelegate get_user!(id), to: Accounts
+  defdelegate get_user(id, preloads \\ []), to: Accounts
+  defdelegate get_user!(id, preloads \\ []), to: Accounts
   defdelegate get_user_by(query), to: Accounts
   defdelegate fetch_user_by_api_token(token), to: Accounts
   defdelegate create_user_api_token(user), to: Accounts

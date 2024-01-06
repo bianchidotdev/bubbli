@@ -12,6 +12,10 @@
   export let data;
   const encryptionKey = data.encryptionKey
   const privateKey = data.privateKey
+  const timeline_id = user?.home_timeline_id
+  // TODO: get this from the server
+  const author = user
+  const content = "Hello world!"
 
   let posts = []
   onMount(async () => {
@@ -23,6 +27,6 @@
 	});
 </script>
 
-<PostInput timeline=timeline/>
+<PostInput timeline_id={timeline_id}/>
 
-<Post author=author content=content />
+<Post author={author} content={content} />

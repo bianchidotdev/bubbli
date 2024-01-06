@@ -1,10 +1,6 @@
-// TODO: this isn't persisting past refreshes like it says it should
-// Alright, so here's what we're going to do.
-// store the unexportable master encryption key and the encrypted private key in indexedDB.
-// With that, we'll have longer term storage and supposedly it's ok to store unexportable
-// crypto keys in indexedDB.
-// example: https://gist.github.com/saulshanabrook/b74984677bccd08b028b30d9968623f5
-// another: https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
+// storage for encryption keys and the user's master private key pair
+// We need to store an encryption key per encryption context, at the very least that means one per timeline.
+// Encryption keys should be stored as non-exportable
 
 import { openDB } from 'idb';
 import type { DBSchema } from 'idb';
@@ -20,25 +16,29 @@ interface KeyStoreDBV1 extends DBSchema {
 }
 
 export const masterPrivateKeyConst = 'masterPrivateKey';
+// TODO: what the hickity heck was I thinking? What's a master encryption key? :sigh:
 export const masterEncryptionKeyConst = 'masterEncryptionKey';
 
-export async function getKey(keyType: string) {
+export const getKey = async (keyType: string): Promise<CryptoKey | undefined> => {
   return (await openKeyStore()).get(keyStoreName, keyType);
-}
-export async function storeKey(keyType: string, keyContent: CryptoKey) {
+};
+
+export const storeKey = async (keyType: string, keyContent: CryptoKey): Promise<string> => {
   return (await openKeyStore()).put(keyStoreName, keyContent, keyType);
-}
-export async function deleteKey(keyType: string) {
+};
+
+export const deleteKey = async (keyType: string): Promise<void> => {
   return (await openKeyStore()).delete(keyStoreName, keyType);
-}
-export async function clearKeys() {
+};
+
+export const clearKeys = async (): Promise<void> => {
   return (await openKeyStore()).clear(keyStoreName);
-}
-export async function listKeys() {
+};
+export const listKeys = async (): Promise<string[]> => {
   return (await openKeyStore()).getAllKeys(keyStoreName);
 }
 
-async function openKeyStore() {
+const openKeyStore = async () => {
   const db = await openDB<KeyStoreDBV1>(keyStoreDBName, 1, {
     upgrade(db) {
       db.createObjectStore(keyStoreName);
@@ -46,6 +46,14 @@ async function openKeyStore() {
   });
   return db;
 }
+
+// NOTE: the session_keystore isn't persisting past refreshes like it says it should
+// Alright, so here's what we're going to do.
+// store the unexportable master encryption key and the encrypted private key in indexedDB.
+// With that, we'll have longer term storage and supposedly it's ok to store unexportable
+// crypto keys in indexedDB.
+// example: https://gist.github.com/saulshanabrook/b74984677bccd08b028b30d9968623f5
+// another: https://blog.engelke.com/2014/09/19/saving-cryptographic-keys-in-the-browser/
 
 // Previous implementation using session keystore
 // import SessionKeystore from 'session-keystore';

@@ -24,6 +24,9 @@ defmodule BubbliWeb.AuthenticationJSON do
   end
 
   def successfully_authenticated(%{user: user, client_key: client_key}) do
+    # TODO: need to return the home timeline + the timeline's encryption key here
+    # OR actually, maybe that just happens on dashboard load... Nah, I think the user
+    # should immediately have the details necessary to post
     %{
       success: true,
       user: BubbliSchema.User.serialize_for_api(user),

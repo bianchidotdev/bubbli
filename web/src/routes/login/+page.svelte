@@ -20,6 +20,7 @@
   let password = '';
   let passwordLocked = true;
 
+  // TODO: it'd be nice to standardize form validation
   const onEmailInput = () => {
     validEmail = validateEmail(email);
   };
@@ -37,10 +38,10 @@
     const response = await login(email, password);
     if (response.status === 200) {
       const json = await response.json();
+      console.warn(json)
       userStore.set({
-        id: json['user_id'],
+        ...json['user'],
         email: email,
-        authenticated: true
       });
 
       const encryptedPrivateKey = toByteArray(json['encrypted_master_private_key']);
