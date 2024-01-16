@@ -5,7 +5,7 @@ defmodule BubbliWeb.UserController do
 
   action_fallback BubbliWeb.FallbackController
 
-  def show(conn, _) do
+  def current_user(conn, _) do
     case Map.fetch(conn.assigns, :current_user) do
       {:ok, user} ->
         conn |> put_status(200) |> render(:user, user: user)

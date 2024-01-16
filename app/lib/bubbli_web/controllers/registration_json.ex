@@ -24,10 +24,10 @@ defmodule BubbliWeb.RegistrationJSON do
     %{success: false, errors: %{message: "invalid public key"}}
   end
 
-  def successfully_registered(%{user_id: user_id}) do
+  def successfully_registered(%{user: user}) do
     %{
       success: true,
-      user_id: user_id
+      user: BubbliWeb.UserView.render("user.json", %{user: user})
     }
   end
 end

@@ -116,6 +116,14 @@ defmodule Bubbli.EncryptionContexts do
   def get_encryption_key(id), do: Repo.get(EncryptionKey, id)
   def get_encryption_key!(id), do: Repo.get!(EncryptionKey, id)
 
+  def get_encryption_keys_by_user(user_id) do
+    Repo.all(from e in EncryptionKey, where: e.user_id == ^user_id)
+  end
+
+  def get_encryption_key_by_user_and_encryption_context(user_id, encryption_context_id) do
+    Repo.get_by(EncryptionKey, user_id: user_id, encryption_context_id: encryption_context_id)
+  end
+
   def create_encryption_key(attrs \\ %{}) do
     %EncryptionKey{}
     |> EncryptionKey.changeset(attrs)

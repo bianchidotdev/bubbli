@@ -1,7 +1,11 @@
 defmodule BubbliWeb.UserJSON do
+  def user(%{user: nil}) do
+    %{}
+  end
+
   def user(%{user: user}) do
     if user do
-      %{user: BubbliSchema.User.serialize_for_api(user)}
+      BubbliWeb.UserView.render("user.json", %{user: user})
     end
   end
 end

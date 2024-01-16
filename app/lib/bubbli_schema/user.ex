@@ -18,22 +18,23 @@ defmodule BubbliSchema.User do
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
-  @public_fields [
-    :email,
-    :is_active,
-    :display_name,
-    :username,
-    :home_timeline_id
-  ]
+  # TODO: figure out if this should live in the user view
+  # @public_fields [
+  #   :email,
+  #   :is_active,
+  #   :display_name,
+  #   :username,
+  #   :home_timeline_id
+  # ]
 
-  def serialize_for_api(user) do
-    user = %{user | home_timeline_id: user.home_timeline.id}
-    Enum.reduce(Map.from_struct(user), %{}, fn
-      {_, %Ecto.Association.NotLoaded{}}, acc -> acc
-      {k, v}, acc when k in @public_fields -> Map.put(acc, k, v)
-      {_, _}, acc -> acc
-    end)
-  end
+  # def serialize_for_api(user) do
+  #   user = %{user | home_timeline_id: user.home_timeline.id}
+  #   Enum.reduce(Map.from_struct(user), %{}, fn
+  #     {_, %Ecto.Association.NotLoaded{}}, acc -> acc
+  #     {k, v}, acc when k in @public_fields -> Map.put(acc, k, v)
+  #     {_, _}, acc -> acc
+  #   end)
+  # end
 
   def verify_user(user, password) do
     Argon2.verify_pass(password, user.master_password_hash)

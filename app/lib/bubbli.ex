@@ -9,6 +9,7 @@ defmodule Bubbli do
   use Boundary, deps: [BubbliSchema, Ecto.Repo, Ecto.Query], exports: [Posts]
 
   alias Bubbli.Accounts
+  alias Bubbli.EncryptionContexts
 
   defdelegate list_users(), to: Accounts
   defdelegate user_exists?(email), to: Accounts
@@ -24,8 +25,10 @@ defmodule Bubbli do
   defdelegate change_user(user), to: Accounts
   defdelegate delete_user(user), to: Accounts
   defdelegate change_user(user, attrs), to: Accounts
-
   defdelegate create_client_key(attrs), to: Accounts
+
+  defdelegate get_encryption_keys_by_user(user_id), to: EncryptionContexts
+  defdelegate get_encryption_key_by_user_and_encryption_context(user_id, encryption_context_id), to: EncryptionContexts
 
   # TODO: Create new context for user content
   # defdelegate get_reactions_by_reactable(reactable_type, reactible_id), to: ???

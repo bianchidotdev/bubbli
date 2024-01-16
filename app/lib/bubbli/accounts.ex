@@ -83,7 +83,7 @@ defmodule Bubbli.Accounts do
         {:error, :user_not_found}
 
       %User{} = user ->
-        user = Repo.preload(user, :home_timeline)
+        user = Repo.preload(user, [:home_timeline, home_timeline: :encryption_context])
         {:ok, user}
 
       error ->
@@ -113,6 +113,7 @@ defmodule Bubbli.Accounts do
                user_id: user.id,
                timeline_id: timeline.id
              }) do
+        user = Repo.preload(user, [:home_timeline, home_timeline: :encryption_context])
         {:ok, user}
       end
     end)

@@ -28,7 +28,7 @@ defmodule Bubbli.AccountsTest do
 
     test "register_user/1 creates a user" do
       assert {:ok, %User{} = user} = Bubbli.register_user(@create_attrs)
-      assert user == Bubbli.get_user!(user.id)
+      assert user == Bubbli.get_user!(user.id, [:home_timeline, home_timeline: :encryption_context])
     end
 
     test "get_user!/1 returns the user with given id" do

@@ -45,7 +45,7 @@ defmodule BubbliWeb.RegistrationController do
                  timeline_key_map: normalized_input.timeline_key,
                  master_password_hash: normalized_input.master_password_hash
                }),
-             Logger.info("Successfully created user"),
+             Logger.info("Successfully created user - #{normalized_input.email}}"),
              token <- Bubbli.create_user_api_token(user) do
           conn
           |> Plug.Conn.put_resp_cookie("authorization", token,
@@ -55,7 +55,7 @@ defmodule BubbliWeb.RegistrationController do
             max_age: 60 * 60 * 24
           )
           |> put_status(:ok)
-          |> render(:successfully_registered, user_id: user.id)
+          |> render(:successfully_registered, user: user)
         else
           {:valid_public_key_check, :error} ->
             conn |> put_status(400) |> render(:invalid_public_key)
