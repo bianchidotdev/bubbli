@@ -3,8 +3,8 @@ import { protectPost } from './post';
 
 export type Timeline = {
   id: string
-  name: string
-  encryption_key: CryptoKey
+  type: string
+  encryption_context_id: string
 }
 
 export const fetchHome = async () => {
@@ -18,10 +18,10 @@ export const fetchHome = async () => {
   }
 }
 
-export const createPost = async (timeline_id: string, content: string) => {
-  const protected_post = await protectPost(timeline_id, content)
+export const createPost = async (timeline: Timeline, content: string) => {
+  const protected_post = await protectPost(timeline, content)
 
-  const res = await fetch(`${BASE_API_URI}/timeline/${timeline_id}/posts`, {
+  const res = await fetch(`${BASE_API_URI}/timeline/${timeline.id}/posts`, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({ protected_post })

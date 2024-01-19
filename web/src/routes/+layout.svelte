@@ -20,9 +20,9 @@
     drawerStore.open({});
   }
 
-  let authed = !!$userStore.authenticated;
+  let authed = !!$userStore.email;
   userStore.subscribe((user) => {
-    authed = !!user.authenticated;
+    authed = !!user.email;
   });
 </script>
 

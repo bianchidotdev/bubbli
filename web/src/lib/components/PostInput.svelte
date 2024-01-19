@@ -3,11 +3,11 @@
   import { createPost, type Timeline } from "$lib/timelines";
 
   // inputs
-  export let timeline_id: string;
+  export let timeline: Timeline;
   export let content = "";
 
   const onSubmit = async (event: Event) => {
-    await createPost(timeline_id, content);
+    await createPost(timeline, content);
   }
 </script>
 

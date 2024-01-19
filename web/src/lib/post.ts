@@ -1,5 +1,5 @@
 import { decryptMessage, encryptMessage, generateEncryptionIV, type ProtectedContent } from './crypto'
-import { getKey } from './stores/encryption_key_store'
+import { getEncryptionKey } from './stores/encryption_key_store'
 import type { Timeline } from './timelines'
 
 export type Post = {
@@ -10,13 +10,14 @@ export type Post = {
   created_at: Date
   updated_at: Date
   timeline_id: string
+  encryption_context_id: string
 }
 
-export const protectPost = async (timeline_id: string, content: string): Promise<ProtectedContent> => {
+export const protectPost = async (timeline: Timeline, content: string): Promise<ProtectedContent> => {
   const iv = generateEncryptionIV()
-  const timelineEncryptionKey = await getKey(timeline_id)
+  const timelineEncryptionKey = await getEncryptionKey(timeline.encryption_context_id)
   if (!timelineEncryptionKey) {
-    throw new Error('Timeline encryption key not found')
+    throw new Error(`Timeline encryption key not found for '${timeline.encryption_context_id}'`)
   }
   const protectedContent = await encryptMessage(timelineEncryptionKey, content, iv)
 
@@ -27,9 +28,9 @@ export const protectPost = async (timeline_id: string, content: string): Promise
 }
 
 export const decryptPost = async (post: Post) => {
-  const timelineEncryptionKey = await getKey(post.timeline_id)
+  const timelineEncryptionKey = await getEncryptionKey(post.encryption_context_id)
   if (!timelineEncryptionKey) {
-    throw new Error('Timeline encryption key not found')
+    throw new Error(`Timeline encryption key not found for '${post.encryption_context_id}'`)
   }
   return await decryptMessage(timelineEncryptionKey, post.encrypted_content, post.iv)
 }

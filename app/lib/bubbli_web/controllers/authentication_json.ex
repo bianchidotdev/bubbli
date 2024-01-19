@@ -29,9 +29,9 @@ defmodule BubbliWeb.AuthenticationJSON do
     # should immediately have the details necessary to post
     %{
       success: true,
-      user: BubbliWeb.UserView.render("user_with_keys.json", %{user: user, encryption_keys: keys}),
-      encrypted_master_private_key: Base.encode64(client_key.protected_private_key),
-      encrypted_master_private_key_iv: Base.encode64(client_key.encryption_iv)
+      user: BubbliWeb.UserView.render("user.json", %{user: user}),
+      encryption_keys: Enum.map(keys, &BubbliWeb.EncryptionKeyView.render("key.json", %{encryption_key: &1})),
+      client_key: BubbliWeb.ClientKeyView.render("key.json", %{client_key: client_key})
     }
   end
 end
