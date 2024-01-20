@@ -14,6 +14,7 @@ defmodule Bubbli.Repo.Migrations.AddTimelines do
 
     create index(:timelines, [:user_id])
     # create index(:timelines, [:group_id])
+
     # belongs_to timelines or chats
     # I feel like this is a useful construct but I can't think of it's use case
     # right now. I'll keep it in here because it's not causing harm
@@ -26,7 +27,9 @@ defmodule Bubbli.Repo.Migrations.AddTimelines do
 
     create table(:encryption_keys, primary_key: false) do
       add(:id, :uuid, primary_key: true)
-      add(:encryption_iv, :bytea, null: false)
+      add(:key_algorithm, :jsonb, null: false)
+      add(:wrap_algorithm, :jsonb, null: false)
+      add(:key_usages, :jsonb, null: false)
       add(:protected_encryption_key, :bytea, null: false)
 
       add(:user_id, references(:users, type: :uuid), null: false)

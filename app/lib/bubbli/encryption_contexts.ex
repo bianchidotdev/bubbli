@@ -63,7 +63,9 @@ defmodule Bubbli.EncryptionContexts do
            {:ok, _encryption_key} <-
              create_encryption_key(%{
                protected_encryption_key: protected_encryption_key_map.protected_encryption_key,
-               encryption_iv: protected_encryption_key_map.encryption_iv,
+               key_algorithm: protected_encryption_key_map.key_algorithm,
+               wrap_algorithm: protected_encryption_key_map.wrap_algorithm,
+               key_usages: protected_encryption_key_map.key_usages,
                user_id: user_id,
                encryption_context_id: encryption_context.id
              }) do

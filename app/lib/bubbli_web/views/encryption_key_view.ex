@@ -3,7 +3,9 @@ defmodule BubbliWeb.EncryptionKeyView do
     %{
       encryption_context_id: key.encryption_context_id,
       protected_encryption_key: Base.encode64(key.protected_encryption_key),
-      encryption_iv: Base.encode64(key.encryption_iv),
+      key_algorithm: key.key_algorithm,
+      wrap_algorithm: key.wrap_algorithm,
+      key_usages: key.key_usages,
     }
   end
 end

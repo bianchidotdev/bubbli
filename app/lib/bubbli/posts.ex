@@ -80,6 +80,14 @@ defmodule Bubbli.Posts do
     %Post{}
     |> Post.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, post} ->
+        post = Repo.preload(post, [timeline: :encryption_context])
+        {:ok, post}
+
+      {:error, _} = err ->
+        err
+    end
   end
 
   @doc """

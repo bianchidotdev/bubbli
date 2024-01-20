@@ -67,6 +67,21 @@ defmodule BubbliSchema.UserToken do
     {:ok, query}
   end
 
+  @spec build_email_token(
+          atom() | %{:email => any(), :id => any(), optional(any()) => any()},
+          any()
+        ) ::
+          {binary(),
+           %BubbliSchema.UserToken{
+             __meta__: Ecto.Schema.Metadata.t(),
+             context: any(),
+             id: nil,
+             inserted_at: nil,
+             sent_to: any(),
+             token: any(),
+             user: Ecto.Association.NotLoaded.t(),
+             user_id: any()
+           }}
   @doc """
   Builds a token and its hash to be delivered to the user's email.
 

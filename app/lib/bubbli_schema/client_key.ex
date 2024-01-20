@@ -4,11 +4,24 @@ defmodule BubbliSchema.ClientKey do
 
   import Ecto.Changeset
 
+  @required_attrs [
+    :type,
+    :user_id,
+    :protected_private_key,
+    :key_algorithm,
+    :wrap_algorithm,
+    :key_usages
+  ]
+  @optional_attrs []
+  @attrs @required_attrs ++ @optional_attrs
+
   @type t :: %__MODULE__{
           id: binary(),
           type: :password | :recovery | :device,
           # name: String.t(),
-          encryption_iv: String.t(),
+          key_algorithm: map(),
+          wrap_algorithm: map(),
+          key_usages: list(String.t()),
           protected_private_key: String.t(),
           inserted_at: NaiveDateTime.t(),
           updated_at: NaiveDateTime.t(),
@@ -22,7 +35,9 @@ defmodule BubbliSchema.ClientKey do
     field(:type, Ecto.Enum, values: [:password, :recovery, :device])
     # field(:name, :string)
 
-    field(:encryption_iv, :string)
+    field(:key_algorithm, :map)
+    field(:wrap_algorithm, :map)
+    field(:key_usages, {:array, :string})
     field(:protected_private_key, :string, redact: true)
 
     timestamps()
@@ -33,8 +48,8 @@ defmodule BubbliSchema.ClientKey do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:type, :encryption_iv, :protected_private_key, :user_id])
-    |> validate_required([:type, :encryption_iv, :protected_private_key, :user_id])
+    |> cast(attrs, @attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:user_id)
   end
 end

@@ -20,7 +20,7 @@ defmodule BubbliWeb.RegistrationController do
       username: :string,
       public_key: :string,
       client_keys: {:array, :map},
-      timeline_key: {:map, :string},
+      timeline_key: :map,
       master_password_hash: Base64EncodedBinary
     }
 
@@ -29,6 +29,7 @@ defmodule BubbliWeb.RegistrationController do
     |> validate_required(~w/email display_name username public_key client_keys timeline_key master_password_hash/a)
     |> cast_client_keys()
     |> cast_timeline_key()
+    |> dbg()
     |> apply_action(:insert)
     |> case do
       {:ok, normalized_input} ->
@@ -69,6 +70,7 @@ defmodule BubbliWeb.RegistrationController do
         end
 
       {:error, changeset} ->
+        dbg()
         conn
         |> put_status(400)
         |> put_view(json: BubbliWeb.ErrorJSON)
@@ -93,7 +95,9 @@ defmodule BubbliWeb.RegistrationController do
   defp cast_client_key(client_key) do
     types = %{
       protected_private_key: Base64EncodedBinary,
-      encryption_iv: Base64EncodedBinary,
+      key_algorithm: :map,
+      wrap_algorithm: :map,
+      key_usages: {:array, :string},
       type: :string
     }
 
@@ -111,7 +115,9 @@ defmodule BubbliWeb.RegistrationController do
     timeline_key = get_field(changeset, :timeline_key)
 
     types = %{
-      encryption_iv: Base64EncodedBinary,
+      key_algorithm: :map,
+      wrap_algorithm: :map,
+      key_usages: {:array, :string},
       protected_encryption_key: Base64EncodedBinary
     }
 

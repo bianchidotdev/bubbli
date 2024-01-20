@@ -22,53 +22,22 @@
     validEmail = validateEmail(email);
   };
 
-  // const verifyEmail = () => {
-  //   submitEmailForm();
-  // };
-
   const validatePassword = () => {
     passwordLocked = password.length < 8;
     return !passwordLocked;
   };
 
   const registrationSubmitHandler = async () => {
-    if (!validatePassword(password)) {
+    if (!validatePassword()) {
       triggerError('Password must be 8 characters or longer');
       return false;
     }
     submitConfirmationForm();
   };
 
-  // const submitEmailForm = async () => {
-  //   await registrationStart(email)
-  //     .then((response) => {
-  //       if (response.status === 200) {
-  //         response.json().then((data) => {
-  //           userStore.set({
-  //             email: email,
-  //             displayName: displayName,
-  //             username: username,
-  //           });
-  //           challenge = data.challenge;
-  //           emailVerified = true;
-  //         });
-  //       } else if (response.status === 409) {
-  //         triggerError('Account already exists');
-  //       } else {
-  //         response.json().then((data) => {
-  //           console.log(data);
-  //         });
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       error = error;
-  //       console.error('Error:', error);
-  //     });
-  // };
-
   const submitConfirmationForm = async () => {
     try {
-      userStore.set({email: email, username: username, displayName: displayName})
+      userStore.set({email: email, username: username, display_name: displayName})
       register(user, password).then((response) => {
         if (response.status === 200) {
           response.json().then((json) => {
@@ -77,6 +46,7 @@
               email: email,
               authenticated: true
             });
+            // TODO(high): set encryption keys with new timeline ID
             goto(`/dashboard`);
           });
         }

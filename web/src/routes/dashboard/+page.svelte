@@ -9,11 +9,11 @@
   import { fetchHome } from "$lib/timelines"
 
   const user = get(userStore);
-  export let data;
-  const encryptionKey = data.encryptionKey
-  const privateKey = data.privateKey
-  const timeline_id = user?.home_timeline_id
-  // TODO: get this from the server
+  // export let data;
+  // const encryptionKey = data.encryptionKey
+  // const privateKey = data.privateKey
+
+  const timeline = user?.home_timeline
   const author = user
   const content = "Hello world!"
 
@@ -27,6 +27,6 @@
 	});
 </script>
 
-<PostInput timeline_id={timeline_id}/>
+<PostInput timeline={timeline}/>
 
 <Post author={author} content={content} />

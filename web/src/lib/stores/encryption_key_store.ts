@@ -5,43 +5,70 @@
 import { openDB } from 'idb';
 import type { DBSchema } from 'idb';
 
-const keyStoreDBName = 'encryption-key-store';
-const keyStoreName = 'key-store';
+const keyStoreDBName = 'key-store';
+const masterKeyStore = 'master-private-key';
+const encryptionKeyStore = 'encryption-keys';
+const clientKeyStore = 'client-keys';
 
 interface KeyStoreDBV1 extends DBSchema {
-  'key-store': {
+  'master-private-key': {
+    key: string;
+    value: CryptoKey;
+  };
+  'encryption-keys': {
+    key: string;
+    value: CryptoKey;
+  };
+  'client-keys': {
     key: string;
     value: CryptoKey;
   };
 }
 
-export const masterPrivateKeyConst = 'masterPrivateKey';
-// TODO: what the hickity heck was I thinking? What's a master encryption key? :sigh:
-export const masterEncryptionKeyConst = 'masterEncryptionKey';
+export const getMasterPrivateKey = async (): Promise<CryptoKey | undefined> => {
+  // TODO: figure out what key to store this as
+  return (await openKeyStore()).get(masterKeyStore, 'primary');
+}
 
-export const getKey = async (keyType: string): Promise<CryptoKey | undefined> => {
-  return (await openKeyStore()).get(keyStoreName, keyType);
+export const storeMasterPrivateKey = async (keyContent: CryptoKey): Promise<string> => {
+  return (await openKeyStore()).put(masterKeyStore, keyContent, 'primary');
+}
+
+export const getClientKey = async (keyType: string): Promise<CryptoKey | undefined> => {
+  return (await openKeyStore()).get(clientKeyStore, keyType);
+}
+
+export const storeClientKey = async (keyType: string, keyContent: CryptoKey): Promise<string> => {
+  return (await openKeyStore()).put(clientKeyStore, keyContent, keyType);
+}
+
+export const getEncryptionKey = async (encryptionContextID: string): Promise<CryptoKey | undefined> => {
+  return (await openKeyStore()).get(encryptionKeyStore, encryptionContextID);
 };
 
-export const storeKey = async (keyType: string, keyContent: CryptoKey): Promise<string> => {
-  return (await openKeyStore()).put(keyStoreName, keyContent, keyType);
+export const storeEncryptionKey = async (encryptionContextID: string, keyContent: CryptoKey): Promise<string> => {
+  return (await openKeyStore()).put(encryptionKeyStore, keyContent, encryptionContextID);
 };
 
-export const deleteKey = async (keyType: string): Promise<void> => {
-  return (await openKeyStore()).delete(keyStoreName, keyType);
+export const deleteEncryptionKey = async (encryptionContextID: string): Promise<void> => {
+  return (await openKeyStore()).delete(encryptionKeyStore, encryptionContextID);
 };
 
 export const clearKeys = async (): Promise<void> => {
-  return (await openKeyStore()).clear(keyStoreName);
+  (await openKeyStore()).clear(masterKeyStore);
+  (await openKeyStore()).clear(encryptionKeyStore);
 };
-export const listKeys = async (): Promise<string[]> => {
-  return (await openKeyStore()).getAllKeys(keyStoreName);
+
+export const listEncryptionKeys = async (): Promise<string[]> => {
+  return (await openKeyStore()).getAllKeys(encryptionKeyStore);
 }
 
 const openKeyStore = async () => {
   const db = await openDB<KeyStoreDBV1>(keyStoreDBName, 1, {
     upgrade(db) {
-      db.createObjectStore(keyStoreName);
+      db.createObjectStore(masterKeyStore);
+      db.createObjectStore(encryptionKeyStore);
+      db.createObjectStore(clientKeyStore);
     },
   });
   return db;

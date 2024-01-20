@@ -6,22 +6,26 @@ import { invalidateAll } from '$app/navigation';
 import {
   generatePasswordBasedKeysArgon2,
   generateSymmetricEncryptionKey,
-  generateClientKeyPair,
-  generateEncryptionIV,
-  decryptAsymmetricKey,
-  encryptAsymmetricKey,
-  encryptSymmetricKey,
+  generateMasterKeyPair,
   exportPublicKeyAsPEM,
-  base64EncodeArrayBuffer
+  base64EncodeArrayBuffer,
+  wrapMasterKey,
+  unwrapMasterKey,
+  wrapEncryptionKey,
+  unwrapCryptoKey,
+  serializeWrapAlgorithm,
+  deserializeWrapAlgorithm
 } from '$lib/crypto';
 
 import {
-  storeKey,
+  storeEncryptionKey,
+  storeMasterPrivateKey,
   clearKeys,
-  masterPrivateKeyConst,
-  masterEncryptionKeyConst,
-  getKey
+  getClientKey,
+  storeClientKey,
 } from '$lib/stores/encryption_key_store';
+import { unwrap } from 'idb';
+import type { A } from 'vitest/dist/types-198fd1d9';
 
 const encoder = new TextEncoder();
 
@@ -62,77 +66,48 @@ export const validateEmail = (email: string) => {
   return !!email.match(emailRegex);
 };
 
-// export const registrationStart = async (email, displayName) => {
-//   return fetch(`${BASE_API_URI}/registration/start`, {
-//     method: 'POST',
-//     mode: 'cors',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({
-//       email: email,
-//       display_name: displayName
-//     })
-//   });
-// };
-
 export const register = async (user: User, password: string) => {
   const salt = encoder.encode(user.email);
-  const privateKeyEncryptionIV = generateEncryptionIV();
-  // const recoveryKeyEncryptionIV = generateEncryptionIV();
-  const userKeyEncryptionIV = generateEncryptionIV();
-  // TODO const recoveryPhrase =
+  // TODO: recovery key - same as password based key but with random phrase
   // generate keys
-  const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+  const { clientKey: passwordClientKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
+  console.log(passwordClientKey)
 
-  // const { encryptionKey: recoveryKey } = await generatePasswordBasedKeysArgon2(
-  //   recoveryPhrase,
-  //   salt
-  // );
-
-  const clientKeyPair = await generateClientKeyPair();
-  const pemExportedPublicKey = await exportPublicKeyAsPEM(clientKeyPair.publicKey);
-  const pwEncPrivateKey = await encryptAsymmetricKey(
-    encryptionKey,
-    clientKeyPair.privateKey,
-    privateKeyEncryptionIV
-  );
-  // const recoveryEncPrivateKey = await encryptAsymmetricKey(
-  //   recoveryKey,
-  //   clientKeyPair.privateKey,
-  //   recoveryKeyEncryptionIV
-  // );
+  const masterKeyPair = await generateMasterKeyPair();
+  
+  const pemExportedPublicKey = await exportPublicKeyAsPEM(masterKeyPair.publicKey);
+  console.log("wrapping master key")
+  const { wrappedKey: passwordWrappedPrivateMasterKey, keyWrapAlgorithm: privateMasterKeyWrapAlgo } = await wrapMasterKey(
+    masterKeyPair.privateKey,
+    passwordClientKey
+  )
+  console.log("wrapped master key")
   const clientKeys = [
     {
       type: 'password',
-      encryption_iv: fromByteArray(privateKeyEncryptionIV),
-      protected_private_key: base64EncodeArrayBuffer(pwEncPrivateKey)
+      key_algorithm: masterKeyPair.privateKey.algorithm,
+      key_usages: masterKeyPair.privateKey.usages,
+      // this inlined mutation seems super sketch to me
+      wrap_algorithm: serializeWrapAlgorithm(privateMasterKeyWrapAlgo),
+      protected_private_key: base64EncodeArrayBuffer(passwordWrappedPrivateMasterKey)
     }
-    // {
-    //   type: 'recovery',
-    //   encryption_iv: fromByteArray(recoveryKeyEncryptionIV),
-    //   protected_private_key: base64EncodeArrayBuffer(recoveryEncPrivateKey)
-    // }
   ];
 
-  // TODO: I don't have to generate a random symmetric key and encrypt it here
-  //   because it'll get generated for each encryption context
-  //   though maybe it's worth generating the user's timeline at this step
-  const userSymmetricEncryptionKey = await generateSymmetricEncryptionKey();
-  console.log('wrapping user encryption key');
-  const encryptedUserEncryptionKey = await encryptSymmetricKey(
-    encryptionKey,
-    userSymmetricEncryptionKey,
-    userKeyEncryptionIV
+  // generates up front a user's timeline encryption key
+  const timelineEncryptionKey = await generateSymmetricEncryptionKey();
+  console.log("wrapping encryption key")
+  const { wrappedKey: wrappedTimelineEncryptionKey, keyWrapAlgorithm: timelineEncryptionKeyWrapAlgo } = await wrapEncryptionKey(
+    timelineEncryptionKey,
+    masterKeyPair.publicKey,  // encrypt with user's public key
   );
-  console.log('wrapped user encryption key');
 
-  console.log(encryptionKey, clientKeyPair.privateKey);
-  await storeKey(masterEncryptionKeyConst, encryptionKey);
-  await storeKey(masterPrivateKeyConst, clientKeyPair.privateKey);
+  await storeClientKey("password", passwordClientKey)
+  await storeMasterPrivateKey(masterKeyPair.privateKey);
+  // wait until response to store the user's encryption key so we have the ID
+  await storeEncryptionKey("home", timelineEncryptionKey);
   userStore.set({ ...user, ...{ salt: salt } });
   return fetch(`${BASE_API_URI}/auth/register`, {
     method: 'POST',
@@ -142,14 +117,18 @@ export const register = async (user: User, password: string) => {
     },
     body: JSON.stringify({
       email: user.email,
-      display_name: user.displayName,
+      display_name: user.display_name,
       username: user.username,
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
       client_keys: clientKeys,
       timeline_key: {
-        encryption_iv: fromByteArray(userKeyEncryptionIV),
-        protected_encryption_key: base64EncodeArrayBuffer(encryptedUserEncryptionKey)
+        key_algorithm: timelineEncryptionKey.algorithm,
+        key_usages: timelineEncryptionKey.usages,
+        // wrap_algorithm: serializeWrapAlgorithm(timelineEncryptionKeyWrapAlgo),
+        // for some reason, this doesn't seem to be right
+        wrap_algorithm: timelineEncryptionKeyWrapAlgo,
+        protected_encryption_key: base64EncodeArrayBuffer(wrappedTimelineEncryptionKey)
       },
     })
   });
@@ -157,11 +136,11 @@ export const register = async (user: User, password: string) => {
 
 export const login = async (email: string, password: string) => {
   const salt = encoder.encode(email);
-  const { encryptionKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+  const { clientKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
-  await storeKey(masterEncryptionKeyConst, encryptionKey);
+  await storeClientKey('password', clientKey);
   return fetch(`${BASE_API_URI}/auth/login`, {
     method: 'POST',
     mode: 'cors',
@@ -178,19 +157,51 @@ export const login = async (email: string, password: string) => {
 
 export const decryptAndLoadMasterPrivateKey = async (
   encryptedPrivateKey: Uint8Array,
-  encryptedPrivateKeyIV: Uint8Array
+  wrappingAlgorithm: {name: string, iv: Uint8Array},
+  privateKeyAlgorithm: AlgorithmIdentifier,
+  privateKeyUsages: Array<KeyUsage>
 ) => {
-  const encryptionKey = await getKey(masterEncryptionKeyConst);
-  if (!encryptionKey || !encryptedPrivateKey || !encryptedPrivateKeyIV) {
-    return { error: 'Missing required keys' };
+  const clientKey = await getClientKey('password');
+  if (!clientKey || !encryptedPrivateKey || !wrappingAlgorithm || ! privateKeyAlgorithm || !privateKeyUsages) {
+    throw new Error('Missing required parameters for decryptAndLoadMasterPrivateKey')
   }
+  console.log("unwrapping master key")
 
-  const masterPrivateKey = await decryptAsymmetricKey(
-    encryptionKey,
+  const masterPrivateKey = await unwrapMasterKey(
     encryptedPrivateKey,
-    encryptedPrivateKeyIV
-  );
+    clientKey,
+    wrappingAlgorithm,
+    privateKeyAlgorithm,
+    privateKeyUsages
+  )
 
-  await storeKey(masterPrivateKeyConst, masterPrivateKey);
-  console.log(masterPrivateKey);
+  console.log("storing master key")
+  await storeMasterPrivateKey(masterPrivateKey);
+  return masterPrivateKey
 };
+
+export const decryptAndLoadEncryptionKeys = async (
+  masterPrivateKey: CryptoKey,
+  encryptionKeys: Array<{
+    protected_encryption_key: Uint8Array;
+    wrap_algorithm: KeyAlgorithm,
+    key_algorithm: KeyAlgorithm,
+    key_usages: Array<KeyUsage>
+    encryption_context_id: string;
+  }>
+) => {
+  const encryptionKeyPromises = encryptionKeys.map(async (encryptionKey) => {
+    console.log("wrapped encryption key", encryptionKey)
+    const decryptedEncryptionKey = await unwrapCryptoKey(
+      encryptionKey.protected_encryption_key,
+      masterPrivateKey,
+      encryptionKey.wrap_algorithm,
+      encryptionKey.key_algorithm.name, // this is probably wrong
+      encryptionKey.key_usages
+    );
+
+    await storeEncryptionKey(encryptionKey.encryption_context_id, decryptedEncryptionKey);
+  });
+
+  await Promise.all(encryptionKeyPromises);
+}

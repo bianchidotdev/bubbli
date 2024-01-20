@@ -1,4 +1,5 @@
 defmodule BubbliWeb.PostController do
+  alias BubbliWeb.Base64EncodedBinary
   use BubbliWeb, :controller
 
   import Ecto.Changeset
@@ -12,28 +13,31 @@ defmodule BubbliWeb.PostController do
 
     types = %{
       timeline_id: :string,
-      # TODO: maybe content is treated as just an attachment?
-      protected_content: :string
+      # TODO: maybe content is treated as just an attachment? <- I think not
+      protected_content: Base64EncodedBinary,
+      encryption_algorithm: :map
       # TODO: attachments
     }
 
     {%{}, types}
     |> cast(params, Map.keys(types))
-    |> validate_required(~w//a)
+    |> validate_required(~w/timeline_id protected_content encryption_algorithm/a)
     |> apply_action(:insert)
     |> case do
       {:ok, normalized_input} ->
-        # TODO create post
         Logger.info("normalized_input: #{inspect(normalized_input)}")
         Logger.debug("user: #{inspect(user)}")
 
-        Bubbli.Posts.create_post(%{
+        {:ok, post} = Bubbli.Posts.create_post(%{
           protected_content: normalized_input.protected_content,
+          encryption_algorithm: normalized_input.encryption_algorithm,
           author_id: user.id,
           timeline_id: normalized_input.timeline_id
         })
 
-        :ok
+        conn
+        |> put_status(:ok)
+        |> render(:successfully_created, %{post: post, timeline: post.timeline, author: user})
 
       {:error, changeset} ->
         conn
