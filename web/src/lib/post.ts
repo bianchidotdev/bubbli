@@ -14,16 +14,15 @@ export type Post = {
 }
 
 export const protectPost = async (timeline: Timeline, content: string): Promise<ProtectedContent> => {
-  const iv = generateEncryptionIV()
   const timelineEncryptionKey = await getEncryptionKey(timeline.encryption_context_id)
   if (!timelineEncryptionKey) {
     throw new Error(`Timeline encryption key not found for '${timeline.encryption_context_id}'`)
   }
-  const protectedContent = await encryptMessage(timelineEncryptionKey, content, iv)
+  const { encryptedMessage: protectedContent, algorithm } = await encryptMessage(timelineEncryptionKey, content)
 
   return {
     protected_content: protectedContent,
-    iv: iv
+    algorithm: algorithm
   }
 }
 

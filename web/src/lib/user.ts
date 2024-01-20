@@ -13,7 +13,8 @@ import {
   unwrapMasterKey,
   wrapEncryptionKey,
   unwrapCryptoKey,
-  serializeWrapAlgorithm
+  serializeWrapAlgorithm,
+  deserializeWrapAlgorithm
 } from '$lib/crypto';
 
 import {
@@ -24,6 +25,7 @@ import {
   storeClientKey,
 } from '$lib/stores/encryption_key_store';
 import { unwrap } from 'idb';
+import type { A } from 'vitest/dist/types-198fd1d9';
 
 const encoder = new TextEncoder();
 
@@ -115,7 +117,7 @@ export const register = async (user: User, password: string) => {
     },
     body: JSON.stringify({
       email: user.email,
-      display_name: user.displayName,
+      display_name: user.display_name,
       username: user.username,
       public_key: pemExportedPublicKey,
       master_password_hash: masterPasswordHash,
@@ -182,19 +184,19 @@ export const decryptAndLoadEncryptionKeys = async (
   masterPrivateKey: CryptoKey,
   encryptionKeys: Array<{
     protected_encryption_key: Uint8Array;
-    wrap_algorithm: {name: string, iv: Uint8Array},
-    key_algorithm: AlgorithmIdentifier,
+    wrap_algorithm: KeyAlgorithm,
+    key_algorithm: KeyAlgorithm,
     key_usages: Array<KeyUsage>
     encryption_context_id: string;
   }>
 ) => {
-  console.log(encryptionKeys)
   const encryptionKeyPromises = encryptionKeys.map(async (encryptionKey) => {
+    console.log("wrapped encryption key", encryptionKey)
     const decryptedEncryptionKey = await unwrapCryptoKey(
       encryptionKey.protected_encryption_key,
       masterPrivateKey,
       encryptionKey.wrap_algorithm,
-      encryptionKey.key_algorithm,
+      encryptionKey.key_algorithm.name, // this is probably wrong
       encryptionKey.key_usages
     );
 

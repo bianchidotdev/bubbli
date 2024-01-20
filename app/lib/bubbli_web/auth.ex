@@ -1,6 +1,6 @@
 defmodule BubbliWeb.Plug.Auth do
   @moduledoc false
-  import Plug.Conn
+  # import Plug.Conn
 
   require Logger
 

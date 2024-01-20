@@ -33,16 +33,16 @@ defmodule BubbliWeb.AuthenticationController do
     end
   end
 
-  def logout(conn, _) do
-    conn
-    |> put_status(:ok)
-    |> BubbliWeb.UserAuth.log_out_user()
-    # |> put_resp_cookie("authorization", "",
-    #   http_only: true,
-    #   same_site: "Strict",
-    #   secure: true,
-    #   max_age: 0
-    # )
-    |> render(:logout)
-  end
+  # def logout(conn, _) do
+  #   conn
+  #   |> put_status(:ok)
+  #   |> BubbliWeb.UserAuth.log_out_user()
+  #   # |> put_resp_cookie("authorization", "",
+  #   #   http_only: true,
+  #   #   same_site: "Strict",
+  #   #   secure: true,
+  #   #   max_age: 0
+  #   # )
+  #   |> render(:logout)
+  # end
 end

@@ -92,7 +92,7 @@ defmodule BubbliSchema.User do
     |> maybe_validate_unique_email(opts)
   end
 
-  defp validate_master_password_hash(changeset, opts) do
+  defp validate_master_password_hash(changeset, _opts) do
     changeset
     |> validate_required([:master_password_hash])
     # TODO: validate byte length

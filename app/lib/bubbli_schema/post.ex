@@ -4,10 +4,20 @@ defmodule BubbliSchema.Post do
 
   import Ecto.Changeset
 
+  @required_attrs [
+    :author_id,
+    :protected_content,
+    :timeline_id,
+    :encryption_algorithm
+  ]
+  @optional_attrs []
+  @attrs @required_attrs ++ @optional_attrs
+
   @type t :: %__MODULE__{
           id: binary(),
           deleted_at: NaiveDateTime.t(),
-          protected_content: String.t(),
+          protected_content: binary(),
+          encryption_algorithm: map(),
           author: BubbliSchema.User.t(),
           # comments: [BubbliSchema.Comment.t()],
           # attachments: [BubbliSchema.Attachment.t()],
@@ -26,7 +36,8 @@ defmodule BubbliSchema.Post do
 
   schema "posts" do
     field(:deleted_at, :utc_datetime)
-    field(:protected_content, :string)
+    field(:protected_content, :binary)
+    field(:encryption_algorithm, :map)
     # TODO: migrate encrypted content to remote storage + store references
 
     timestamps()
@@ -40,8 +51,8 @@ defmodule BubbliSchema.Post do
 
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:protected_content, :author_id, :timeline_id])
-    |> validate_required([:protected_content, :author_id, :timeline_id])
+    |> cast(attrs, @attrs)
+    |> validate_required(@required_attrs)
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:timeline_id)
   end

@@ -9,11 +9,12 @@ defmodule BubbliSchema do
       Ecto.Query
     ],
     exports: [
-      User,
       ClientKey,
-      Post,
       EncryptionContext,
       EncryptionKey,
-      Timeline
+      Post,
+      Timeline,
+      User,
+      UserToken,
     ]
 end

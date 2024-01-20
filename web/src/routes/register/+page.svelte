@@ -37,7 +37,7 @@
 
   const submitConfirmationForm = async () => {
     try {
-      userStore.set({email: email, username: username, displayName: displayName})
+      userStore.set({email: email, username: username, display_name: displayName})
       register(user, password).then((response) => {
         if (response.status === 200) {
           response.json().then((json) => {
@@ -46,6 +46,7 @@
               email: email,
               authenticated: true
             });
+            // TODO(high): set encryption keys with new timeline ID
             goto(`/dashboard`);
           });
         }

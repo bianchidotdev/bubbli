@@ -5,7 +5,7 @@ import type { IArgon2Options } from 'hash-wasm';
 
 export type ProtectedContent = {
   protected_content: ArrayBuffer;
-  iv: Uint8Array;
+  algorithm: Algorithm;
 };
 
 const encoder = new TextEncoder();
@@ -95,17 +95,22 @@ export const generateSymmetricEncryptionKey = async (): Promise<CryptoKey> => {
 export const encryptMessage = async (
   encryptionKey: CryptoKey,
   message: string,
-  iv: Uint8Array
 ) => {
   const encodedMessage = encoder.encode(message);
-  return crypto.subtle.encrypt(
-    {
+  if (encryptionKey.algorithm.name === 'AES-GCM') {
+    const algorithm = {
       name: 'AES-GCM',
-      iv: iv
-    },
-    encryptionKey,
-    encodedMessage
-  );
+      iv: generateEncryptionIV()
+    }
+    const encryptedMessage = await crypto.subtle.encrypt(
+      algorithm,
+      encryptionKey,
+      encodedMessage
+    )
+    return { encryptedMessage, algorithm };
+  } else {
+    throw new Error(`Unsupported encryption algorithm: ${encryptionKey.algorithm.name}`)
+  }
 }
 
 export const decryptMessage = async (

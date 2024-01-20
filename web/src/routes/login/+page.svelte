@@ -68,9 +68,10 @@
             protected_encryption_key: toByteArray(key['protected_encryption_key']),
             key_algorithm: key['key_algorithm'],
             key_usages: key['key_usages'],
-            wrap_algorithm: clientKey['wrap_algorithm']
+            wrap_algorithm: key['wrap_algorithm']
           };
         });
+        console.log("encryptionKeys", encryptionKeys)
 
         const masterPrivateKey = await decryptAndLoadMasterPrivateKey(
           encryptedPrivateKey.protected_private_key,

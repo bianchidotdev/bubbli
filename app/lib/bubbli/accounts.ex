@@ -113,6 +113,7 @@ defmodule Bubbli.Accounts do
                user_id: user.id,
                timeline_id: timeline.id
              }) do
+        # TODO: figure out how to handle preloads
         user = Repo.preload(user, [:home_timeline, home_timeline: :encryption_context])
         {:ok, user}
       end
@@ -138,6 +139,7 @@ defmodule Bubbli.Accounts do
   def fetch_user_by_api_token(token) do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "api-token"),
          %User{} = user <- Repo.one(query) do
+      user = Repo.preload(user, [:home_timeline, home_timeline: :encryption_context])
       {:ok, user}
     else
       _ -> :error

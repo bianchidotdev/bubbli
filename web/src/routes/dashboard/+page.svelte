@@ -13,8 +13,7 @@
   // const encryptionKey = data.encryptionKey
   // const privateKey = data.privateKey
 
-  // sketchy af
-  const timeline = {...user?.home_timeline, ...{encryption_context_id: "home"}}
+  const timeline = user?.home_timeline
   const author = user
   const content = "Hello world!"
 

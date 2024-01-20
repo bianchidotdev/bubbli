@@ -17,7 +17,7 @@
     logOutUser();
   };
 
-  export let user: User;
+  export let user: null | User;
 </script>
 
 <div use:popup={avatarFeatured}>
@@ -29,7 +29,7 @@
     cursor="cursor-pointer"
   />
 
-  <div class="card p-4 w-72 shadow-xl" data-popup="avatarFeatured">
+  <div class="card p-4 w-72 shadow-xl z-50" data-popup="avatarFeatured">
     <ul class="list-nav">
       <li><span class="flex-auto">{user.email}</span></li>
       <hr />
