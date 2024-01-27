@@ -31,10 +31,10 @@ defmodule BubbliWeb.ConnCase do
     end
   end
 
-  # setup tags do
-  #   Bubbli.DataCase.setup_sandbox(tags)
-  #   {:ok, conn: Phoenix.ConnTest.build_conn()}
-  # end
+  setup tags do
+    Bubbli.DataCase.setup_sandbox(tags)
+    {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
 
   #   @doc """
   # Setup helper that registers and logs in users.
@@ -65,7 +65,6 @@ defmodule BubbliWeb.ConnCase do
   def log_in_api_user(conn, user) do
     token = Bubbli.create_user_api_token(user)
 
-    conn
-    |> Plug.Conn.put_resp_header("authorization", token)
+    Plug.Conn.put_resp_header(conn, "authorization", token)
   end
 end

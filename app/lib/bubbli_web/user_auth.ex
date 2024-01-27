@@ -1,4 +1,5 @@
 defmodule BubbliWeb.UserAuth do
+  @moduledoc false
   use BubbliWeb, :verified_routes
 
   import Plug.Conn
@@ -28,7 +29,7 @@ defmodule BubbliWeb.UserAuth do
 
   def get_auth_token(conn) do
     case get_req_header(conn, "authorization") do
-      ["Bearer" <> token] ->
+      ["Bearer " <> token] ->
         {:ok, token}
 
       _ ->
@@ -42,8 +43,7 @@ defmodule BubbliWeb.UserAuth do
   def log_in_api_user(conn, user) do
     token = Bubbli.create_user_api_token(user)
 
-    conn
-    |> put_resp_header("authorization", "Bearer #{token}")
+    put_resp_header(conn, "authorization", "Bearer #{token}")
   end
 
   # defp days_for_context("api-token"), do: 365

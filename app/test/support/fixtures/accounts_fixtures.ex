@@ -10,7 +10,9 @@ defmodule BubbliFixtures.AccountsFixtures do
     %{
       type: "password",
       protected_private_key: "foobar",
-      encryption_iv: "foobar"
+      key_algorithm: %{},
+      wrap_algorithm: %{},
+      key_usages: []
     }
   ]
 
@@ -53,8 +55,10 @@ defmodule BubbliFixtures.AccountsFixtures do
         master_password_hash: "foobar",
         master_public_key: sample_public_key(),
         timeline_key_map: %{
-          encryption_iv: "test",
-          protected_encryption_key: "test"
+          protected_encryption_key: "test",
+          key_algorithm: %{},
+          wrap_algorithm: %{},
+          key_usages: []
         }
       })
       |> Bubbli.Accounts.register_user()

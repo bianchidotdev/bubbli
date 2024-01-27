@@ -82,7 +82,7 @@ defmodule Bubbli.Posts do
     |> Repo.insert()
     |> case do
       {:ok, post} ->
-        post = Repo.preload(post, [timeline: :encryption_context])
+        post = Repo.preload(post, timeline: :encryption_context)
         {:ok, post}
 
       {:error, _} = err ->

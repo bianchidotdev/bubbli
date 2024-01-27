@@ -53,6 +53,7 @@ defmodule BubbliSchema.Post do
     post
     |> cast(attrs, @attrs)
     |> validate_required(@required_attrs)
+    # TODO: validate encryption algorithm is actually populated
     |> foreign_key_constraint(:author_id)
     |> foreign_key_constraint(:timeline_id)
   end

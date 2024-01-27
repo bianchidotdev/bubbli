@@ -2,6 +2,16 @@
 
 An end-to-end encrypted social media app supporting user timelines, groups, and DMs (eventually).
 
+## Immediate TODOs
+- Fix registration and then posting
+- Simple playwright tests
+- Change master key pair to root key pair
+- Friends
+- Authorization
+- Search
+- Multi-timeline dashboard
+- Channels && real time updating
+
 ## Install
 
 Requirements:
@@ -62,9 +72,9 @@ The Argon2 derived password hash output is then imported as the material for an 
 
 ### Master User Key Pair
 
-The asymmetric key pair is generated randomly client-side on user registration and stored in session storage using [session-keystore](https://github.com/47ng/session-keystore).
+The asymmetric key pair is generated randomly client-side on user registration and stored in IndexedDB (as exportable from registration and unexportable on login - TODO: always store as unexportable even though it requires re-importing as a separate key)
 
-An RSA-OAEP key pair with modulus length 4096 bits is used as the user master kep pair.
+An RSA-OAEP key pair with modulus length 4096 bits is used as the user master key pair.
 
 The private key is encrypted by each of the client keys (password + recovery codes) and sent to the server along with the public key.
 
@@ -75,7 +85,7 @@ The private key is encrypted by each of the client keys (password + recovery cod
 
 Symmetric encryption keys are generated client-side for each "encryption context" on creation. The first time this happens is on user registration when an encryption key is generated for that user's timeline. 
 
-The client will also generate a symmetric key every time they create a new encryption context, such as a new group. These keys are AES-GCM 256-bit symmetric encryption keys similar to the user's master encryption key.
+The client will also generate a symmetric key every time they create a new encryption context, such as a new group. These keys are AES-GCM 256-bit symmetric encryption keys.
 
 Before sending the encryption key to the server, the client will encrypt the context-specific encryption key with each of the public keys that should have access to the content.
 
@@ -85,4 +95,6 @@ The encrypted keys are sent to the server as part of the group creation API call
 Every time a user connects with a friend or adds a friend to a group, they will encrypt the context-specific encryption key with their friend's public key and send the protected symmetric key to the server.
 
 ### Diagram:
+TODO: update diagram
+
 [Encryption Scheme Mermaid Diagram](encryption-scheme.mmd)

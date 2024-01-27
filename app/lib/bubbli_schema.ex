@@ -15,6 +15,6 @@ defmodule BubbliSchema do
       Post,
       Timeline,
       User,
-      UserToken,
+      UserToken
     ]
 end

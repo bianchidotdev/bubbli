@@ -22,7 +22,8 @@ defmodule Bubbli.PostsTest do
     post_attrs = %{
       protected_content: Faker.Lorem.paragraph(),
       author_id: ctx.user.id,
-      timeline_id: ctx.user.home_timeline.id
+      timeline_id: ctx.user.home_timeline.id,
+      encryption_algorithm: %{}
     }
 
     assert {:ok, _post} = Posts.create_post(post_attrs)
@@ -33,30 +34,38 @@ defmodule Bubbli.PostsTest do
       protected_content: Faker.Lorem.paragraph(),
       author_id: ctx.user.id,
       timeline_id: ctx.user.home_timeline.id,
-      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      encryption_algorithm: %{}
     }
 
     assert {:ok, _post} = Posts.create_post(post_attrs)
   end
 
-  test "create post with invalid author", ctx do
+  test "fails to create post with invalid author", ctx do
     post_attrs = %{
       protected_content: Faker.Lorem.paragraph(),
       author_id: Faker.UUID.v4(),
-      timeline_id: ctx.user.home_timeline.id
+      timeline_id: ctx.user.home_timeline.id,
+      encryption_algorithm: %{}
     }
 
     assert {:error, changeset} = Posts.create_post(post_attrs)
     assert {"does not exist", _} = changeset.errors[:author_id]
   end
 
-  test "create post with invalid timeline", ctx do
-    post_attrs = %{protected_content: Faker.Lorem.paragraph(), author_id: ctx.user.id, timeline_id: Faker.UUID.v4()}
+  test "fails to create post with invalid timeline", ctx do
+    post_attrs = %{
+      protected_content: Faker.Lorem.paragraph(),
+      author_id: ctx.user.id,
+      encryption_algorithm: %{},
+      timeline_id: Faker.UUID.v4()
+    }
+
     assert {:error, changeset} = Posts.create_post(post_attrs)
     assert {"does not exist", _} = changeset.errors[:timeline_id]
   end
 
-  test "create post with invalid protected_content", ctx do
+  test "fails to create post with invalid protected_content", ctx do
     post_attrs = %{author_id: ctx.user.id, timeline_id: ctx.user.home_timeline.id, protected_content: nil}
     assert {:error, changeset} = Posts.create_post(post_attrs)
     assert {"can't be blank", _} = changeset.errors[:protected_content]

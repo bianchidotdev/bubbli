@@ -11,13 +11,17 @@ defmodule BubbliWeb.RegistrationControllerTest do
     client_keys: [
       %{
         protected_private_key: Base.encode64("private_key"),
-        encryption_iv: Base.encode64("iv"),
-        type: "password"
+        type: "password",
+        key_algorithm: %{},
+        wrap_algorithm: %{},
+        key_usages: []
       }
     ],
     timeline_key: %{
-      encryption_iv: Base.encode64("iv"),
-      protected_encryption_key: Base.encode64("encrypted_timeline_key")
+      protected_encryption_key: Base.encode64("encrypted_timeline_key"),
+      key_algorithm: %{},
+      wrap_algorithm: %{},
+      key_usages: []
     },
     master_password_hash: Base.encode64("password_hash")
   }

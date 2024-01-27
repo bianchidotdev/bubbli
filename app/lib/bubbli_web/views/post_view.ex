@@ -7,7 +7,7 @@ defmodule BubbliWeb.PostView do
       timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: timeline}),
       inserted_at: post.inserted_at,
       updated_at: post.updated_at,
-      author: BubbliWeb.UserView.render("user.json", %{user: author}),
+      author: BubbliWeb.UserView.render("user.json", %{user: author})
       # comments: post.comments
     }
   end

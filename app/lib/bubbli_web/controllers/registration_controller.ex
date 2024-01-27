@@ -29,7 +29,6 @@ defmodule BubbliWeb.RegistrationController do
     |> validate_required(~w/email display_name username public_key client_keys timeline_key master_password_hash/a)
     |> cast_client_keys()
     |> cast_timeline_key()
-    |> dbg()
     |> apply_action(:insert)
     |> case do
       {:ok, normalized_input} ->
@@ -70,7 +69,6 @@ defmodule BubbliWeb.RegistrationController do
         end
 
       {:error, changeset} ->
-        dbg()
         conn
         |> put_status(400)
         |> put_view(json: BubbliWeb.ErrorJSON)

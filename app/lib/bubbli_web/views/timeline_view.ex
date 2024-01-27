@@ -3,7 +3,7 @@ defmodule BubbliWeb.TimelineView do
     %{
       id: timeline.id,
       type: timeline.type,
-      encryption_context_id: timeline.encryption_context.id,
+      encryption_context_id: timeline.encryption_context.id
     }
   end
 end

@@ -46,5 +46,7 @@ defmodule BubbliSchema.EncryptionKey do
     encryption_key
     |> cast(attrs, @attrs)
     |> validate_required(@required_attrs)
+
+    # TODO: validate key algorithm/wrap algorithm/key usages are actually populated
   end
 end

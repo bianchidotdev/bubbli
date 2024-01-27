@@ -77,12 +77,11 @@ defmodule BubbliSchema.User do
       :is_active,
       :display_name,
       :username,
-      :master_public_key,
+      :master_public_key
     ])
     |> validate_email(opts)
     |> validate_master_password_hash(opts)
   end
-
 
   defp validate_email(changeset, opts) do
     changeset

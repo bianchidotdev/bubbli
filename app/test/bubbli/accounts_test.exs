@@ -1,5 +1,6 @@
 defmodule Bubbli.AccountsTest do
   use Bubbli.DataCase
+
   import BubbliFixtures.AccountsFixtures
 
   alias BubbliSchema.User
@@ -13,7 +14,9 @@ defmodule Bubbli.AccountsTest do
       master_public_key: "test",
       client_keys: [],
       timeline_key_map: %{
-        encryption_iv: "test",
+        key_algorithm: %{},
+        wrap_algorithm: %{},
+        key_usages: [],
         protected_encryption_key: "test"
       },
       salt: "testtesttesttest",
@@ -67,7 +70,8 @@ defmodule Bubbli.AccountsTest do
     test "creates and fetches by token" do
       user = user_fixture()
       token = Bubbli.create_user_api_token(user)
-      assert Bubbli.fetch_user_by_api_token(token) == {:ok, user}
+      assert {:ok, fetched_user} = Bubbli.fetch_user_by_api_token(token)
+      assert fetched_user.id == user.id
       assert Bubbli.fetch_user_by_api_token("invalid") == :error
     end
   end

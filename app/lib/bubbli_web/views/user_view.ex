@@ -6,7 +6,7 @@ defmodule BubbliWeb.UserView do
       is_active: user.is_active,
       display_name: user.display_name,
       username: user.username,
-      home_timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: user.home_timeline}),
+      home_timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: user.home_timeline})
     }
   end
 
@@ -18,7 +18,7 @@ defmodule BubbliWeb.UserView do
       display_name: user.display_name,
       username: user.username,
       home_timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: user.home_timeline}),
-      encryption_keys: Enum.map(keys, &BubbliWeb.EncryptionKeyView.render("key.json", %{encryption_key: &1})),
+      encryption_keys: Enum.map(keys, &BubbliWeb.EncryptionKeyView.render("key.json", %{encryption_key: &1}))
     }
   end
 end

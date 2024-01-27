@@ -1,8 +1,9 @@
 defmodule BubbliWeb.PostController do
-  alias BubbliWeb.Base64EncodedBinary
   use BubbliWeb, :controller
 
   import Ecto.Changeset
+
+  alias BubbliWeb.Base64EncodedBinary
 
   require Logger
 
@@ -28,12 +29,13 @@ defmodule BubbliWeb.PostController do
         Logger.info("normalized_input: #{inspect(normalized_input)}")
         Logger.debug("user: #{inspect(user)}")
 
-        {:ok, post} = Bubbli.Posts.create_post(%{
-          protected_content: normalized_input.protected_content,
-          encryption_algorithm: normalized_input.encryption_algorithm,
-          author_id: user.id,
-          timeline_id: normalized_input.timeline_id
-        })
+        {:ok, post} =
+          Bubbli.Posts.create_post(%{
+            protected_content: normalized_input.protected_content,
+            encryption_algorithm: normalized_input.encryption_algorithm,
+            author_id: user.id,
+            timeline_id: normalized_input.timeline_id
+          })
 
         conn
         |> put_status(:ok)

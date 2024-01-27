@@ -8,11 +8,11 @@ defmodule Bubbli.Accounts do
   alias Bubbli.EncryptionContexts
   alias Bubbli.Repo
   alias Bubbli.Timelines
-  alias BubbliSchema.UserToken
 
   # alias Bubbli.Accounts.AuthenticationChallenge
   alias BubbliSchema.ClientKey
   alias BubbliSchema.User
+  alias BubbliSchema.UserToken
 
   @doc """
   Returns the list of users.
@@ -31,7 +31,6 @@ defmodule Bubbli.Accounts do
     User
     |> Repo.get(id)
     |> Repo.preload(preloads)
-
   end
 
   @doc """
