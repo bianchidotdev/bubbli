@@ -1,19 +1,20 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { onDestroy } from 'svelte'
+  import { onDestroy } from 'svelte';
   import { Stepper, Step } from '@skeletonlabs/skeleton';
-  import { userStore } from '$lib/stores/user_store';
+  import { userStore, type User } from '$lib/stores/user_store';
   import { validateEmail, register } from '$lib/user';
   import { triggerError } from '$lib/error';
+  import { storeEncryptionKey, getEncryptionKey } from '$lib/stores/encryption_key_store';
 
-  let user;
-  const unsubscribe = userStore.subscribe((value) => user = value)
-  onDestroy(unsubscribe)
+  let user: User;
+  const unsubscribe = userStore.subscribe((value) => value && (user = value));
+  onDestroy(unsubscribe);
   let email = '',
     displayName = '',
     username = '',
     error: string | null,
-    password = ''
+    password = '';
 
   let validEmail = false;
   let passwordLocked = true;
@@ -37,20 +38,23 @@
 
   const submitConfirmationForm = async () => {
     try {
-      userStore.set({email: email, username: username, display_name: displayName})
-      register(user, password).then((response) => {
-        if (response.status === 200) {
-          response.json().then((json) => {
-            userStore.set({
-              id: json['user_id'],
-              email: email,
-              authenticated: true
-            });
-            // TODO(high): set encryption keys with new timeline ID
-            goto(`/dashboard`);
-          });
+      userStore.set({ email: email, username: username, display_name: displayName });
+      const response = await register(user, password);
+      if (response.status === 200) {
+        const json = response.data;
+        console.log(json);
+        userStore.set({ ...user, ...json.user });
+        const encryption_context_id = json.user?.home_timeline?.encryption_context_id;
+        const home_timeline_key = await getEncryptionKey('home');
+        if (encryption_context_id && home_timeline_key) {
+          storeEncryptionKey(encryption_context_id, home_timeline_key);
         }
-      });
+        // TODO(high): set encryption keys with new timeline ID
+        goto(`/dashboard`);
+      } else {
+        console.log("Error registering user", response.status, response.data)
+        triggerError("Error registering user")
+      }
     } catch (e) {
       console.log('Error occurred creating encryption keys - ', e);
     }

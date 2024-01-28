@@ -11,7 +11,7 @@ defmodule BubbliSchema.User do
           display_name: String.t(),
           username: String.t(),
           master_public_key: String.t(),
-          master_password_hash: String.t(),
+          root_password_hash: String.t(),
           inserted_at: NaiveDateTime.t(),
           updated_at: NaiveDateTime.t(),
           client_keys: [BubbliSchema.ClientKey.t()]
@@ -37,7 +37,7 @@ defmodule BubbliSchema.User do
   # end
 
   def verify_user(user, password) do
-    Argon2.verify_pass(password, user.master_password_hash)
+    Argon2.verify_pass(password, user.root_password_hash)
   end
 
   schema "users" do
@@ -47,7 +47,7 @@ defmodule BubbliSchema.User do
     # cryptography
     # PEM encoded
     field(:master_public_key, :string)
-    field(:master_password_hash, :binary)
+    field(:root_password_hash, :binary)
 
     # user attributes
     field(:display_name, :string)
@@ -69,7 +69,7 @@ defmodule BubbliSchema.User do
       :is_active,
       :display_name,
       :master_public_key,
-      :master_password_hash,
+      :root_password_hash,
       :username
     ])
     # TODO: cast assoc for client_keys
@@ -80,7 +80,7 @@ defmodule BubbliSchema.User do
       :master_public_key
     ])
     |> validate_email(opts)
-    |> validate_master_password_hash(opts)
+    |> validate_root_password_hash(opts)
   end
 
   defp validate_email(changeset, opts) do
@@ -91,9 +91,9 @@ defmodule BubbliSchema.User do
     |> maybe_validate_unique_email(opts)
   end
 
-  defp validate_master_password_hash(changeset, _opts) do
+  defp validate_root_password_hash(changeset, _opts) do
     changeset
-    |> validate_required([:master_password_hash])
+    |> validate_required([:root_password_hash])
     # TODO: validate byte length
     # |> validate_length(:password, min: 12, max: 72)
     |> put_pass_hash()
@@ -112,9 +112,9 @@ defmodule BubbliSchema.User do
   # this mimics bitwardens server-side password hashing model
   # ref: https://bitwarden.com/images/resources/security-white-paper-download.pdf
   # hashing defaults: https://bitwarden.com/help/kdf-algorithms/#argon2id
-  defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{master_password_hash: password_hash}} = changeset) do
+  defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{root_password_hash: password_hash}} = changeset) do
     # TODO: ensure the right opts are used
-    change(changeset, %{master_password_hash: Argon2.hash_pwd_salt(password_hash)})
+    change(changeset, %{root_password_hash: Argon2.hash_pwd_salt(password_hash)})
   end
 
   defp put_pass_hash(changeset), do: changeset

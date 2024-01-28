@@ -20,7 +20,7 @@ defmodule Bubbli.AccountsTest do
         protected_encryption_key: "test"
       },
       salt: "testtesttesttest",
-      master_password_hash: "test"
+      root_password_hash: "test"
     }
     @invalid_attrs %{email: nil, is_active: nil}
 

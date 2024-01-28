@@ -21,12 +21,12 @@ defmodule BubbliWeb.RegistrationController do
       public_key: :string,
       client_keys: {:array, :map},
       timeline_key: :map,
-      master_password_hash: Base64EncodedBinary
+      root_password_hash: Base64EncodedBinary
     }
 
     {%{}, types}
     |> cast(params, Map.keys(types))
-    |> validate_required(~w/email display_name username public_key client_keys timeline_key master_password_hash/a)
+    |> validate_required(~w/email display_name username public_key client_keys timeline_key root_password_hash/a)
     |> cast_client_keys()
     |> cast_timeline_key()
     |> apply_action(:insert)
@@ -43,7 +43,7 @@ defmodule BubbliWeb.RegistrationController do
                  master_public_key: normalized_input.public_key,
                  client_keys: normalized_input.client_keys,
                  timeline_key_map: normalized_input.timeline_key,
-                 master_password_hash: normalized_input.master_password_hash
+                 root_password_hash: normalized_input.root_password_hash
                }),
              Logger.info("Successfully created user - #{normalized_input.email}}"),
              token <- Bubbli.create_user_api_token(user) do

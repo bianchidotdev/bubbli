@@ -23,7 +23,7 @@ defmodule BubbliWeb.RegistrationControllerTest do
       wrap_algorithm: %{},
       key_usages: []
     },
-    master_password_hash: Base.encode64("password_hash")
+    root_password_hash: Base.encode64("password_hash")
   }
   @invalid_attrs %{}
 

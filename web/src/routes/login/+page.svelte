@@ -40,7 +40,7 @@
   const submitLoginForm = async () => {
     const response = await login(email, password);
     if (response.status === 200) {
-      const json = await response.json();
+      const json = response.data
       userStore.set({
         ...json['user'],
         email: email

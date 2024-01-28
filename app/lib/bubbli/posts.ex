@@ -40,7 +40,9 @@ defmodule Bubbli.Posts do
               where: t.user_id == ^user.id,
               select: t.id
             )
-          )
+          ),
+          # TODO: oy to the vey
+          preload: [author: [home_timeline: [:encryption_context]], timeline: [:encryption_context]]
       )
 
     Repo.all(query)

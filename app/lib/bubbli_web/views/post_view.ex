@@ -1,13 +1,26 @@
 defmodule BubbliWeb.PostView do
-  def render("post.json", %{post: post, timeline: timeline, author: author}) do
+  def render("post.json", %{post: post}) do
     %{
       id: post.id,
       protected_content: Base.encode64(post.protected_content),
       encryption_algorithm: post.encryption_algorithm,
-      timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: timeline}),
+      timeline_id: post.timeline_id,
       inserted_at: post.inserted_at,
       updated_at: post.updated_at,
-      author: BubbliWeb.UserView.render("user.json", %{user: author})
+      author_id: post.author_id
+      # comments: post.comments
+    }
+  end
+
+  def render("post_with_resources.json", %{post: post}) do
+    %{
+      id: post.id,
+      protected_content: Base.encode64(post.protected_content),
+      encryption_algorithm: post.encryption_algorithm,
+      timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: post.timeline}),
+      inserted_at: post.inserted_at,
+      updated_at: post.updated_at,
+      author: BubbliWeb.UserView.render("user.json", %{user: post.author})
       # comments: post.comments
     }
   end

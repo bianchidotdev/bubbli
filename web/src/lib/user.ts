@@ -26,6 +26,7 @@ import {
 } from '$lib/stores/encryption_key_store';
 import { unwrap } from 'idb';
 import type { A } from 'vitest/dist/types-198fd1d9';
+import { bubbliClient } from './bubbliClient';
 
 const encoder = new TextEncoder();
 
@@ -70,89 +71,75 @@ export const register = async (user: User, password: string) => {
   const salt = encoder.encode(user.email);
   // TODO: recovery key - same as password based key but with random phrase
   // generate keys
-  const { clientKey: passwordClientKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+  const { clientKey: passwordClientKey, rootPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
-  console.log(passwordClientKey)
 
-  const masterKeyPair = await generateMasterKeyPair();
+  const rootKeyPair = await generateMasterKeyPair();
   
-  const pemExportedPublicKey = await exportPublicKeyAsPEM(masterKeyPair.publicKey);
-  console.log("wrapping master key")
+  const pemExportedPublicKey = await exportPublicKeyAsPEM(rootKeyPair.publicKey);
   const { wrappedKey: passwordWrappedPrivateMasterKey, keyWrapAlgorithm: privateMasterKeyWrapAlgo } = await wrapMasterKey(
-    masterKeyPair.privateKey,
+    rootKeyPair.privateKey,
     passwordClientKey
   )
-  console.log("wrapped master key")
-  const clientKeys = [
+
+
+
+  // generates up front a user's timeline encryption key
+  const timelineEncryptionKey = await generateSymmetricEncryptionKey();
+  const { wrappedKey: wrappedTimelineEncryptionKey, keyWrapAlgorithm: timelineEncryptionKeyWrapAlgo } = await wrapEncryptionKey(
+    timelineEncryptionKey,
+    rootKeyPair.publicKey,  // encrypt with user's public key
+  );
+
+  await storeClientKey("password", passwordClientKey)
+  await storeMasterPrivateKey(rootKeyPair.privateKey);
+  await storeEncryptionKey("home", timelineEncryptionKey);
+
+  // wait until response to store the user's encryption key so we have the ID
+  userStore.set({ ...user, ...{ salt: salt } });
+  // return axios.post()
+
+  const encodedClientKeys = [
     {
       type: 'password',
-      key_algorithm: masterKeyPair.privateKey.algorithm,
-      key_usages: masterKeyPair.privateKey.usages,
+      key_algorithm: rootKeyPair.privateKey.algorithm,
+      key_usages: rootKeyPair.privateKey.usages,
       // this inlined mutation seems super sketch to me
       wrap_algorithm: serializeWrapAlgorithm(privateMasterKeyWrapAlgo),
       protected_private_key: base64EncodeArrayBuffer(passwordWrappedPrivateMasterKey)
     }
   ];
 
-  // generates up front a user's timeline encryption key
-  const timelineEncryptionKey = await generateSymmetricEncryptionKey();
-  console.log("wrapping encryption key")
-  const { wrappedKey: wrappedTimelineEncryptionKey, keyWrapAlgorithm: timelineEncryptionKeyWrapAlgo } = await wrapEncryptionKey(
-    timelineEncryptionKey,
-    masterKeyPair.publicKey,  // encrypt with user's public key
-  );
-
-  await storeClientKey("password", passwordClientKey)
-  await storeMasterPrivateKey(masterKeyPair.privateKey);
-  // wait until response to store the user's encryption key so we have the ID
-  await storeEncryptionKey("home", timelineEncryptionKey);
-  userStore.set({ ...user, ...{ salt: salt } });
-  return fetch(`${BASE_API_URI}/auth/register`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json'
+  return bubbliClient.post('/auth/register', {
+    email: user.email,
+    display_name: user.display_name,
+    username: user.username,
+    public_key: pemExportedPublicKey,
+    root_password_hash: base64EncodeArrayBuffer(rootPasswordHash),
+    client_keys: encodedClientKeys,
+    timeline_key: {
+      key_algorithm: timelineEncryptionKey.algorithm,
+      key_usages: timelineEncryptionKey.usages,
+      wrap_algorithm: serializeWrapAlgorithm(timelineEncryptionKeyWrapAlgo),
+      protected_encryption_key: base64EncodeArrayBuffer(wrappedTimelineEncryptionKey)
     },
-    body: JSON.stringify({
-      email: user.email,
-      display_name: user.display_name,
-      username: user.username,
-      public_key: pemExportedPublicKey,
-      master_password_hash: masterPasswordHash,
-      client_keys: clientKeys,
-      timeline_key: {
-        key_algorithm: timelineEncryptionKey.algorithm,
-        key_usages: timelineEncryptionKey.usages,
-        // wrap_algorithm: serializeWrapAlgorithm(timelineEncryptionKeyWrapAlgo),
-        // for some reason, this doesn't seem to be right
-        wrap_algorithm: timelineEncryptionKeyWrapAlgo,
-        protected_encryption_key: base64EncodeArrayBuffer(wrappedTimelineEncryptionKey)
-      },
-    })
-  });
+  })
 };
 
 export const login = async (email: string, password: string) => {
   const salt = encoder.encode(email);
-  const { clientKey, masterPasswordHash } = await generatePasswordBasedKeysArgon2(
+  const { clientKey, rootPasswordHash } = await generatePasswordBasedKeysArgon2(
     password,
     salt
   );
   await storeClientKey('password', clientKey);
-  return fetch(`${BASE_API_URI}/auth/login`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      email: email,
-      master_password_hash: masterPasswordHash,
-      client_key_type: 'password'
-    })
-  });
+  return bubbliClient.post("/auth/login", {
+    email: email,
+    root_password_hash: base64EncodeArrayBuffer(rootPasswordHash),
+    client_key_type: "password"
+  })
 };
 
 export const decryptAndLoadMasterPrivateKey = async (

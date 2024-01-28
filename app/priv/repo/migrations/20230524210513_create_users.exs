@@ -10,7 +10,7 @@ defmodule Bubbli.Repo.Migrations.CreateUsers do
       # cryptography
       # NOTE(bianchi): stored as binary blogs (independent of encoding)
       add(:master_public_key, :bytea)
-      add(:master_password_hash, :bytea)
+      add(:root_password_hash, :bytea)
 
       # user attributes
       add(:display_name, :string)

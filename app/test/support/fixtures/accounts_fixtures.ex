@@ -34,7 +34,7 @@ defmodule BubbliFixtures.AccountsFixtures do
         username: "test",
         is_active: true,
         salt: "testsalt",
-        master_password_hash: Base.encode64("foobar"),
+        root_password_hash: Base.encode64("foobar"),
         encrypted_master_private_keys: %{"ckey_1234" => "test"},
         master_public_key: "test"
       })
@@ -52,7 +52,7 @@ defmodule BubbliFixtures.AccountsFixtures do
         username: Faker.Internet.user_name(),
         display_name: "test mctesterson",
         salt: Argon2.Base.gen_salt(),
-        master_password_hash: "foobar",
+        root_password_hash: "foobar",
         master_public_key: sample_public_key(),
         timeline_key_map: %{
           protected_encryption_key: "test",

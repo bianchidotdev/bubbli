@@ -26,7 +26,7 @@ const clientKeyParams = {
 }
 const clientKeyUsages: KeyUsage[] = ['wrapKey', 'unwrapKey'];
 
-const masterKeyPairParams = {
+const rootKeyPairParams = {
   name: 'RSA-OAEP',
   modulusLength: 4096,
   publicExponent: new Uint8Array([1, 0, 1]),
@@ -45,7 +45,7 @@ const argon2Options: Partial<IArgon2Options> = {
 export const generatePasswordBasedKeysArgon2 = async (
   pw: string,
   salt: Uint8Array
-): Promise<{ clientKey: CryptoKey; masterPasswordHash: string; }> => {
+): Promise<{ clientKey: CryptoKey; rootPasswordHash: Uint8Array; }> => {
   // @ts-ignore
   const keyMaterial: Uint8Array = await argon2id({
     ...argon2Options,
@@ -57,7 +57,7 @@ export const generatePasswordBasedKeysArgon2 = async (
 
   // key splitting into encryption and authentication "keys"
   const clientKeyMaterial = keyMaterial.slice(0, clientKeyByteLength);
-  const authenticationKeyMaterial = keyMaterial.slice(
+  const authenticationHash = keyMaterial.slice(
     clientKeyByteLength,
     clientKeyByteLength + authenticationKeyByteLength
   );
@@ -71,9 +71,7 @@ export const generatePasswordBasedKeysArgon2 = async (
     clientKeyUsages
   );
 
-  const authenticationHash = fromByteArray(authenticationKeyMaterial);
-
-  return { clientKey: clientKey, masterPasswordHash: authenticationHash };
+  return { clientKey: clientKey, rootPasswordHash: authenticationHash };
 };
 
 export const generateSalt = () => {
@@ -85,7 +83,7 @@ export const generateEncryptionIV = () => {
 };
 
 export const generateMasterKeyPair = async () => {
-  return await crypto.subtle.generateKey(masterKeyPairParams, true, ["wrapKey", "unwrapKey"]);
+  return await crypto.subtle.generateKey(rootKeyPairParams, true, ["wrapKey", "unwrapKey"]);
 };
 
 export const generateSymmetricEncryptionKey = async (): Promise<CryptoKey> => {
