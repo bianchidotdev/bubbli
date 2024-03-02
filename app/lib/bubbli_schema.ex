@@ -6,6 +6,7 @@ defmodule BubbliSchema do
     deps: [
       Ecto,
       Ecto.Changeset,
+      Ecto.Schema,
       Ecto.Query
     ],
     exports: [

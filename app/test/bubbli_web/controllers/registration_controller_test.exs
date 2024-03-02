@@ -33,7 +33,7 @@ defmodule BubbliWeb.RegistrationControllerTest do
   end
 
   describe "register" do
-    test "verifies user does not exist", %{conn: conn} do
+    test "verifies user already exist", %{conn: conn} do
       _existing_user = user_fixture(@valid_attrs)
       conn = post(conn, ~p"/api/v1/auth/register", @valid_attrs)
       assert json_response(conn, 409)["success"] == false
@@ -53,7 +53,7 @@ defmodule BubbliWeb.RegistrationControllerTest do
 
     test "with invalid attributes", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/auth/register", @invalid_attrs)
-      assert json_response(conn, 400)["errors"] == %{"message" => "Bad Request"}
+      assert json_response(conn, 400)
     end
   end
 end

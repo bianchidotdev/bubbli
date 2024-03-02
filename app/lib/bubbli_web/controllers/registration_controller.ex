@@ -3,8 +3,6 @@ defmodule BubbliWeb.RegistrationController do
 
   import Ecto.Changeset
 
-  alias BubbliWeb.Base64EncodedBinary
-
   require Logger
 
   action_fallback(BubbliWeb.FallbackController)
@@ -14,23 +12,9 @@ defmodule BubbliWeb.RegistrationController do
   end
 
   def register(conn, params) do
-    types = %{
-      email: :string,
-      display_name: :string,
-      username: :string,
-      public_key: :string,
-      client_keys: {:array, :map},
-      timeline_key: :map,
-      root_password_hash: Base64EncodedBinary
-    }
+    changeset = BubbliWeb.RegisterSchema.changeset(params)
 
-    {%{}, types}
-    |> cast(params, Map.keys(types))
-    |> validate_required(~w/email display_name username public_key client_keys timeline_key root_password_hash/a)
-    |> cast_client_keys()
-    |> cast_timeline_key()
-    |> apply_action(:insert)
-    |> case do
+    case apply_action(changeset, :insert) do
       {:ok, normalized_input} ->
         with {:valid_public_key_check, :ok} <-
                {:valid_public_key_check, validate_public_key(normalized_input.public_key)},
@@ -41,8 +25,8 @@ defmodule BubbliWeb.RegistrationController do
                  display_name: normalized_input.display_name,
                  username: normalized_input.username,
                  master_public_key: normalized_input.public_key,
-                 client_keys: normalized_input.client_keys,
-                 timeline_key_map: normalized_input.timeline_key,
+                 client_keys: Enum.map(normalized_input.client_keys, &Map.from_struct/1),
+                 timeline_key_map: Map.from_struct(normalized_input.timeline_key),
                  root_password_hash: normalized_input.root_password_hash
                }),
              Logger.info("Successfully created user - #{normalized_input.email}}"),
@@ -68,63 +52,9 @@ defmodule BubbliWeb.RegistrationController do
             conn |> put_status(500) |> put_view(json: BubbliWeb.ErrorJSON) |> render(:"500")
         end
 
-      {:error, changeset} ->
-        conn
-        |> put_status(400)
-        |> put_view(json: BubbliWeb.ErrorJSON)
-        |> render(:"400", changeset: changeset)
+      {:error, error} ->
+        {:error, error}
     end
-  end
-
-  defp cast_client_keys(%{valid?: false} = changeset), do: changeset
-
-  defp cast_client_keys(changeset) do
-    client_keys = get_field(changeset, :client_keys)
-
-    client_key_changesets = Enum.map(client_keys, &cast_client_key/1)
-
-    if Enum.any?(client_key_changesets, fn cs -> !cs.valid? end) do
-      add_error(changeset, :client_keys, "contains invalid keys")
-    else
-      put_change(changeset, :client_keys, Enum.map(client_key_changesets, fn cs -> cs.changes end))
-    end
-  end
-
-  defp cast_client_key(client_key) do
-    types = %{
-      protected_private_key: Base64EncodedBinary,
-      key_algorithm: :map,
-      wrap_algorithm: :map,
-      key_usages: {:array, :string},
-      type: :string
-    }
-
-    changeset =
-      {%{}, types}
-      |> Ecto.Changeset.cast(client_key, Map.keys(types))
-      |> Ecto.Changeset.validate_required(Map.keys(types))
-
-    changeset
-  end
-
-  defp cast_timeline_key(%{valid?: false} = changeset), do: changeset
-
-  defp cast_timeline_key(changeset) do
-    timeline_key = get_field(changeset, :timeline_key)
-
-    types = %{
-      key_algorithm: :map,
-      wrap_algorithm: :map,
-      key_usages: {:array, :string},
-      protected_encryption_key: Base64EncodedBinary
-    }
-
-    timeline_changeset =
-      {%{}, types}
-      |> Ecto.Changeset.cast(timeline_key, Map.keys(types))
-      |> Ecto.Changeset.validate_required(Map.keys(types))
-
-    put_change(changeset, :timeline_key, timeline_changeset.changes)
   end
 
   defp validate_public_key(public_PEM) do

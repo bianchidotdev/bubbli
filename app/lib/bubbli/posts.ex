@@ -41,8 +41,8 @@ defmodule Bubbli.Posts do
               select: t.id
             )
           ),
-          # TODO: oy to the vey
-          preload: [author: [home_timeline: [:encryption_context]], timeline: [:encryption_context]]
+        # TODO: oy to the vey
+        preload: [author: [home_timeline: [:encryption_context]], timeline: [:encryption_context]]
       )
 
     Repo.all(query)

@@ -16,7 +16,9 @@ defmodule BubbliWeb do
   below. Instead, define additional modules and import
   those modules here.
   """
-  use Boundary, deps: [Bubbli, BubbliSchema, Phoenix, Ecto.Changeset, Ecto.Type], exports: [Endpoint]
+  use Boundary,
+    deps: [Bubbli, BubbliSchema, Phoenix, Ecto.Changeset, Ecto.Schema, Ecto.Query, Ecto.Type],
+    exports: [Endpoint]
 
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
