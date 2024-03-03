@@ -35,7 +35,10 @@ defmodule BubbliWeb.AuthenticationController do
             secure: true,
             max_age: 60 * 60 * 24
           )
-          |> render(:successfully_authenticated, %{user: user, client_key: client_key, encryption_keys: encryption_keys})
+          |> render(
+            :successfully_authenticated,
+            %{user: user, client_key: client_key, encryption_keys: encryption_keys}
+          )
         else
           {:error, :user_not_found} ->
             conn |> put_status(404) |> render(:failed_login, error: :user_not_found)
