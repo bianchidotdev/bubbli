@@ -1,5 +1,8 @@
 defmodule BubbliSchema.ClientKey do
-  @moduledoc false
+  @moduledoc """
+  Schema for the ClientKey model. Client keys are used to encrypt and decrypt
+  the user's root private key.
+  """
   use Ecto.Schema
 
   import Ecto.Changeset

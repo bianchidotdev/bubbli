@@ -1,5 +1,7 @@
 defmodule BubbliSchema.User do
-  @moduledoc false
+  @moduledoc """
+  Schema for the User model
+  """
   use Ecto.Schema
 
   import Ecto.Changeset

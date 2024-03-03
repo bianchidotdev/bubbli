@@ -24,9 +24,10 @@ defmodule BubbliWeb.AuthenticationController do
       {:ok, normalized_input} ->
         with {:ok, user} <- Bubbli.get_user_by(email: normalized_input.email),
              :ok <- Bubbli.verify_user(user, normalized_input.root_password_hash),
-             {:ok, client_key} <- Bubbli.get_client_key_by_user_and_type(user, normalized_input.client_key_type),
-             encryption_keys <- Bubbli.get_encryption_keys_by_user(user.id),
-             token <- Bubbli.create_user_api_token(user) do
+             {:ok, client_key} <- Bubbli.get_client_key_by_user_and_type(user, normalized_input.client_key_type) do
+          encryption_keys = Bubbli.get_encryption_keys_by_user(user.id)
+          token = Bubbli.create_user_api_token(user)
+
           conn
           |> put_status(:ok)
           |> Plug.Conn.put_resp_cookie("authorization", token,

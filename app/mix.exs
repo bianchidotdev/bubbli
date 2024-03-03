@@ -68,15 +68,16 @@ defmodule Bubbli.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:timex, "~> 3.0"},
-      # waffle
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.1.2"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
       {:sweet_xml, "~> 0.6"},
+
       # build
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+
       # non-prod deps
       {:boundary, "~> 0.10", runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
@@ -84,6 +85,7 @@ defmodule Bubbli.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:faker, "~> 0.17", only: :test},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
       {:styler, "~> 0.8", only: [:dev, :test], runtime: false}
     ]

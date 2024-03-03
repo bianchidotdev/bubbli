@@ -28,9 +28,10 @@ defmodule BubbliWeb.RegistrationController do
                  client_keys: Enum.map(normalized_input.client_keys, &Map.from_struct/1),
                  timeline_key_map: Map.from_struct(normalized_input.timeline_key),
                  root_password_hash: normalized_input.root_password_hash
-               }),
-             Logger.info("Successfully created user - #{normalized_input.email}}"),
-             token <- Bubbli.create_user_api_token(user) do
+               }) do
+          Logger.info("Successfully created user - #{normalized_input.email}}")
+          token = Bubbli.create_user_api_token(user)
+
           conn
           |> Plug.Conn.put_resp_cookie("authorization", token,
             http_only: true,
@@ -62,7 +63,7 @@ defmodule BubbliWeb.RegistrationController do
     #        # erlang :public_key expects a DER encoded signature as opposed to the raw bytes
     #        # https://elixirforum.com/t/verifying-web-crypto-signatures-in-erlang-elixir/20727/2
     with [key_entry] <- :public_key.pem_decode(public_PEM),
-         public_key <- :public_key.pem_entry_decode(key_entry),
+         public_key = :public_key.pem_entry_decode(key_entry),
          false <- is_nil(public_key) do
       :ok
     else
