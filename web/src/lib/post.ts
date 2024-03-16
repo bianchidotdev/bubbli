@@ -1,11 +1,12 @@
+import { toByteArray } from 'base64-js'
 import { decryptMessage, encryptMessage, generateEncryptionIV, type ProtectedContent } from './crypto'
 import { getEncryptionKey } from './stores/encryption_key_store'
 import type { Timeline } from './timelines'
 
 export type Post = {
   id: string
-  encrypted_content: Uint8Array
-  iv: Uint8Array
+  protected_content: string // base64 encoded
+  encryption_algorithm: any // base64 encoded TODO: how to handle
   content: string
   created_at: Date
   updated_at: Date
@@ -31,5 +32,10 @@ export const decryptPost = async (post: Post) => {
   if (!timelineEncryptionKey) {
     throw new Error(`Timeline encryption key not found for '${post.encryption_context_id}'`)
   }
-  return await decryptMessage(timelineEncryptionKey, post.encrypted_content, post.iv)
+  // TODO: make this more maintainable
+  const rawContent = toByteArray(post.protected_content)
+  const {iv, name} = post.encryption_algorithm
+  const alg = {iv: toByteArray(iv), name}
+  const messageContent = await decryptMessage(timelineEncryptionKey, rawContent, alg)
+  return new TextDecoder("utf-8").decode(messageContent)
 }

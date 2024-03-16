@@ -20,7 +20,10 @@
   let posts = []
   onMount(async () => {
     try {
-      posts = await fetchHome();
+      const homeData = await fetchHome();
+      if (homeData) {
+        posts = homeData.posts
+      }
     } catch {
       console.error('Error fetching posts');
     }
@@ -29,4 +32,7 @@
 
 <PostInput timeline={timeline}/>
 
-<Post author={author} content={content} />
+{#each posts as post}
+  <Post post={post} />
+{/each}
+

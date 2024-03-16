@@ -18,6 +18,7 @@ defmodule BubbliWeb.PostView do
       protected_content: Base.encode64(post.protected_content),
       encryption_algorithm: post.encryption_algorithm,
       timeline: BubbliWeb.TimelineView.render("timeline.json", %{timeline: post.timeline}),
+      encryption_context_id: post.timeline.encryption_context.id,
       inserted_at: post.inserted_at,
       updated_at: post.updated_at,
       author: BubbliWeb.UserView.render("user.json", %{user: post.author})

@@ -114,13 +114,10 @@ export const encryptMessage = async (
 export const decryptMessage = async (
   encryptionKey: CryptoKey,
   encryptedMessage: Uint8Array,
-  iv: Uint8Array
+  encryptionAlgorithm: Algorithm
 ) => {
   return crypto.subtle.decrypt(
-    {
-      name: 'AES-GCM',
-      iv: iv
-    },
+    encryptionAlgorithm,
     encryptionKey,
     encryptedMessage
   );
