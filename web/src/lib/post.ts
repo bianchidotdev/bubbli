@@ -7,6 +7,7 @@ export type Post = {
   id: string
   protected_content: string // base64 encoded
   encryption_algorithm: any // base64 encoded TODO: how to handle
+  author: any
   content: string
   created_at: Date
   updated_at: Date

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { decryptPost } from "$lib/post";
+  import { decryptPost, type Post } from "$lib/post";
 
-  export let post: any;
+  export let post: Post;
   // export let createdAt;
   // export let editedAt;
   // export let content;
@@ -11,7 +11,6 @@
   let content: string;
 
   $: {
-    console.log(JSON.stringify(post))
     authorName = post?.author?.display_name;
     protectedContent = post?.protected_content;
     (async () => {
@@ -23,9 +22,9 @@
 <div class="flex flex-row justify-center items-center mb-4" />
 
 <div class="card p-4">
-  {authorName} posted a message.
+  {authorName} posted a message
 
   <hr class="!border-t-2 mt-2 mb-6" />
   <p>Content: {content}</p>
-  <p>Post raw: {post}</p>
+  <p>Post raw: {JSON.stringify(post)}</p>
 </div>
