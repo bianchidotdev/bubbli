@@ -9,16 +9,3 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-
-alias Bubbli.Repo
-alias BubbliSchema.User
-
-# defmodule Seeds do
-#  def setup_global_seeds(), do: nil
-# end
-#
-# Seeds.setup_global_seeds()
-
-# Repo.insert!(%User{
-#   email: "test@example.com"
-# })

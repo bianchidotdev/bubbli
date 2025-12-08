@@ -8,25 +8,19 @@
 import Config
 
 config :bubbli,
-  ecto_repos: [Bubbli.Repo]
+  ecto_repos: [Bubbli.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :bubbli, BubbliWeb.Endpoint,
-  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [json: BubbliWeb.ErrorJSON],
+    formats: [html: BubbliWeb.ErrorHTML, json: BubbliWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Bubbli.PubSub,
-  live_view: [signing_salt: "HtOw9bl+"]
-
-# https://bitwarden.com/help/kdf-algorithms/#argon2id
-config :argon2_elixir,
-  t_cost: 3,
-  # 64 MiB
-  m_cost: 16,
-  parallelism: 4
+  live_view: [signing_salt: "QtSvmDtU"]
 
 # Configures the mailer
 #
@@ -40,16 +34,17 @@ config :bubbli, Bubbli.Mailer, adapter: Swoosh.Adapters.Local
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  default: [
-    args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+  bubbli: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.2.7",
-  default: [
+  version: "3.4.3",
+  bubbli: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

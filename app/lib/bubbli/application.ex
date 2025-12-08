@@ -2,24 +2,22 @@ defmodule Bubbli.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-  use Boundary, top_level?: true, deps: [Bubbli, BubbliWeb]
+
   use Application
 
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       BubbliWeb.Telemetry,
-      # Start the Ecto repository
       Bubbli.Repo,
-      # Start the PubSub system
+      {DNSCluster, query: Application.get_env(:bubbli, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Bubbli.PubSub},
-      # Start Finch
+      # Start the Finch HTTP client for sending emails
       {Finch, name: Bubbli.Finch},
-      # Start the Endpoint (http/https)
-      BubbliWeb.Endpoint
       # Start a worker by calling: Bubbli.Worker.start_link(arg)
-      # {Bubbli.Worker, arg}
+      # {Bubbli.Worker, arg},
+      # Start to serve requests, typically the last entry
+      BubbliWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

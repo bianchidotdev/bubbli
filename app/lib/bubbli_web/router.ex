@@ -1,38 +1,29 @@
 defmodule BubbliWeb.Router do
   use BubbliWeb, :router
 
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {BubbliWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
-    plug(:accepts, ["json"])
+    plug :accepts, ["json"]
   end
 
-  pipeline :authed do
-    plug(BubbliWeb.Plug.Auth)
+  scope "/", BubbliWeb do
+    pipe_through :browser
+
+    get "/", PageController, :home
   end
 
-  # routes for authn
-  scope "/api/v1", BubbliWeb do
-    pipe_through([:api])
-
-    post("/auth/register", RegistrationController, :register)
-
-    post("/auth/login", AuthenticationController, :login)
-    delete("/auth/logout", AuthenticationController, :logout)
-  end
-
-  # authenticated routes
-  scope "/api/v1", BubbliWeb do
-    pipe_through([:api, :authed])
-    get("/current_user", UserController, :current_user)
-    get("/test", RegistrationController, :test)
-    # delete "/auth/logout", AuthenticationController, :delete
-    # get("/dashboard", DashboardController, :show)
-
-    get("/timelines/home", TimelineController, :home)
-
-    scope "/timelines/:timeline_id" do
-      resources("/posts", PostController, only: [:index, :show, :create, :update, :delete])
-    end
-  end
+  # Other scopes may use custom stacks.
+  # scope "/api", BubbliWeb do
+  #   pipe_through :api
+  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:bubbli, :dev_routes) do
@@ -44,10 +35,10 @@ defmodule BubbliWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through([:fetch_session, :protect_from_forgery])
+      pipe_through :browser
 
-      live_dashboard("/dashboard", metrics: BubbliWeb.Telemetry)
-      forward("/mailbox", Plug.Swoosh.MailboxPreview)
+      live_dashboard "/dashboard", metrics: BubbliWeb.Telemetry
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 end

@@ -9,26 +9,7 @@ defmodule Bubbli.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
-      compilers: [:boundary] ++ Mix.compilers(),
-      boundary: [
-        default: [
-          check: [
-            apps: [:phoenix, :ecto, {:mix, :runtime}]
-          ]
-        ]
-      ],
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
-      dialyzer: [
-        # Put the project-level PLT in the priv/ directory (instead of the default _build/ location)
-        plt_file: {:no_warn, "priv/plts/project.plt"}
-      ]
+      deps: deps()
     ]
   end
 
@@ -51,43 +32,32 @@ defmodule Bubbli.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:argon2_elixir, "~> 4.0"},
-      {:bandit, "~> 1.1"},
-      {:corsica, "~> 2.1"},
-      {:ecto_sql, "~> 3.6"},
-      {:finch, "~> 0.13"},
-      {:flop, "~> 0.24.1"},
-      {:gettext, "~> 0.20"},
-      {:guardian, "~> 2.0"},
-      {:jason, "~> 1.2"},
-      {:phoenix, "~> 1.7.2"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_dashboard, "~> 0.8"},
+      {:phoenix, "~> 1.7.17"},
+      {:phoenix_ecto, "~> 4.5"},
+      {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
-      {:swoosh, "~> 1.3"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:timex, "~> 3.0"},
-      {:waffle, "~> 1.1"},
-      {:ex_aws, "~> 2.1.2"},
-      {:ex_aws_s3, "~> 2.0"},
-      {:hackney, "~> 1.9"},
-      {:sweet_xml, "~> 0.6"},
-
-      # build
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:phoenix_html, "~> 4.1"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 1.0.0"},
+      {:floki, ">= 0.30.0", only: :test},
+      {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-
-      # non-prod deps
-      {:boundary, "~> 0.10", runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
-      {:faker, "~> 0.17", only: :test},
-      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.12", only: [:dev, :test], runtime: false},
-      {:styler, "~> 0.8", only: [:dev, :test], runtime: false}
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.1.1",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1},
+      {:swoosh, "~> 1.5"},
+      {:finch, "~> 0.13"},
+      {:telemetry_metrics, "~> 1.0"},
+      {:telemetry_poller, "~> 1.0"},
+      {:gettext, "~> 0.20"},
+      {:jason, "~> 1.2"},
+      {:dns_cluster, "~> 0.1.1"},
+      {:bandit, "~> 1.5"}
     ]
   end
 
@@ -104,9 +74,12 @@ defmodule Bubbli.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      check: ["format", "credo --strict", "compile --warnings-as-errors", "dialyzer", "docs"]
+      "assets.build": ["tailwind bubbli", "esbuild bubbli"],
+      "assets.deploy": [
+        "tailwind bubbli --minify",
+        "esbuild bubbli --minify",
+        "phx.digest"
+      ]
     ]
   end
 end

@@ -1,7 +1,5 @@
 defmodule BubbliWeb.Telemetry do
-  @moduledoc false
   use Supervisor
-
   import Telemetry.Metrics
 
   def start_link(arg) do
@@ -45,7 +43,7 @@ defmodule BubbliWeb.Telemetry do
       summary("phoenix.socket_connected.duration",
         unit: {:native, :millisecond}
       ),
-      summary("phoenix.channel_join.duration",
+      summary("phoenix.channel_joined.duration",
         unit: {:native, :millisecond}
       ),
       summary("phoenix.channel_handled_in.duration",
@@ -72,7 +70,8 @@ defmodule BubbliWeb.Telemetry do
       ),
       summary("bubbli.repo.query.idle_time",
         unit: {:native, :millisecond},
-        description: "The time the connection spent waiting before being checked out for the query"
+        description:
+          "The time the connection spent waiting before being checked out for the query"
       ),
 
       # VM Metrics

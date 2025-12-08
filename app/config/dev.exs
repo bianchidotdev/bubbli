@@ -4,7 +4,7 @@ import Config
 config :bubbli, Bubbli.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: System.get_env("DB_HOST", "localhost"),
+  hostname: "localhost",
   database: "bubbli_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
@@ -14,27 +14,20 @@ config :bubbli, Bubbli.Repo,
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we use it
-# with esbuild to bundle .js and .css sources.
+# watchers to your application. For example, we can use it
+# to bundle .js and .css sources.
 config :bubbli, BubbliWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
-  # NOTE(bianchi): forces JSON responses
-  debug_errors: false,
-  secret_key_base: "8FqmpKL3ma3jihN2dr90dlvfOQtAFBe3IUikaS4lqz+tIveBcSYGD886z3cygtK2",
+  debug_errors: true,
+  secret_key_base: "m3afgW9uhiOTzJg40TNaN3W74ZGQIzvMuxgF/PO/LNlCErZp+I/Sm7wEfwG84fiv",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:bubbli, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:bubbli, ~w(--watch)]}
   ]
-
-config :bubbli, :signing_salt, "testsigningsalt"
-
-config :waffle,
-  storage: Waffle.Storage.Local,
-  asset_host: "http://static.example.com"
 
 # ## SSL Support
 #
@@ -59,6 +52,16 @@ config :waffle,
 # configured to run both http and https servers on
 # different ports.
 
+# Watch static and templates for browser reloading.
+config :bubbli, BubbliWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/bubbli_web/(controllers|live|components)/.*(ex|heex)$"
+    ]
+  ]
+
 # Enable dev routes for dashboard and mailbox
 config :bubbli, dev_routes: true
 
@@ -71,6 +74,12 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
