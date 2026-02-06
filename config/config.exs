@@ -17,13 +17,15 @@ config :ash,
   default_actions_require_atomic?: true,
   read_action_after_action_hooks_in_order?: true,
   bulk_actions_default_to_errors?: true,
-  transaction_rollback_on_error?: true
+  transaction_rollback_on_error?: true,
+  known_types: [AshPostgres.Timestamptz, AshPostgres.TimestamptzUsec]
 
 config :spark,
   formatter: [
     remove_parens?: true,
     "Ash.Resource": [
       section_order: [
+        :postgres,
         :authentication,
         :token,
         :user_identity,
