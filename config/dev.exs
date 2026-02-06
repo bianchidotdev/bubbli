@@ -69,7 +69,7 @@ config :bubbli, BubbliWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :bubbli, dev_routes: true
+config :bubbli, dev_routes: true, token_signing_secret: "wj1zUO2knuAfe9IQ0MAe5JfoYI1FtwFy"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

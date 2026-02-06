@@ -15,7 +15,8 @@ defmodule Bubbli.Application do
       # Start a worker by calling: Bubbli.Worker.start_link(arg)
       # {Bubbli.Worker, arg},
       # Start to serve requests, typically the last entry
-      BubbliWeb.Endpoint
+      BubbliWeb.Endpoint,
+      {AshAuthentication.Supervisor, [otp_app: :bubbli]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
