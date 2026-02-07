@@ -1,0 +1,40 @@
+{
+  "name": "bubbli-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "biome check src/",
+    "format": "biome format --write src/",
+    "check": "biome check --write src/",
+    "generate-api": "openapi-typescript http://localhost:4000/api/openapi -o src/api/schema.d.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-router": "^1.158.4",
+    "openapi-fetch": "^0.15.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-query-devtools": "^5.91.3",
+    "@tanstack/router-devtools": "^1.158.4",
+    "@tanstack/router-plugin": "^1.158.4",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "openapi-typescript": "^7.10.1",
+    "tailwindcss": "^4.1.18",
+    "typescript": "~5.9.3",
+    "vite": "npm:rolldown-vite@7.2.5"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.2.5"
+  }
+}
