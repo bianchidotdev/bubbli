@@ -4,686 +4,688 @@
  */
 
 export interface paths {
-    "/api/circles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description /circles operation on circle resource */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Filters the query to results with attributes matching the given filter object */
-                    filter?: components["schemas"]["circle-filter"];
-                    /** @description Sort order to apply to the results */
-                    sort?: string;
-                    /** @description Paginates the response with the limit and offset or keyset pagination. */
-                    page?: {
-                        after?: string;
-                        before?: string;
-                        /** @default false */
-                        count?: boolean;
-                        limit?: number;
-                        offset?: number;
-                    };
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for circle
-                         * @example id,name,system_type,description
-                         */
-                        circle?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Success */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            /** @description An array of resource objects representing a circle */
-                            data?: components["schemas"]["circle"][];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        put?: never;
-        /** @description Create a custom circle */
-        post: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for circle
-                         * @example id,name,system_type,description
-                         */
-                        circle?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Request body for the /circles operation on circle resource */
-            requestBody: {
-                content: {
-                    "application/vnd.api+json": {
-                        data: {
-                            attributes?: {
-                                description?: string | null;
-                                name: string;
-                            };
-                            relationships?: Record<string, never>;
-                            /** @enum {unknown} */
-                            type?: "circle";
-                        };
-                    };
-                };
-            };
-            responses: {
-                /** @description Success */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            data?: components["schemas"]["circle"];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/circles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description /circles/:id operation on circle resource */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for circle
-                         * @example id,name,system_type,description
-                         */
-                        circle?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Success */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            data?: components["schemas"]["circle"];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        put?: never;
-        post?: never;
-        /** @description Delete a custom circle */
-        delete: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for circle
-                         * @example id,name,system_type,description
-                         */
-                        circle?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        options?: never;
-        head?: never;
-        /** @description Update a custom circle (name, description) */
-        patch: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for circle
-                         * @example id,name,system_type,description
-                         */
-                        circle?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Request body for the /circles/:id operation on circle resource */
-            requestBody?: {
-                content: {
-                    "application/vnd.api+json": {
-                        data: {
-                            attributes?: {
-                                description?: string | null;
-                                name?: string | null;
-                            };
-                            id: string;
-                            relationships?: Record<string, never>;
-                            /** @enum {unknown} */
-                            type?: "circle";
-                        };
-                    };
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            data?: components["schemas"]["circle"];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        trace?: never;
-    };
-    "/api/users/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description /users/:id operation on user resource */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for user
-                         * @example id,email,display_name,handle,bio,avatar_url
-                         */
-                        user?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Success */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            data?: components["schemas"]["user"];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users/{id}/profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** @description Update user profile fields */
-        patch: {
-            parameters: {
-                query?: {
-                    /** @description Relationship paths to include in the response */
-                    include?: string;
-                    /** @description Limits the response fields to only those listed for each type */
-                    fields?: {
-                        /**
-                         * @description Comma separated field names for user
-                         * @example id,email,display_name,handle,bio,avatar_url
-                         */
-                        user?: string;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Request body for the /users/:id/profile operation on user resource */
-            requestBody?: {
-                content: {
-                    "application/vnd.api+json": {
-                        data: {
-                            attributes?: {
-                                avatar_url?: string | null;
-                                bio?: string | null;
-                                comment_visibility?: ("connections_and_group_members" | "everyone_on_post") | null;
-                                display_name?: string | null;
-                                handle?: string | null;
-                                profile_visibility?: ("connections_only" | "public") | null;
-                            };
-                            id: string;
-                            relationships?: Record<string, never>;
-                            /** @enum {unknown} */
-                            type?: "user";
-                        };
-                    };
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/vnd.api+json": {
-                            data?: components["schemas"]["user"];
-                            included?: unknown[];
-                            meta?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                default: components["responses"]["errors"];
-            };
-        };
-        trace?: never;
-    };
+	"/api/circles": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /circles operation on circle resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["circle-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Paginates the response with the limit and offset or keyset pagination. */
+					page?: {
+						after?: string;
+						before?: string;
+						/** @default false */
+						count?: boolean;
+						limit?: number;
+						offset?: number;
+					};
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for circle
+						 * @example id,name,system_type,description
+						 */
+						circle?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a circle */
+							data?: components["schemas"]["circle"][];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		/** @description Create a custom circle */
+		post: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for circle
+						 * @example id,name,system_type,description
+						 */
+						circle?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			/** @description Request body for the /circles operation on circle resource */
+			requestBody: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								description?: string | null;
+								name: string;
+							};
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "circle";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				201: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["circle"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/circles/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /circles/:id operation on circle resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for circle
+						 * @example id,name,system_type,description
+						 */
+						circle?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["circle"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		/** @description Delete a custom circle */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for circle
+						 * @example id,name,system_type,description
+						 */
+						circle?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		/** @description Update a custom circle (name, description) */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for circle
+						 * @example id,name,system_type,description
+						 */
+						circle?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /circles/:id operation on circle resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								description?: string | null;
+								name?: string | null;
+							};
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "circle";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["circle"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/users/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /users/:id operation on user resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for user
+						 * @example id,email,display_name,handle,bio,avatar_url
+						 */
+						user?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["user"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/users/{id}/profile": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/** @description Update user profile fields */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for user
+						 * @example id,email,display_name,handle,bio,avatar_url
+						 */
+						user?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /users/:id/profile operation on user resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								avatar_url?: string | null;
+								bio?: string | null;
+								comment_visibility?:
+									| ("connections_and_group_members" | "everyone_on_post")
+									| null;
+								display_name?: string | null;
+								handle?: string | null;
+								profile_visibility?: ("connections_only" | "public") | null;
+							};
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "user";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["user"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** @description A "Resource object" representing a circle */
-        circle: {
-            /** @description An attributes object for a circle */
-            attributes?: {
-                /** @description Field included by default. */
-                description?: (string | null) | null;
-                /** @description Field included by default. */
-                name: string;
-                /** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. Field included by default. */
-                system_type?: ("private" | "all_friends" | "public" | null) | null;
-            };
-            id: string;
-            /** @description A relationships object for a circle */
-            relationships?: Record<string, never>;
-            type: string;
-        };
-        /**
-         * @description Filters the query to results matching the given filter object
-         * @example
-         */
-        "circle-filter": {
-            and?: components["schemas"]["circle-filter"][];
-            description?: components["schemas"]["circle-filter-description"];
-            id?: components["schemas"]["circle-filter-id"];
-            name?: components["schemas"]["circle-filter-name"];
-            not?: components["schemas"]["circle-filter"];
-            or?: components["schemas"]["circle-filter"][];
-            system_type?: components["schemas"]["circle-filter-system_type"];
-        };
-        "circle-filter-description": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        "circle-filter-id": {
-            /** Format: uuid */
-            eq?: string;
-            /** Format: uuid */
-            greater_than?: string;
-            /** Format: uuid */
-            greater_than_or_equal?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            /** Format: uuid */
-            less_than?: string;
-            /** Format: uuid */
-            less_than_or_equal?: string;
-            /** Format: uuid */
-            not_eq?: string;
-        };
-        "circle-filter-name": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        /** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. */
-        "circle-filter-system_type": {
-            /** @enum {string} */
-            eq?: "private" | "all_friends" | "public";
-            /** @enum {string} */
-            greater_than?: "private" | "all_friends" | "public";
-            /** @enum {string} */
-            greater_than_or_equal?: "private" | "all_friends" | "public";
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            /** @enum {string} */
-            less_than?: "private" | "all_friends" | "public";
-            /** @enum {string} */
-            less_than_or_equal?: "private" | "all_friends" | "public";
-            /** @enum {string} */
-            not_eq?: "private" | "all_friends" | "public";
-        };
-        error: {
-            /** @description An application-specific error code, expressed as a string value. */
-            code?: string;
-            /** @description A human-readable explanation specific to this occurrence of the problem. */
-            detail?: string;
-            /** @description A unique identifier for this particular occurrence of the problem. */
-            id?: string;
-            links?: components["schemas"]["links"];
-            source?: {
-                /** @description A string indicating which query parameter caused the error. */
-                parameter?: string;
-                /** @description A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. */
-                pointer?: string;
-            };
-            /** @description The HTTP status code applicable to this problem, expressed as a string value. */
-            status?: string;
-            /** @description A short, human-readable summary of the problem. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization. */
-            title?: string;
-        };
-        errors: components["schemas"]["error"][];
-        /** @description A link MUST be represented as either: a string containing the link's URL or a link object. */
-        link: string;
-        links: {
-            [key: string]: components["schemas"]["link"];
-        };
-        /** @description A "Resource object" representing a user */
-        user: {
-            /** @description An attributes object for a user */
-            attributes?: {
-                /** @description Field included by default. */
-                avatar_url?: (string | null) | null;
-                /** @description Field included by default. */
-                bio?: (string | null) | null;
-                /** @description Field included by default. */
-                display_name?: (string | null) | null;
-                /** @description Field included by default. */
-                email: string;
-                /** @description Field included by default. */
-                handle?: (string | null) | null;
-                /** @description Virtual system circles defined in code, not the database */
-                system_circles?: (unknown[] | null) | null;
-            };
-            id: string;
-            /** @description A relationships object for a user */
-            relationships?: Record<string, never>;
-            type: string;
-        };
-        /**
-         * @description Filters the query to results matching the given filter object
-         * @example
-         */
-        "user-filter": {
-            and?: components["schemas"]["user-filter"][];
-            avatar_url?: components["schemas"]["user-filter-avatar_url"];
-            bio?: components["schemas"]["user-filter-bio"];
-            display_name?: components["schemas"]["user-filter-display_name"];
-            email?: components["schemas"]["user-filter-email"];
-            handle?: components["schemas"]["user-filter-handle"];
-            id?: components["schemas"]["user-filter-id"];
-            not?: components["schemas"]["user-filter"];
-            or?: components["schemas"]["user-filter"][];
-        };
-        "user-filter-avatar_url": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        "user-filter-bio": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        "user-filter-display_name": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        "user-filter-email": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            not_eq?: string;
-        };
-        "user-filter-handle": {
-            contains?: string;
-            eq?: string;
-            greater_than?: string;
-            greater_than_or_equal?: string;
-            ilike?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            less_than?: string;
-            less_than_or_equal?: string;
-            like?: string;
-            not_eq?: string;
-        };
-        "user-filter-id": {
-            /** Format: uuid */
-            eq?: string;
-            /** Format: uuid */
-            greater_than?: string;
-            /** Format: uuid */
-            greater_than_or_equal?: string;
-            in?: string[];
-            is_distinct_from?: string;
-            is_nil?: boolean;
-            is_not_distinct_from?: string;
-            /** Format: uuid */
-            less_than?: string;
-            /** Format: uuid */
-            less_than_or_equal?: string;
-            /** Format: uuid */
-            not_eq?: string;
-        };
-    };
-    responses: {
-        /** @description General Error */
-        errors: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/vnd.api+json": components["schemas"]["errors"];
-            };
-        };
-    };
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+	schemas: {
+		/** @description A "Resource object" representing a circle */
+		circle: {
+			/** @description An attributes object for a circle */
+			attributes?: {
+				/** @description Field included by default. */
+				description?: (string | null) | null;
+				/** @description Field included by default. */
+				name: string;
+				/** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. Field included by default. */
+				system_type?: ("private" | "all_friends" | "public" | null) | null;
+			};
+			id: string;
+			/** @description A relationships object for a circle */
+			relationships?: Record<string, never>;
+			type: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"circle-filter": {
+			and?: components["schemas"]["circle-filter"][];
+			description?: components["schemas"]["circle-filter-description"];
+			id?: components["schemas"]["circle-filter-id"];
+			name?: components["schemas"]["circle-filter-name"];
+			not?: components["schemas"]["circle-filter"];
+			or?: components["schemas"]["circle-filter"][];
+			system_type?: components["schemas"]["circle-filter-system_type"];
+		};
+		"circle-filter-description": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"circle-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"circle-filter-name": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		/** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. */
+		"circle-filter-system_type": {
+			/** @enum {string} */
+			eq?: "private" | "all_friends" | "public";
+			/** @enum {string} */
+			greater_than?: "private" | "all_friends" | "public";
+			/** @enum {string} */
+			greater_than_or_equal?: "private" | "all_friends" | "public";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "private" | "all_friends" | "public";
+			/** @enum {string} */
+			less_than_or_equal?: "private" | "all_friends" | "public";
+			/** @enum {string} */
+			not_eq?: "private" | "all_friends" | "public";
+		};
+		error: {
+			/** @description An application-specific error code, expressed as a string value. */
+			code?: string;
+			/** @description A human-readable explanation specific to this occurrence of the problem. */
+			detail?: string;
+			/** @description A unique identifier for this particular occurrence of the problem. */
+			id?: string;
+			links?: components["schemas"]["links"];
+			source?: {
+				/** @description A string indicating which query parameter caused the error. */
+				parameter?: string;
+				/** @description A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. */
+				pointer?: string;
+			};
+			/** @description The HTTP status code applicable to this problem, expressed as a string value. */
+			status?: string;
+			/** @description A short, human-readable summary of the problem. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization. */
+			title?: string;
+		};
+		errors: components["schemas"]["error"][];
+		/** @description A link MUST be represented as either: a string containing the link's URL or a link object. */
+		link: string;
+		links: {
+			[key: string]: components["schemas"]["link"];
+		};
+		/** @description A "Resource object" representing a user */
+		user: {
+			/** @description An attributes object for a user */
+			attributes?: {
+				/** @description Field included by default. */
+				avatar_url?: (string | null) | null;
+				/** @description Field included by default. */
+				bio?: (string | null) | null;
+				/** @description Field included by default. */
+				display_name?: (string | null) | null;
+				/** @description Field included by default. */
+				email: string;
+				/** @description Field included by default. */
+				handle?: (string | null) | null;
+				/** @description Virtual system circles defined in code, not the database */
+				system_circles?: (unknown[] | null) | null;
+			};
+			id: string;
+			/** @description A relationships object for a user */
+			relationships?: Record<string, never>;
+			type: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"user-filter": {
+			and?: components["schemas"]["user-filter"][];
+			avatar_url?: components["schemas"]["user-filter-avatar_url"];
+			bio?: components["schemas"]["user-filter-bio"];
+			display_name?: components["schemas"]["user-filter-display_name"];
+			email?: components["schemas"]["user-filter-email"];
+			handle?: components["schemas"]["user-filter-handle"];
+			id?: components["schemas"]["user-filter-id"];
+			not?: components["schemas"]["user-filter"];
+			or?: components["schemas"]["user-filter"][];
+		};
+		"user-filter-avatar_url": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"user-filter-bio": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"user-filter-display_name": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"user-filter-email": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			not_eq?: string;
+		};
+		"user-filter-handle": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"user-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+	};
+	responses: {
+		/** @description General Error */
+		errors: {
+			headers: {
+				[name: string]: unknown;
+			};
+			content: {
+				"application/vnd.api+json": components["schemas"]["errors"];
+			};
+		};
+	};
+	parameters: never;
+	requestBodies: never;
+	headers: never;
+	pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

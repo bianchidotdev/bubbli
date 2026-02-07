@@ -1,1 +1,255 @@
 @import "tailwindcss";
+
+/*
+ * Design tokens for the Bubbli component library.
+ *
+ * We define semantic color tokens as CSS custom properties, then register them
+ * with Tailwind v4's @theme so they're available as utility classes:
+ *   bg-primary, text-on-primary, border-muted, etc.
+ *
+ * Themes are switched by setting `data-theme="light"` or `data-theme="dark"`
+ * on the <html> element (managed by ThemeProvider).
+ */
+
+/* ── Light theme (default) ─────────────────────────────────────────────── */
+
+:root,
+[data-theme="light"] {
+	/* Brand / Primary */
+	--color-primary: oklch(0.541 0.281 293.4); /* violet-600 */
+	--color-primary-hover: oklch(0.491 0.27 292.58); /* violet-700 */
+	--color-primary-soft: oklch(0.943 0.05 294.72); /* violet-100 */
+	--color-on-primary: oklch(1 0 0); /* white */
+	--color-on-primary-soft: oklch(0.491 0.27 292.58); /* violet-700 */
+
+	/* Accent / Secondary */
+	--color-accent: oklch(0.591 0.293 322.89); /* fuchsia-600 */
+	--color-accent-hover: oklch(0.518 0.253 323.95); /* fuchsia-700 */
+	--color-accent-soft: oklch(0.952 0.051 325.01); /* fuchsia-100 */
+
+	/* Surfaces */
+	--color-surface: oklch(1 0 0); /* white */
+	--color-surface-raised: oklch(1 0 0); /* white */
+	--color-surface-sunken: oklch(0.985 0.002 247.86); /* gray-50 */
+	--color-surface-overlay: oklch(1 0 0 / 0.8); /* white/80 */
+
+	/* Text */
+	--color-text: oklch(0.21 0.034 264.66); /* gray-900 */
+	--color-text-secondary: oklch(0.446 0.03 256.8); /* gray-600 */
+	--color-text-tertiary: oklch(0.551 0.027 264.36); /* gray-500 */
+	--color-text-placeholder: oklch(0.651 0.024 264.18); /* gray-400 */
+	--color-text-inverted: oklch(1 0 0); /* white */
+
+	/* Borders */
+	--color-border: oklch(0.872 0.01 258.34); /* gray-200 */
+	--color-border-strong: oklch(0.807 0.014 264.06); /* gray-300 */
+	--color-border-focus: oklch(0.541 0.281 293.4); /* violet-500 */
+
+	/* Status */
+	--color-danger: oklch(0.577 0.245 27.33); /* red-600 */
+	--color-danger-soft: oklch(0.971 0.013 17.38); /* red-50 */
+	--color-danger-border: oklch(0.904 0.048 16.83); /* red-200 */
+	--color-on-danger: oklch(0.505 0.213 27.52); /* red-700 */
+
+	--color-success: oklch(0.527 0.154 150.07); /* green-600 */
+	--color-success-soft: oklch(0.962 0.044 156.74); /* green-50 */
+	--color-success-border: oklch(0.905 0.093 164.15); /* green-200 */
+	--color-on-success: oklch(0.462 0.141 153.44); /* green-700 */
+
+	--color-warning: oklch(0.666 0.179 58.32); /* amber-500 */
+	--color-warning-soft: oklch(0.987 0.026 102.21); /* amber-50 */
+	--color-warning-border: oklch(0.913 0.076 95.28); /* amber-200 */
+	--color-on-warning: oklch(0.555 0.163 48.99); /* amber-700 */
+
+	--color-info: oklch(0.546 0.245 262.88); /* blue-600 */
+	--color-info-soft: oklch(0.97 0.014 254.6); /* blue-50 */
+	--color-info-border: oklch(0.882 0.059 254.13); /* blue-200 */
+	--color-on-info: oklch(0.488 0.243 264.38); /* blue-700 */
+
+	/* Ring / Focus */
+	--color-ring: oklch(0.541 0.281 293.4 / 0.2); /* violet-500/20 */
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+	--shadow-md:
+		0 4px 6px -1px oklch(0 0 0 / 0.08), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+	--shadow-lg:
+		0 10px 15px -3px oklch(0 0 0 / 0.08), 0 4px 6px -4px oklch(0 0 0 / 0.04);
+
+	/* Radii */
+	--radius-sm: 0.375rem; /* 6px */
+	--radius-md: 0.5rem; /* 8px */
+	--radius-lg: 0.75rem; /* 12px */
+	--radius-xl: 1rem; /* 16px */
+	--radius-2xl: 1.25rem; /* 20px */
+	--radius-full: 9999px;
+
+	/* Transitions */
+	--duration-fast: 100ms;
+	--duration-normal: 150ms;
+	--duration-slow: 300ms;
+}
+
+/* ── Dark theme ────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] {
+	/* Brand / Primary */
+	--color-primary: oklch(0.702 0.183 293.54); /* violet-400 */
+	--color-primary-hover: oklch(0.81 0.111 293.57); /* violet-300 */
+	--color-primary-soft: oklch(0.283 0.141 291.09 / 0.3); /* violet-900/30 */
+	--color-on-primary: oklch(0.16 0.04 280); /* dark */
+	--color-on-primary-soft: oklch(0.81 0.111 293.57); /* violet-300 */
+
+	/* Accent / Secondary */
+	--color-accent: oklch(0.74 0.189 322.2); /* fuchsia-400 */
+	--color-accent-hover: oklch(0.833 0.145 321.43); /* fuchsia-300 */
+	--color-accent-soft: oklch(0.293 0.158 322.87 / 0.3); /* fuchsia-900/30 */
+
+	/* Surfaces */
+	--color-surface: oklch(0.17 0.017 265); /* dark background */
+	--color-surface-raised: oklch(0.21 0.017 265); /* slightly lighter */
+	--color-surface-sunken: oklch(0.13 0.015 265); /* slightly darker */
+	--color-surface-overlay: oklch(0.21 0.017 265 / 0.85);
+
+	/* Text */
+	--color-text: oklch(0.95 0.006 264); /* near-white */
+	--color-text-secondary: oklch(0.75 0.014 264); /* muted */
+	--color-text-tertiary: oklch(0.6 0.02 264); /* more muted */
+	--color-text-placeholder: oklch(0.5 0.02 264); /* faint */
+	--color-text-inverted: oklch(0.17 0.017 265); /* dark */
+
+	/* Borders */
+	--color-border: oklch(0.3 0.015 265);
+	--color-border-strong: oklch(0.4 0.015 265);
+	--color-border-focus: oklch(0.702 0.183 293.54); /* violet-400 */
+
+	/* Status */
+	--color-danger: oklch(0.704 0.191 22.22); /* red-400 */
+	--color-danger-soft: oklch(0.258 0.092 26.04 / 0.3);
+	--color-danger-border: oklch(0.444 0.177 26.9 / 0.5);
+	--color-on-danger: oklch(0.838 0.117 19.58); /* red-300 */
+
+	--color-success: oklch(0.648 0.15 160); /* green-400 */
+	--color-success-soft: oklch(0.262 0.065 152.93 / 0.3);
+	--color-success-border: oklch(0.393 0.111 152.54 / 0.5);
+	--color-on-success: oklch(0.792 0.117 163.39); /* green-300 */
+
+	--color-warning: oklch(0.768 0.165 71.72); /* amber-400 */
+	--color-warning-soft: oklch(0.279 0.077 45.64 / 0.3);
+	--color-warning-border: oklch(0.473 0.137 46.2 / 0.5);
+	--color-on-warning: oklch(0.879 0.111 85.14); /* amber-300 */
+
+	--color-info: oklch(0.707 0.165 254.62); /* blue-400 */
+	--color-info-soft: oklch(0.282 0.091 267.94 / 0.3);
+	--color-info-border: oklch(0.424 0.199 265.64 / 0.5);
+	--color-on-info: oklch(0.809 0.105 251.81); /* blue-300 */
+
+	/* Ring / Focus */
+	--color-ring: oklch(0.702 0.183 293.54 / 0.3);
+
+	/* Shadows – softer in dark mode */
+	--shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.3);
+	--shadow-md:
+		0 4px 6px -1px oklch(0 0 0 / 0.4), 0 2px 4px -2px oklch(0 0 0 / 0.3);
+	--shadow-lg:
+		0 10px 15px -3px oklch(0 0 0 / 0.4), 0 4px 6px -4px oklch(0 0 0 / 0.3);
+}
+
+/* ── Register tokens with Tailwind v4 ─────────────────────────────────── */
+
+@theme {
+	/* Colors */
+	--color-primary: var(--color-primary);
+	--color-primary-hover: var(--color-primary-hover);
+	--color-primary-soft: var(--color-primary-soft);
+	--color-on-primary: var(--color-on-primary);
+	--color-on-primary-soft: var(--color-on-primary-soft);
+
+	--color-accent: var(--color-accent);
+	--color-accent-hover: var(--color-accent-hover);
+	--color-accent-soft: var(--color-accent-soft);
+
+	--color-surface: var(--color-surface);
+	--color-surface-raised: var(--color-surface-raised);
+	--color-surface-sunken: var(--color-surface-sunken);
+	--color-surface-overlay: var(--color-surface-overlay);
+
+	--color-text: var(--color-text);
+	--color-text-secondary: var(--color-text-secondary);
+	--color-text-tertiary: var(--color-text-tertiary);
+	--color-text-placeholder: var(--color-text-placeholder);
+	--color-text-inverted: var(--color-text-inverted);
+
+	--color-border: var(--color-border);
+	--color-border-strong: var(--color-border-strong);
+	--color-border-focus: var(--color-border-focus);
+
+	--color-ring: var(--color-ring);
+
+	--color-danger: var(--color-danger);
+	--color-danger-soft: var(--color-danger-soft);
+	--color-danger-border: var(--color-danger-border);
+	--color-on-danger: var(--color-on-danger);
+
+	--color-success: var(--color-success);
+	--color-success-soft: var(--color-success-soft);
+	--color-success-border: var(--color-success-border);
+	--color-on-success: var(--color-on-success);
+
+	--color-warning: var(--color-warning);
+	--color-warning-soft: var(--color-warning-soft);
+	--color-warning-border: var(--color-warning-border);
+	--color-on-warning: var(--color-on-warning);
+
+	--color-info: var(--color-info);
+	--color-info-soft: var(--color-info-soft);
+	--color-info-border: var(--color-info-border);
+	--color-on-info: var(--color-on-info);
+
+	/* Shadows */
+	--shadow-sm: var(--shadow-sm);
+	--shadow-md: var(--shadow-md);
+	--shadow-lg: var(--shadow-lg);
+
+	/* Radii */
+	--radius-sm: var(--radius-sm);
+	--radius-md: var(--radius-md);
+	--radius-lg: var(--radius-lg);
+	--radius-xl: var(--radius-xl);
+	--radius-2xl: var(--radius-2xl);
+	--radius-full: var(--radius-full);
+}
+
+/* ── Base reset with token awareness ───────────────────────────────────── */
+
+body {
+	background-color: var(--color-surface-sunken);
+	color: var(--color-text);
+	transition:
+		background-color var(--duration-slow) ease,
+		color var(--duration-slow) ease;
+}
+
+/* Smooth theme transition for key properties */
+[data-theme] * {
+	transition-property:
+		background-color, border-color, color, fill, stroke, box-shadow;
+	transition-duration: var(--duration-normal);
+	transition-timing-function: ease;
+}
+
+/* Opt out of transition for animated elements (spinners, etc.) */
+[data-theme] [data-no-theme-transition],
+[data-theme] [data-no-theme-transition] * {
+	transition-property: none;
+}
+
+/* Focus ring utility */
+.focus-ring {
+	outline: none;
+}
+.focus-ring:focus-visible {
+	box-shadow:
+		0 0 0 2px var(--color-surface),
+		0 0 0 4px var(--color-border-focus);
+}

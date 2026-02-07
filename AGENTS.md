@@ -1,9 +1,162 @@
-This is a web application written using the Phoenix web framework.
+# Bubbli
 
-## Project guidelines
+Bubbli is a social application with two main parts:
+
+- **Backend** (`/`): An Elixir/Phoenix API server using Ash Framework, serving a JSON:API
+- **Frontend** (`/web`): A React SPA using Vite, TanStack Router, TanStack Query, and Tailwind CSS v4
+
+## Project structure
+
+```
+bubbli/
+├── config/              # Elixir app configuration
+├── lib/
+│   ├── bubbli/          # Core business logic (Ash domains, resources)
+│   │   ├── accounts/    # User accounts, authentication
+│   │   └── social/      # Social features (posts, circles, etc.)
+│   └── bubbli_web/      # Phoenix endpoint, router, controllers (JSON:API only)
+├── priv/                # Migrations, seeds, static assets
+├── test/                # Elixir tests
+├── web/                 # React SPA (separate from Phoenix)
+│   ├── src/
+│   │   ├── api/         # API client (openapi-fetch), auth helpers, generated schema
+│   │   ├── components/
+│   │   │   └── ui/      # Design system component library (see below)
+│   │   ├── lib/         # Shared hooks and providers (auth, theme)
+│   │   └── routes/      # TanStack Router file-based routes
+│   ├── biome.json       # Linter/formatter config (tabs, double quotes)
+│   ├── package.json
+│   └── vite.config.ts
+├── mix.exs
+├── Caddyfile            # Local reverse proxy config
+└── lefthook.yml         # Git hooks
+```
+
+## General guidelines
 
 - Use `mix precommit` alias when you are done with all changes and fix any pending issues
 - Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps
+
+---
+
+## Frontend (`/web`)
+
+### Package manager
+
+- **Always use `bun`** as the package manager. **Never** use `npm`, `yarn`, or `pnpm`
+- Install dependencies: `bun install`
+- Run scripts: `bun run dev`, `bun run build`, `bun run check`, etc.
+- Add dependencies: `bun add <package>` / `bun add -d <package>`
+
+### Stack overview
+
+| Concern        | Tool                       |
+|----------------|----------------------------|
+| Framework      | React 19                   |
+| Bundler        | Vite (rolldown-vite)       |
+| Routing        | TanStack Router (file-based) |
+| Data fetching  | TanStack Query + openapi-fetch |
+| Styling        | Tailwind CSS v4            |
+| Linting/Format | Biome (tabs, double quotes) |
+| Type checking  | TypeScript ~5.9            |
+
+### Lint and format
+
+- Run `bun run check` to auto-fix lint and formatting issues
+- Run `bun run lint` for check-only mode
+- Biome is configured with tabs for indentation and double quotes for strings
+- **Always** run `bun run check` before committing frontend changes
+
+### Tailwind CSS v4
+
+- Tailwind v4 **does not use a `tailwind.config.js`**
+- Configuration lives in `web/src/app.css` using `@import "tailwindcss"` and `@theme`
+- **Never** use `@apply` when writing raw CSS
+- **Never** use daisyUI or similar component libraries — use the project's own design system
+
+### JS and CSS rules
+
+- Out of the box **only the `app.js` and `app.css` bundles are supported** in the web app
+- **Never write inline `<script>` tags within templates**
+- Import vendor dependencies into `app.js` or `app.css` rather than referencing external URLs
+
+---
+
+## Design system (`web/src/components/ui/`)
+
+The project has a custom component library built on **semantic design tokens** and **CSS custom properties**, registered with Tailwind v4's `@theme` directive. All components automatically support light and dark themes.
+
+### Theming architecture
+
+1. **Design tokens** are defined in `web/src/app.css` as CSS custom properties under `:root` / `[data-theme="light"]` and `[data-theme="dark"]` selectors
+2. Tokens are registered with `@theme { }` so Tailwind generates utilities like `bg-primary`, `text-text-secondary`, `border-border`, etc.
+3. **`ThemeProvider`** (`web/src/lib/theme.tsx`) manages the active theme, persists preference to localStorage, and syncs across tabs
+4. Themes are applied via a `data-theme` attribute on `<html>`
+
+### Semantic color tokens
+
+Always use these semantic tokens instead of raw Tailwind palette colors (e.g., use `bg-primary` not `bg-violet-600`):
+
+| Token                | Purpose                              |
+|----------------------|--------------------------------------|
+| `primary`            | Brand/action color                   |
+| `primary-hover`      | Hovered primary                      |
+| `primary-soft`       | Soft primary background              |
+| `on-primary`         | Text on primary backgrounds          |
+| `on-primary-soft`    | Text on soft primary backgrounds     |
+| `accent`             | Secondary brand color                |
+| `surface`            | Base surface (cards, modals)         |
+| `surface-raised`     | Elevated surfaces                    |
+| `surface-sunken`     | Recessed backgrounds                 |
+| `surface-overlay`    | Backdrop overlays                    |
+| `text`               | Primary text                         |
+| `text-secondary`     | Secondary text                       |
+| `text-tertiary`      | Muted/hint text                      |
+| `text-placeholder`   | Placeholder text                     |
+| `border`             | Default borders                      |
+| `border-strong`      | Emphasized borders                   |
+| `border-focus`       | Focus ring border                    |
+| `danger` / `success` / `warning` / `info` | Status colors (with `-soft`, `-border`, `on-` variants) |
+
+### Available components
+
+**Always** import from the barrel export `@/components/ui` (or `../components/ui` relative):
+
+```tsx
+import { Button, Input, Card, Alert, Avatar, Spinner } from "@/components/ui";
+```
+
+| Component       | File                | Key props / notes                                           |
+|-----------------|---------------------|-------------------------------------------------------------|
+| `Button`        | `button.tsx`        | `variant`: `primary`/`secondary`/`ghost`/`danger`/`accent`; `size`: `sm`/`md`/`lg`; `loading`, `iconLeft`, `iconRight` |
+| `Input`         | `input.tsx`         | `size`: `sm`/`md`/`lg`; `error`; `leadingAddon`, `trailingAddon` |
+| `Textarea`      | `textarea.tsx`      | `variant`: `default`/`ghost`; `error`                       |
+| `Select`        | `select.tsx`        | `selectSize`: `sm`/`md`/`lg`; `variant`: `default`/`ghost`; `error`; includes chevron icon |
+| `Card`          | `card.tsx`          | `variant`: `raised`/`flat`/`outlined`; sub-components: `Card.Header` (`heading`, `description`, `action`), `Card.Body`, `Card.Footer` (`align`) |
+| `Avatar`        | `avatar.tsx`        | `size`: `xs`/`sm`/`md`/`lg`/`xl`; `src`, `displayName`, `email`; gradient fallback with initials |
+| `Spinner`       | `spinner.tsx`       | `size`: `xs`/`sm`/`md`/`lg`; uses `<output>` element for a11y |
+| `Alert`         | `alert.tsx`         | `status`: `error`/`success`/`warning`/`info`; `title`, `onDismiss`; default status icons |
+| `Badge`         | `badge.tsx`         | `variant`: `default`/`primary`/`success`/`danger`/`warning`/`info`; `size`, `solid`, `dot` |
+| `FormField`     | `form-field.tsx`    | `label`, `htmlFor`, `hint`, `error`; wraps any input component |
+| `ThemeToggle`   | `theme-toggle.tsx`  | Segmented picker for light/dark/system; also `ThemeToggleCompact` (icon-only cycle button) |
+
+### Component usage rules
+
+- **Always** use design system components instead of raw HTML elements for buttons, inputs, selects, textareas, cards, alerts, and avatars
+- **Always** use semantic token classes (`bg-primary`, `text-text`, `border-border`, etc.) instead of raw Tailwind palette colors (`bg-violet-600`, `text-gray-900`, etc.) in all files
+- When adding new components to the design system, export them from `web/src/components/ui/index.ts` and use the same token-based approach
+- To add a new theme, add a `[data-theme="your-theme"]` block in `app.css` overriding the same CSS custom properties
+
+### UI/UX & design guidelines
+
+- **Produce world-class UI designs** with a focus on usability, aesthetics, and modern design principles
+- Implement **subtle micro-interactions** (e.g., button hover effects, and smooth transitions)
+- Ensure **clean typography, spacing, and layout balance** for a refined, premium look
+- Focus on **delightful details** like hover effects, loading states, and smooth page transitions
+
+---
+
+## Backend (Elixir / Phoenix)
 
 ### Phoenix v1.8 guidelines
 
@@ -15,38 +168,26 @@ This is a web application written using the Phoenix web framework.
 - Phoenix v1.8 moved the `<.flash_group>` component to the `Layouts` module. You are **forbidden** from calling `<.flash_group>` outside of the `layouts.ex` module
 - Out of the box, `core_components.ex` imports an `<.icon name="hero-x-mark" class="w-5 h-5"/>` component for for hero icons. **Always** use the `<.icon>` component for icons, **never** use `Heroicons` modules or similar
 - **Always** use the imported `<.input>` component for form inputs from `core_components.ex` when available. `<.input>` is imported and using it will save steps and prevent errors
-- If you override the default input classes (`<.input class="myclass px-2 py-1 rounded-lg">)`) class with your own values, no default classes are inherited, so your
-custom classes must fully style the input
+- If you override the default input classes (`<.input class="myclass px-2 py-1 rounded-lg">)`) class with your own values, no default classes are inherited, so your custom classes must fully style the input
 
-### JS and CSS guidelines
+### Phoenix router guidelines
 
-- **Use Tailwind CSS classes and custom CSS rules** to create polished, responsive, and visually stunning interfaces.
-- Tailwindcss v4 **no longer needs a tailwind.config.js** and uses a new import syntax in `app.css`:
+- Remember Phoenix router `scope` blocks include an optional alias which is prefixed for all routes within the scope. **Always** be mindful of this when creating routes within a scope to avoid duplicate module prefixes.
 
-      @import "tailwindcss" source(none);
-      @source "../css";
-      @source "../js";
-      @source "../../lib/my_app_web";
+- You **never** need to create your own `alias` for route definitions! The `scope` provides the alias, ie:
 
-- **Always use and maintain this import syntax** in the app.css file for projects generated with `phx.new`
-- **Never** use `@apply` when writing raw css
-- **Always** manually write your own tailwind-based components instead of using daisyUI for a unique, world-class design
-- Out of the box **only the app.js and app.css bundles are supported**
-  - You cannot reference an external vendor'd script `src` or link `href` in the layouts
-  - You must import the vendor deps into app.js and app.css to use them
-  - **Never write inline <script>custom js</script> tags within templates**
+      scope "/admin", AppWeb.Admin do
+        pipe_through :browser
 
-### UI/UX & design guidelines
+        live "/users", UserLive, :index
+      end
 
-- **Produce world-class UI designs** with a focus on usability, aesthetics, and modern design principles
-- Implement **subtle micro-interactions** (e.g., button hover effects, and smooth transitions)
-- Ensure **clean typography, spacing, and layout balance** for a refined, premium look
-- Focus on **delightful details** like hover effects, loading states, and smooth page transitions
+  the UserLive route would point to the `AppWeb.Admin.UserLive` module
 
+- `Phoenix.View` no longer is needed or included with Phoenix, don't use it
 
-<!-- usage-rules-start -->
+---
 
-<!-- phoenix:elixir-start -->
 ## Elixir guidelines
 
 - Elixir lists **do not support index based access via the access syntax**
@@ -85,11 +226,27 @@ custom classes must fully style the input
 - Elixir's builtin OTP primitives like `DynamicSupervisor` and `Registry`, require names in the child spec, such as `{DynamicSupervisor, name: MyApp.MyDynamicSup}`, then you can use `DynamicSupervisor.start_child(MyApp.MyDynamicSup, child_spec)`
 - Use `Task.async_stream(collection, callback, options)` for concurrent enumeration with back-pressure. The majority of times you will want to pass `timeout: :infinity` as option
 
+---
+
+## Ecto guidelines
+
+- **Always** preload Ecto associations in queries when they'll be accessed in templates, ie a message that needs to reference the `message.user.email`
+- Remember `import Ecto.Query` and other supporting modules when you write `seeds.exs`
+- `Ecto.Schema` fields always use the `:string` type, even for `:text`, columns, ie: `field :name, :string`
+- `Ecto.Changeset.validate_number/2` **DOES NOT SUPPORT the `:allow_nil` option**. By default, Ecto validations only run if a change for the given field exists and the change value is not nil, so such as option is never needed
+- You **must** use `Ecto.Changeset.get_field(changeset, :field)` to access changeset fields
+- Fields which are set programatically, such as `user_id`, must not be listed in `cast` calls or similar for security purposes. Instead they must be explicitly set when creating the struct
+- **Always** invoke `mix ecto.gen.migration migration_name_using_underscores` when generating migration files, so the correct timestamp and conventions are applied
+
+---
+
 ## Mix guidelines
 
 - Read the docs and options before using tasks (by using `mix help task_name`)
 - To debug test failures, run tests in a specific file with `mix test test/my_test.exs` or run all previously failed tests with `mix test --failed`
 - `mix deps.clean --all` is **almost never needed**. **Avoid** using it unless you have good reason
+
+---
 
 ## Test guidelines
 
@@ -101,36 +258,3 @@ custom classes must fully style the input
       assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
 
    - Instead of sleeping to synchronize before the next call, **always** use `_ = :sys.get_state/1` to ensure the process has handled prior messages
-<!-- phoenix:elixir-end -->
-
-<!-- phoenix:phoenix-start -->
-## Phoenix guidelines
-
-- Remember Phoenix router `scope` blocks include an optional alias which is prefixed for all routes within the scope. **Always** be mindful of this when creating routes within a scope to avoid duplicate module prefixes.
-
-- You **never** need to create your own `alias` for route definitions! The `scope` provides the alias, ie:
-
-      scope "/admin", AppWeb.Admin do
-        pipe_through :browser
-
-        live "/users", UserLive, :index
-      end
-
-  the UserLive route would point to the `AppWeb.Admin.UserLive` module
-
-- `Phoenix.View` no longer is needed or included with Phoenix, don't use it
-<!-- phoenix:phoenix-end -->
-
-<!-- phoenix:ecto-start -->
-## Ecto Guidelines
-
-- **Always** preload Ecto associations in queries when they'll be accessed in templates, ie a message that needs to reference the `message.user.email`
-- Remember `import Ecto.Query` and other supporting modules when you write `seeds.exs`
-- `Ecto.Schema` fields always use the `:string` type, even for `:text`, columns, ie: `field :name, :string`
-- `Ecto.Changeset.validate_number/2` **DOES NOT SUPPORT the `:allow_nil` option**. By default, Ecto validations only run if a change for the given field exists and the change value is not nil, so such as option is never needed
-- You **must** use `Ecto.Changeset.get_field(changeset, :field)` to access changeset fields
-- Fields which are set programatically, such as `user_id`, must not be listed in `cast` calls or similar for security purposes. Instead they must be explicitly set when creating the struct
-- **Always** invoke `mix ecto.gen.migration migration_name_using_underscores` when generating migration files, so the correct timestamp and conventions are applied
-<!-- phoenix:ecto-end -->
-
-<!-- usage-rules-end -->

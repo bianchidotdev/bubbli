@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button, Card } from "../components/ui";
 import { useAuth } from "../lib/auth";
 
 export const Route = createFileRoute("/")({
@@ -20,61 +21,68 @@ function AuthenticatedHome({ displayName }: { displayName: string | null }) {
 		<div className="space-y-8">
 			{/* Greeting */}
 			<div>
-				<h1 className="text-2xl font-bold tracking-tight text-gray-900">
+				<h1 className="text-2xl font-bold tracking-tight text-text">
 					{displayName ? `Hey, ${displayName}` : "Welcome back"} 👋
 				</h1>
-				<p className="mt-1 text-sm text-gray-500">
+				<p className="mt-1 text-sm text-text-tertiary">
 					Here's what's happening in your circles.
 				</p>
 			</div>
 
 			{/* Empty feed placeholder */}
-			<div className="flex flex-col items-center rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
-				<div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-violet-100">
-					<svg
-						className="h-7 w-7 text-violet-600"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-						strokeWidth={1.5}
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
-						/>
-					</svg>
-				</div>
-				<h2 className="mt-4 text-lg font-semibold text-gray-900">
-					Your feed is empty
-				</h2>
-				<p className="mt-1 max-w-sm text-sm text-gray-500">
-					Connect with friends and add them to your circles to start seeing
-					their posts here.
-				</p>
+			<Card variant="outlined" className="border-dashed">
+				<Card.Body>
+					<div className="flex flex-col items-center px-6 py-10 text-center">
+						<div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft">
+							<svg
+								className="h-7 w-7 text-primary"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								strokeWidth={1.5}
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
+								/>
+							</svg>
+						</div>
+						<h2 className="mt-4 text-lg font-semibold text-text">
+							Your feed is empty
+						</h2>
+						<p className="mt-1 max-w-sm text-sm text-text-tertiary">
+							Connect with friends and add them to your circles to start seeing
+							their posts here.
+						</p>
 
-				<div className="mt-6 flex gap-3">
-					<Link
-						to="/profile"
-						className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none"
-					>
-						<svg
-							className="h-4 w-4"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2}
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-							/>
-						</svg>
-						Set up your profile
-					</Link>
-				</div>
-			</div>
+						<div className="mt-6 flex gap-3">
+							<Link to="/profile">
+								<Button
+									variant="primary"
+									iconLeft={
+										<svg
+											className="h-4 w-4"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+											strokeWidth={2}
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+											/>
+										</svg>
+									}
+								>
+									Set up your profile
+								</Button>
+							</Link>
+						</div>
+					</div>
+				</Card.Body>
+			</Card>
 		</div>
 	);
 }
@@ -85,15 +93,15 @@ function UnauthenticatedHome() {
 			<div className="w-full max-w-lg space-y-8 text-center">
 				{/* Hero */}
 				<div className="space-y-4">
-					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-200">
-						<span className="text-3xl font-bold text-white">b</span>
+					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+						<span className="text-3xl font-bold text-on-primary">b</span>
 					</div>
-					<h1 className="text-4xl font-bold tracking-tight text-gray-900">
+					<h1 className="text-4xl font-bold tracking-tight text-text">
 						Your circles,
 						<br />
-						<span className="text-violet-600">your rules</span>
+						<span className="text-primary">your rules</span>
 					</h1>
-					<p className="mx-auto max-w-md text-base text-gray-500">
+					<p className="mx-auto max-w-md text-base text-text-tertiary">
 						Bubbli is a social space where you control who sees what. Share
 						moments with close friends, family, or everyone — it's up to you.
 					</p>
@@ -101,26 +109,29 @@ function UnauthenticatedHome() {
 
 				{/* CTA */}
 				<div className="flex flex-col items-center gap-3">
-					<Link
-						to="/login"
-						className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-violet-700 hover:shadow-md focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none"
-					>
-						Get started
-						<svg
-							className="h-4 w-4"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2.5}
+					<Link to="/login">
+						<Button
+							size="lg"
+							iconRight={
+								<svg
+									className="h-4 w-4"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									strokeWidth={2.5}
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+									/>
+								</svg>
+							}
 						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-							/>
-						</svg>
+							Get started
+						</Button>
 					</Link>
-					<p className="text-xs text-gray-400">
+					<p className="text-xs text-text-placeholder">
 						No password needed — sign in with a magic link
 					</p>
 				</div>
@@ -176,10 +187,10 @@ function FeatureCard({
 	description: string;
 }) {
 	return (
-		<div className="rounded-xl border border-gray-200 bg-white p-4 text-center transition-shadow hover:shadow-md">
-			<div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50">
+		<Card variant="outlined" className="p-4 text-center hover:shadow-md">
+			<div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-primary-soft">
 				<svg
-					className="h-5 w-5 text-violet-600"
+					className="h-5 w-5 text-primary"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -188,8 +199,8 @@ function FeatureCard({
 					{icon}
 				</svg>
 			</div>
-			<h3 className="mt-2.5 text-sm font-semibold text-gray-900">{title}</h3>
-			<p className="mt-0.5 text-xs text-gray-500">{description}</p>
-		</div>
+			<h3 className="mt-2.5 text-sm font-semibold text-text">{title}</h3>
+			<p className="mt-0.5 text-xs text-text-tertiary">{description}</p>
+		</Card>
 	);
 }

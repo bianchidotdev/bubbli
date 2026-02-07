@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { useState } from "react";
+import { Avatar, Button, Spinner, ThemeToggleCompact } from "../components/ui";
 import { useAuth } from "../lib/auth";
 
 interface RouterContext {
@@ -30,12 +31,12 @@ function RootComponent() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50 text-gray-900">
-			<header className="sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+		<div className="min-h-screen bg-surface-sunken text-text">
+			<header className="sticky top-0 z-30 border-b border-border bg-surface-overlay backdrop-blur-md">
 				<nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
 					<Link
 						to="/"
-						className="text-xl font-bold tracking-tight transition-colors hover:text-violet-600"
+						className="text-xl font-bold tracking-tight transition-colors hover:text-primary"
 					>
 						bubbli
 					</Link>
@@ -45,23 +46,26 @@ function RootComponent() {
 							<NavLink to="/" label="Feed" />
 							<NavLink to="/profile" label="Profile" />
 
+							<ThemeToggleCompact className="ml-1" />
+
 							{/* User menu */}
 							<div className="relative ml-2">
 								<button
 									type="button"
 									onClick={() => setMenuOpen((o) => !o)}
-									className="flex items-center gap-2 rounded-full border border-gray-200 py-1.5 pr-3 pl-1.5 text-sm font-medium transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm"
+									className="flex items-center gap-2 rounded-full border border-border py-1.5 pr-3 pl-1.5 text-sm font-medium transition-all hover:border-border-strong hover:bg-surface-sunken hover:shadow-sm"
 								>
-									<span className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-100 text-xs font-semibold text-violet-700">
-										{user?.display_name?.[0]?.toUpperCase() ??
-											user?.email?.[0]?.toUpperCase() ??
-											"?"}
-									</span>
-									<span className="max-w-[120px] truncate text-gray-700">
+									<Avatar
+										displayName={user?.display_name}
+										email={user?.email}
+										src={user?.avatar_url}
+										size="xs"
+									/>
+									<span className="max-w-[120px] truncate text-text-secondary">
 										{user?.display_name ?? user?.email ?? "Account"}
 									</span>
 									<svg
-										className={`h-3.5 w-3.5 text-gray-400 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+										className={`h-3.5 w-3.5 text-text-placeholder transition-transform ${menuOpen ? "rotate-180" : ""}`}
 										fill="none"
 										viewBox="0 0 24 24"
 										stroke="currentColor"
@@ -88,22 +92,22 @@ function RootComponent() {
 												if (e.key === "Escape") setMenuOpen(false);
 											}}
 										/>
-										<div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
-											<div className="border-b border-gray-100 px-4 py-2.5">
-												<p className="truncate text-sm font-medium text-gray-900">
+										<div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-surface-raised py-1 shadow-lg">
+											<div className="border-b border-border px-4 py-2.5">
+												<p className="truncate text-sm font-medium text-text">
 													{user?.display_name ?? "No name set"}
 												</p>
-												<p className="truncate text-xs text-gray-500">
+												<p className="truncate text-xs text-text-tertiary">
 													{user?.email}
 												</p>
 											</div>
 											<Link
 												to="/profile"
 												onClick={() => setMenuOpen(false)}
-												className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+												className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-surface-sunken"
 											>
 												<svg
-													className="h-4 w-4 text-gray-400"
+													className="h-4 w-4 text-text-placeholder"
 													fill="none"
 													viewBox="0 0 24 24"
 													stroke="currentColor"
@@ -120,10 +124,10 @@ function RootComponent() {
 											<button
 												type="button"
 												onClick={handleLogout}
-												className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
+												className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-danger transition-colors hover:bg-danger-soft"
 											>
 												<svg
-													className="h-4 w-4 text-red-400"
+													className="h-4 w-4 text-danger/70"
 													fill="none"
 													viewBox="0 0 24 24"
 													stroke="currentColor"
@@ -143,12 +147,16 @@ function RootComponent() {
 							</div>
 						</div>
 					) : (
-						<Link
-							to="/login"
-							className="rounded-lg bg-violet-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-violet-700"
-						>
-							Sign in
-						</Link>
+						<div className="flex items-center gap-2">
+							<ThemeToggleCompact />
+							<Button
+								variant="primary"
+								size="sm"
+								onClick={() => router.navigate({ to: "/login" })}
+							>
+								Sign in
+							</Button>
+						</div>
 					)}
 				</nav>
 			</header>
@@ -157,8 +165,8 @@ function RootComponent() {
 				{isLoading ? (
 					<div className="flex items-center justify-center py-20">
 						<div className="flex flex-col items-center gap-3">
-							<div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
-							<p className="text-sm text-gray-500">Loading...</p>
+							<Spinner size="lg" />
+							<p className="text-sm text-text-tertiary">Loading...</p>
 						</div>
 					</div>
 				) : (
@@ -176,7 +184,7 @@ function NavLink({ to, label }: { to: string; label: string }) {
 	return (
 		<Link
 			to={to}
-			className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 [&.active]:bg-violet-50 [&.active]:text-violet-700"
+			className="rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text [&.active]:bg-primary-soft [&.active]:text-on-primary-soft"
 		>
 			{label}
 		</Link>

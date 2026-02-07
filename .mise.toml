@@ -3,6 +3,27 @@ elixir = "1.19"
 erlang = "28"
 go = "1.25"
 bun = "latest"
+lefthook = "2"
+
+[tasks."githook:install"]
+run = "lefthook install"
+
+[tasks.precommit]
+depends = ["detect-secrets", "web:lint", "web:format", "back:format"]
+
+[tasks."detect-secrets"]
+run = "detect-secrets audit .secrets-baseline.json"
+
+[tasks."web:lint"]
+dir = "web"
+run = "bun run lint"
+
+[tasks."web:format"]
+dir = "web"
+run = "bun run format"
+
+[tasks."back:format"]
+run = "mix format"
 
 [tasks.dev]
 depends = ["web:dev", "back:dev", "caddy:dev"]

@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { magicLinkCallback } from "../api/auth";
+import { Button, Spinner } from "../components/ui";
 import { useAuth } from "../lib/auth";
 
 type CallbackSearch = {
@@ -55,9 +56,9 @@ function MagicLinkCallbackPage() {
 			<div className="flex min-h-[70vh] items-center justify-center">
 				<div className="w-full max-w-sm space-y-6 text-center">
 					{/* Error icon */}
-					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-danger-soft">
 						<svg
-							className="h-8 w-8 text-red-600"
+							className="h-8 w-8 text-danger"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -72,30 +73,30 @@ function MagicLinkCallbackPage() {
 					</div>
 
 					<div>
-						<h1 className="text-xl font-bold text-gray-900">Sign-in failed</h1>
-						<p className="mt-2 text-sm text-gray-600">{error}</p>
+						<h1 className="text-xl font-bold text-text">Sign-in failed</h1>
+						<p className="mt-2 text-sm text-text-secondary">{error}</p>
 					</div>
 
-					<button
-						type="button"
+					<Button
 						onClick={() => router.navigate({ to: "/login", replace: true })}
-						className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none"
+						iconLeft={
+							<svg
+								className="h-4 w-4"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								strokeWidth={2}
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+								/>
+							</svg>
+						}
 					>
-						<svg
-							className="h-4 w-4"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2}
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-							/>
-						</svg>
 						Back to sign in
-					</button>
+					</Button>
 				</div>
 			</div>
 		);
@@ -105,8 +106,10 @@ function MagicLinkCallbackPage() {
 	return (
 		<div className="flex min-h-[70vh] items-center justify-center">
 			<div className="flex flex-col items-center gap-4">
-				<div className="h-10 w-10 animate-spin rounded-full border-[3px] border-violet-200 border-t-violet-600" />
-				<p className="text-sm font-medium text-gray-500">Signing you in...</p>
+				<Spinner size="lg" />
+				<p className="text-sm font-medium text-text-tertiary">
+					Signing you in...
+				</p>
 			</div>
 		</div>
 	);

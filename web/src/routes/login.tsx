@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { requestMagicLink } from "../api/auth";
+import { Alert, Button, FormField, Input } from "../components/ui";
 import { useAuth } from "../lib/auth";
 
 export const Route = createFileRoute("/login")({
@@ -50,9 +51,9 @@ function LoginForm() {
 			<div className="flex min-h-[70vh] items-center justify-center">
 				<div className="w-full max-w-sm space-y-6 text-center">
 					{/* Envelope icon */}
-					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-violet-100">
+					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft">
 						<svg
-							className="h-8 w-8 text-violet-600"
+							className="h-8 w-8 text-primary"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -67,31 +68,29 @@ function LoginForm() {
 					</div>
 
 					<div>
-						<h1 className="text-2xl font-bold text-gray-900">
-							Check your email
-						</h1>
-						<p className="mt-2 text-gray-600">
+						<h1 className="text-2xl font-bold text-text">Check your email</h1>
+						<p className="mt-2 text-text-secondary">
 							We sent a magic link to{" "}
-							<span className="font-medium text-gray-900">{email}</span>
+							<span className="font-medium text-text">{email}</span>
 						</p>
 					</div>
 
-					<p className="text-sm text-gray-500">
+					<p className="text-sm text-text-tertiary">
 						Click the link in the email to sign in. It may take a minute to
 						arrive.
 					</p>
 
 					<div className="pt-2">
-						<button
-							type="button"
+						<Button
+							variant="ghost"
+							size="sm"
 							onClick={() => {
 								setSubmitted(false);
 								setEmail("");
 							}}
-							className="text-sm font-medium text-violet-600 transition-colors hover:text-violet-800"
 						>
 							← Try a different email
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -103,47 +102,28 @@ function LoginForm() {
 			<div className="w-full max-w-sm space-y-8">
 				{/* Logo & heading */}
 				<div className="text-center">
-					<div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-200">
-						<span className="text-2xl font-bold text-white">b</span>
+					<div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+						<span className="text-2xl font-bold text-on-primary">b</span>
 					</div>
-					<h1 className="text-2xl font-bold tracking-tight text-gray-900">
+					<h1 className="text-2xl font-bold tracking-tight text-text">
 						Welcome to Bubbli
 					</h1>
-					<p className="mt-1 text-sm text-gray-500">
+					<p className="mt-1 text-sm text-text-tertiary">
 						Sign in with a magic link — no password needed
 					</p>
 				</div>
 
 				{/* Error message */}
 				{error && (
-					<div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-						<svg
-							className="mt-0.5 h-4 w-4 shrink-0 text-red-500"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2}
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-							/>
-						</svg>
-						<p className="text-sm text-red-700">{error}</p>
-					</div>
+					<Alert status="error" onDismiss={() => setError(null)}>
+						{error}
+					</Alert>
 				)}
 
 				{/* Form */}
 				<form onSubmit={handleSubmit} className="space-y-4">
-					<div>
-						<label
-							htmlFor="email"
-							className="block text-sm font-medium text-gray-700"
-						>
-							Email address
-						</label>
-						<input
+					<FormField label="Email address" htmlFor="email">
+						<Input
 							id="email"
 							type="email"
 							required
@@ -153,26 +133,28 @@ function LoginForm() {
 							disabled={loading}
 							autoComplete="email"
 							autoFocus
-							className="mt-1.5 block w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition-all placeholder:text-gray-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
 						/>
-					</div>
-					<button
-						type="submit"
-						disabled={loading || !email}
-						className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+					</FormField>
+
+					<Button
+						variant="primary"
+						size="md"
+						loading={loading}
+						disabled={!email}
+						className="w-full"
+						onClick={(e) => {
+							// Let the form handle submission
+							const form = (e.target as HTMLElement).closest("form");
+							if (form) {
+								form.requestSubmit();
+							}
+						}}
 					>
-						{loading ? (
-							<>
-								<div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-								Sending...
-							</>
-						) : (
-							"Send magic link"
-						)}
-					</button>
+						{loading ? "Sending..." : "Send magic link"}
+					</Button>
 				</form>
 
-				<p className="text-center text-xs text-gray-400">
+				<p className="text-center text-xs text-text-placeholder">
 					We'll send a one-time sign-in link to your email.
 					<br />
 					No account? One will be created automatically.

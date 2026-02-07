@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
 import { AuthProvider } from "./lib/auth";
+import { ThemeProvider } from "./lib/theme";
 import { routeTree } from "./routeTree.gen";
 
 const queryClient = new QueryClient({
@@ -35,10 +36,12 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
 	<StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<AuthProvider>
-				<RouterProvider router={router} />
-			</AuthProvider>
-		</QueryClientProvider>
+		<ThemeProvider>
+			<QueryClientProvider client={queryClient}>
+				<AuthProvider>
+					<RouterProvider router={router} />
+				</AuthProvider>
+			</QueryClientProvider>
+		</ThemeProvider>
 	</StrictMode>,
 );
