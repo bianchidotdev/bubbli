@@ -1,4 +1,5 @@
 import Config
+config :ash, policies: [show_policy_breakdowns?: true]
 
 # Configure your database
 config :bubbli, Bubbli.Repo,
@@ -46,7 +47,10 @@ config :bubbli, BubbliWeb.Endpoint,
 # different ports.
 
 # Enable dev routes for dashboard and mailbox
-config :bubbli, dev_routes: true
+config :bubbli,
+  dev_routes: true,
+  token_signing_secret: "kgQrkH7xv3f2IV1h40YMxYuP1XsTTQCW",
+  frontend_url: "http://localhost:5173"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

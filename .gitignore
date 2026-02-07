@@ -1,3 +1,8 @@
+# Web frontend
+/web/node_modules/
+/web/dist/
+/web/src/routeTree.gen.ts
+
 # The directory Mix will write compiled artifacts to.
 /_build/
 
@@ -34,4 +39,3 @@ bubbli-*.tar
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
 /assets/node_modules/
-

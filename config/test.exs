@@ -1,4 +1,7 @@
 import Config
+config :bubbli, token_signing_secret: "QEfc3JJxJSJek5c50EAG0I8hJKFaECDO"
+config :bcrypt_elixir, log_rounds: 1
+config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 
 # Configure your database
 #

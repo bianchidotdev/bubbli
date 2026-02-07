@@ -68,6 +68,14 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :bubbli,
+    token_signing_secret:
+      System.get_env("TOKEN_SIGNING_SECRET") ||
+        raise("Missing environment variable `TOKEN_SIGNING_SECRET`!"),
+    frontend_url:
+      System.get_env("FRONTEND_URL") ||
+        raise("Missing environment variable `FRONTEND_URL`!")
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

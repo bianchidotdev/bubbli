@@ -10,7 +10,8 @@ defmodule Bubbli.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      consolidate_protocols: Mix.env() != :dev
     ]
   end
 
@@ -39,6 +40,8 @@ defmodule Bubbli.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:picosat_elixir, "~> 0.2"},
+      {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:open_api_spex, "~> 3.0"},
       {:cors_plug, "~> 3.0"},
       {:ash_authentication, "~> 4.0"},
@@ -69,10 +72,10 @@ defmodule Bubbli.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ash.setup", "run priv/repo/seeds.exs"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ash.setup --quiet", "test"],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
   end
