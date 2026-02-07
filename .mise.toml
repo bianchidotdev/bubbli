@@ -28,7 +28,11 @@ run = "mix format"
 [tasks.dev]
 depends = ["web:dev", "back:dev", "caddy:dev"]
 
+[tasks.dbstart]
+run = "docker-compose up -d"
+
 [tasks."back:dev"]
+depends = ["dbstart"]
 run = "mix phx.server"
 
 [tasks."web:dev"]
