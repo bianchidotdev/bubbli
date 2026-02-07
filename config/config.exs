@@ -7,63 +7,19 @@
 # General application configuration
 import Config
 
-config :ash,
-  allow_forbidden_field_for_relationships_by_default?: true,
-  include_embedded_source_by_default?: false,
-  show_keysets_for_all_actions?: false,
-  default_page_type: :keyset,
-  policies: [no_filter_static_forbidden_reads?: false],
-  keep_read_action_loads_when_loading?: false,
-  default_actions_require_atomic?: true,
-  read_action_after_action_hooks_in_order?: true,
-  bulk_actions_default_to_errors?: true,
-  transaction_rollback_on_error?: true,
-  known_types: [AshPostgres.Timestamptz, AshPostgres.TimestamptzUsec]
-
-config :spark,
-  formatter: [
-    remove_parens?: true,
-    "Ash.Resource": [
-      section_order: [
-        :postgres,
-        :authentication,
-        :token,
-        :user_identity,
-        :resource,
-        :code_interface,
-        :actions,
-        :policies,
-        :pub_sub,
-        :preparations,
-        :changes,
-        :validations,
-        :multitenancy,
-        :attributes,
-        :relationships,
-        :calculations,
-        :aggregates,
-        :identities
-      ]
-    ],
-    "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]]
-  ]
-
 config :bubbli,
   ecto_repos: [Bubbli.Repo],
-  generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Bubbli.Accounts],
-  ash_authentication: [return_error_on_invalid_magic_link_token?: true]
+  generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint
 config :bubbli, BubbliWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: BubbliWeb.ErrorHTML, json: BubbliWeb.ErrorJSON],
+    formats: [json: BubbliWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Bubbli.PubSub,
-  live_view: [signing_salt: "kl+I6Xnh"]
+  pubsub_server: Bubbli.PubSub
 
 # Configure the mailer
 #
@@ -73,27 +29,6 @@ config :bubbli, BubbliWeb.Endpoint,
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
 config :bubbli, Bubbli.Mailer, adapter: Swoosh.Adapters.Local
-
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.25.4",
-  bubbli: [
-    args:
-      ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
-  ]
-
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "4.1.12",
-  bubbli: [
-    args: ~w(
-      --input=assets/css/app.css
-      --output=priv/static/assets/css/app.css
-    ),
-    cd: Path.expand("..", __DIR__)
-  ]
 
 # Configure Elixir's Logger
 config :logger, :default_formatter,

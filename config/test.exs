@@ -1,7 +1,4 @@
 import Config
-config :bubbli, token_signing_secret: "OGoTaxieg82fNRMy7joLfYnymazJJb8B"
-config :bcrypt_elixir, log_rounds: 1
-config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 
 # Configure your database
 #
@@ -20,7 +17,7 @@ config :bubbli, Bubbli.Repo,
 # you can enable the server option below.
 config :bubbli, BubbliWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "MYnbmgkR5Jb5iF3eFFYx++jAhcOY0y6Y2C8Bzbd+t2CRY80b0FAKPHmYVQcuXiIl",
+  secret_key_base: "tVek5HDx/Uu6swKAWEaO0wXc6x+TtfvZap2PGmflS3BBZnZmT/w+oTTVHAdmHleC",
   server: false
 
 # In test we don't send emails
@@ -34,10 +31,6 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Enable helpful, but potentially expensive runtime checks
-config :phoenix_live_view,
-  enable_expensive_runtime_checks: true
 
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
