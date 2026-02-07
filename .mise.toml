@@ -60,4 +60,4 @@ run = "caddy run --config Caddyfile.dev"
 run = "docker-compose -f docker/devex-compose.yaml up -d"
 
 [tasks."detect-secrets"]
-run = "detect-secrets audit .secrets-baseline.json"
+run = "git diff --staged --name-only -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline"
