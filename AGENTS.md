@@ -39,6 +39,52 @@ bubbli/
 
 ---
 
+## Tidewave MCP
+
+This project includes [Tidewave](https://tidewave.ai), which exposes an MCP server at `http://localhost:4000/tidewave/mcp` (streamable HTTP). It integrates your coding agent directly with the Phoenix runtime, giving it access to logs, the database, documentation, and live code evaluation — all within the context of the running app.
+
+### Available tools
+
+| Tool                   | What it does                                                        |
+|------------------------|---------------------------------------------------------------------|
+| `project_eval`         | Evaluate Elixir code in the running application context             |
+| `get_docs`             | Fetch documentation for any module/function (project or deps)       |
+| `get_source_location`  | Find the source file for any module/function (project or deps)      |
+| `get_logs`             | Read application logs (excluding tool-generated noise)              |
+| `get_ecto_schemas`     | List all Ecto schema modules and their file paths                   |
+| `execute_sql_query`    | Run SQL queries against the project's Ecto repo (PostgreSQL)        |
+| `search_package_docs`  | Search Hex documentation for the project's dependencies             |
+
+### Agent rules
+
+Always prefer Tidewave tools over manual alternatives:
+
+- Use `project_eval` to evaluate Elixir code — **never** use shell tools for this
+- Use `get_docs` to read module/function documentation and `get_source_location` to find definitions — these work even for dependencies not yet used in the codebase
+- Use `execute_sql_query` to inspect database state (read-only queries)
+- Use `get_ecto_schemas` to discover available schemas instead of grepping the file system
+- Use `get_logs` to check for runtime errors or request logs
+- Use `search_package_docs` to search Hex docs for any project dependency
+
+### Database safety
+
+- **Never** execute `INSERT`, `UPDATE`, `DELETE`, `DROP`, `TRUNCATE`, `ALTER`, or any other mutating SQL via `execute_sql_query` — it is for **read-only queries only** (e.g., `SELECT`, `EXPLAIN`)
+- All database mutations must go through application code (Ash actions, Ecto changesets, migrations) so that validations, policies, and audit trails are respected
+- If you need to seed or fix data, use `project_eval` to call the appropriate Ash/Ecto functions instead
+
+### Tidewave MCP vs LSP
+
+Tidewave MCP complements (does not replace) Language Server Protocol tooling. Key differences:
+
+- **LSP** is file/line/column-based — it can only find information about symbols already referenced in the codebase
+- **Tidewave MCP** uses Elixir's module/function notation — it can explore any module or function, even from dependencies not yet imported
+- **Tidewave MCP** performs **runtime analysis**, which captures meta-programmed code (e.g., Ash resources, Ecto schemas) that static analysis misses
+- **Tidewave MCP** provides runtime-only capabilities (`project_eval`, `execute_sql_query`, `get_logs`) that LSP cannot offer
+
+Use both: Tidewave MCP for runtime intelligence, LSP for diagnostics and symbol search.
+
+---
+
 ## Frontend (`/web`)
 
 ### Package manager
