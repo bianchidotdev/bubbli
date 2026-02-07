@@ -41,7 +41,6 @@ defmodule Bubbli.Accounts.User do
       base "/users"
 
       get :read
-      index :read
 
       patch :update_profile, route: "/:id/profile"
     end
@@ -123,7 +122,14 @@ defmodule Bubbli.Accounts.User do
     end
 
     policy action_type(:read) do
-      authorize_if always()
+      # Can always read yourself
+      authorize_if expr(id == ^actor(:id))
+      # Can read anyone with a public profile
+      authorize_if expr(profile_visibility == :public)
+      # Can read users you've added to one of your circles
+      authorize_if expr(exists(circle_memberships, circle.owner_id == ^actor(:id)))
+      # Can read users who've added you to one of their circles
+      authorize_if expr(exists(owned_circles.members, user_id == ^actor(:id)))
     end
 
     policy action(:update_profile) do
@@ -172,6 +178,27 @@ defmodule Bubbli.Accounts.User do
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
+  end
+
+  relationships do
+    has_many :owned_circles, Bubbli.Social.Circle do
+      source_attribute :id
+      destination_attribute :owner_id
+    end
+
+    has_many :circle_memberships, Bubbli.Social.CircleMember do
+      source_attribute :id
+      destination_attribute :user_id
+    end
+  end
+
+  calculations do
+    calculate :system_circles,
+              {:array, :struct},
+              Bubbli.Accounts.User.Calculations.SystemCircles do
+      description "Virtual system circles defined in code, not the database"
+      public? true
+    end
   end
 
   identities do

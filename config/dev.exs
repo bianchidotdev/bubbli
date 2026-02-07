@@ -50,7 +50,7 @@ config :bubbli, BubbliWeb.Endpoint,
 config :bubbli,
   dev_routes: true,
   token_signing_secret: "kgQrkH7xv3f2IV1h40YMxYuP1XsTTQCW",
-  frontend_url: "http://localhost:5173"
+  frontend_url: "https://local.bubbli.org"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

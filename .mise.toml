@@ -3,3 +3,16 @@ elixir = "1.19"
 erlang = "28"
 go = "1.25"
 bun = "latest"
+
+[tasks.dev]
+depends = ["web:dev", "back:dev", "caddy:dev"]
+
+[tasks."back:dev"]
+run = "mix phx.server"
+
+[tasks."web:dev"]
+dir = "web"
+run = "bun run dev"
+
+[tasks."caddy:dev"]
+run = "caddy run"

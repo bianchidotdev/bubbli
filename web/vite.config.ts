@@ -12,6 +12,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ["local.bubbli.org"],
     port: 5173,
   },
 });

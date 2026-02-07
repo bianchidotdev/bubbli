@@ -1,11 +1,20 @@
-import createClient from "openapi-fetch";
+import createClient, { type Middleware } from "openapi-fetch";
+import { getToken } from "../lib/auth";
+import type { paths } from "./schema";
 
-// TODO: Import generated schema types once the backend OpenAPI endpoint is live.
-// Run `bun run generate-api` to generate src/api/schema.d.ts from the Phoenix API.
-//
-// import type { paths } from "./schema";
-// const api = createClient<paths>({ baseUrl: "/api" });
+const authMiddleware: Middleware = {
+  async onRequest({ request }) {
+    request.headers.set("Content-Type", "application/vnd.api+json");
+    request.headers.set("Accept", "application/vnd.api+json");
+    const token = getToken();
+    if (token) {
+      request.headers.set("Authorization", `Bearer ${token}`);
+    }
+    return request;
+  },
+};
 
-const api = createClient({ baseUrl: "/api" });
+const api = createClient<paths>({});
+api.use(authMiddleware);
 
 export default api;

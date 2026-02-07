@@ -62,7 +62,7 @@ config :spark,
 config :bubbli,
   ecto_repos: [Bubbli.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Bubbli.Accounts],
+  ash_domains: [Bubbli.Accounts, Bubbli.Social],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
 
 # Configure the endpoint

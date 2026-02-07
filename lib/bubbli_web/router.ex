@@ -6,6 +6,7 @@ defmodule BubbliWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug :load_from_bearer
+    plug :set_actor, :user
   end
 
   scope "/api" do

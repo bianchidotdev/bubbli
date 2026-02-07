@@ -1,11 +1,13 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-	type ReactNode,
 	createContext,
+	type ReactNode,
 	useCallback,
 	useContext,
 	useMemo,
 	useSyncExternalStore,
 } from "react";
+import { signOut as apiSignOut, fetchMe, type User } from "../api/auth";
 
 const TOKEN_KEY = "bubbli_token";
 
@@ -55,18 +57,52 @@ function getSnapshot(): string | null {
 }
 
 // ---------------------------------------------------------------------------
+// Query key & hook for /me
+// ---------------------------------------------------------------------------
+
+export const meQueryKey = ["auth", "me"] as const;
+
+/**
+ * Fetches the current user from `/api/auth/me`.
+ * Only enabled when a token exists in localStorage.
+ */
+export function useMe() {
+	const token = useSyncExternalStore(subscribe, getSnapshot, () => null);
+
+	return useQuery<User | null>({
+		queryKey: meQueryKey,
+		queryFn: async () => {
+			try {
+				return await fetchMe();
+			} catch {
+				// Token is invalid or expired — clear it
+				clearToken();
+				return null;
+			}
+		},
+		enabled: token !== null,
+		staleTime: 1000 * 60 * 5, // 5 minutes
+		retry: false,
+	});
+}
+
+// ---------------------------------------------------------------------------
 // Context
 // ---------------------------------------------------------------------------
 
 interface AuthContextValue {
 	/** Current bearer token, or null when signed out. */
 	token: string | null;
+	/** The authenticated user, or null when signed out / loading. */
+	user: User | null;
 	/** Whether the user has an active token. */
 	isAuthenticated: boolean;
+	/** Whether the /me query is currently loading. */
+	isLoading: boolean;
 	/** Store a token received from the magic-link callback. */
 	login: (token: string) => void;
-	/** Clear the stored token. */
-	logout: () => void;
+	/** Revoke the token server-side and clear local state. */
+	logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -77,23 +113,42 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const token = useSyncExternalStore(subscribe, getSnapshot, () => null);
+	const queryClient = useQueryClient();
 
-	const login = useCallback((newToken: string) => {
-		setToken(newToken);
-	}, []);
+	const { data: user = null, isLoading: meLoading } = useMe();
 
-	const logout = useCallback(() => {
+	const login = useCallback(
+		(newToken: string) => {
+			setToken(newToken);
+			// Invalidate the /me query so it refetches with the new token
+			queryClient.invalidateQueries({ queryKey: meQueryKey });
+		},
+		[queryClient],
+	);
+
+	const logout = useCallback(async () => {
+		try {
+			await apiSignOut();
+		} catch {
+			// Sign-out failed server-side, still clear locally
+		}
 		clearToken();
-	}, []);
+		queryClient.setQueryData(meQueryKey, null);
+		queryClient.invalidateQueries();
+	}, [queryClient]);
+
+	const isLoading = token !== null && meLoading;
 
 	const value = useMemo<AuthContextValue>(
 		() => ({
 			token,
-			isAuthenticated: token !== null,
+			user,
+			isAuthenticated: token !== null && user !== null,
+			isLoading,
 			login,
 			logout,
 		}),
-		[token, login, logout],
+		[token, user, isLoading, login, logout],
 	);
 
 	return <AuthContext value={value}>{children}</AuthContext>;
@@ -116,3 +171,4 @@ export function useAuth(): AuthContextValue {
 // ---------------------------------------------------------------------------
 
 export { getToken, setToken, clearToken };
+export type { User };

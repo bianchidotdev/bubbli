@@ -10,7 +10,7 @@
     "lint": "biome check src/",
     "format": "biome format --write src/",
     "check": "biome check --write src/",
-    "generate-api": "openapi-typescript http://localhost:4000/api/openapi -o src/api/schema.d.ts"
+    "generate-api": "openapi-typescript http://localhost:4000/api/open_api -o src/api/schema.d.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",

@@ -469,10 +469,10 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - [x] Set up OpenAPI spec endpoint (`/api/open_api` + SwaggerUI at `/api/swaggerui`)
 - [x] Create database, verify migration pipeline works
 - [x] Set up React app with Vite + TypeScript in `web/`
-- [ ] Configure OpenAPI client codegen (`bun run generate-api` against live backend)
+- [x] Configure OpenAPI client codegen (`bun run generate-api` against live backend)
 - [ ] Verify full stack: React → Caddy → Phoenix → Postgres round-trip
 
-### Phase 1: Auth & Users (in progress)
+### Phase 1: Auth & Users (nearly complete)
 
 - [x] Define `Bubbli.Accounts.User` Ash resource (email, display_name, handle, bio, avatar_url, profile_visibility, comment_visibility)
 - [x] Configure AshAuthentication magic link strategy (with email sender)
@@ -480,11 +480,11 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - [x] Auth controller routes (request magic link, callback, sign-out, me) at `/api/auth/*`
 - [x] JSON:API routes for users (index, get, update_profile) auto-generated
 - [x] Policies: unauthenticated access for auth actions, read for all, update_profile for self only
-- [ ] System circle creation on user registration (after_action hook or Ash change)
+- [x] System circle creation on user registration (Ash change on `sign_in_with_magic_link`)
 - [ ] Phoenix Channel: `user:{user_id}` with token auth
-- [ ] React: auth flow (request magic link → check email → token stored → authenticated)
-- [ ] React: basic app shell, routing, auth context
-- [ ] React: user profile view/edit
+- [x] React: auth flow (request magic link → check email → token stored → authenticated)
+- [x] React: basic app shell, routing, auth context
+- [x] React: user profile view/edit
 
 ### Phase 2: Connections
 
@@ -499,10 +499,10 @@ The viewer joins channels based on what they're looking at. The server broadcast
 
 ### Phase 3: Circles
 
-- [ ] Define `Bubbli.Social.Circle` Ash resource
-- [ ] Define `Bubbli.Social.CircleMember` Ash resource
-- [ ] System circle seeding on user creation (hook from Phase 1)
-- [ ] Prevent deletion of system circles
+- [x] Define `Bubbli.Social.Circle` Ash resource
+- [x] Define `Bubbli.Social.CircleMember` Ash resource
+- [x] System circle seeding on user creation (hook from Phase 1)
+- [x] Prevent deletion of system circles
 - [ ] Custom circle CRUD
 - [ ] Circle member management (add/remove connections)
 - [ ] View which circles a connection is in (from connection page)
@@ -588,91 +588,37 @@ The viewer joins channels based on what they're looking at. The server broadcast
 
 - Phoenix 1.8.3 project generated with `--no-html --no-live --no-dashboard`
 - Elixir 1.19 / Erlang OTP 28
-- PostgreSQL configured (not yet created)
+- PostgreSQL configured and running with all migrations applied
 - Mailer configured (Swoosh, local adapter for dev)
-- Caddy reverse proxy configured for dev
+- Caddy reverse proxy configured for dev (handle blocks for correct routing)
 - esbuild/tailwind/heroicons removed (React/Vite will handle frontend)
-- React web app scaffolded with Vite + TanStack Router + TanStack Query in `web/`
+- React web app with Vite + TanStack Router + TanStack Query in `web/`
 - Ash 3.15 installed with AshPostgres, AshJsonApi, AshAuthentication
 - `Bubbli.Accounts` domain with User and Token resources
+- `Bubbli.Social` domain with Circle and CircleMember resources
 - Magic link auth strategy fully working (request → email → token exchange → JWT)
 - Auth controller at `/api/auth/*` (request, callback, me, sign-out)
-- JSON:API endpoints at `/api/users` (index, get, update_profile)
+- JSON:API endpoints at `/api/users` and `/api/circles` (auto-generated)
 - OpenAPI spec at `/api/open_api`, SwaggerUI at `/api/swaggerui`
+- OpenAPI → TypeScript codegen working (`bun run generate-api`)
+- Typed `openapi-fetch` client with auth middleware (`src/api/client.ts`)
+- Auth API module for custom auth endpoints (`src/api/auth.ts`)
+- Auth context with token storage, `/me` query, login/logout (`src/lib/auth.tsx`)
+- React auth flow: login → magic link email → callback route → token exchange → redirect
+- React routes: `/`, `/login`, `/profile`, `/auth/magic-link/callback`
+- Profile page with view/edit mode (updates via JSON:API PATCH)
+- System circles (Private, All Friends, Public) auto-created on first user registration
 - CORSPlug configured in endpoint
-- Database created with all migrations applied
-- Clean compile, zero warnings
-
-### File structure
-
-```
-bubbli/
-├── config/
-│   ├── config.exs         ← main config (endpoint, mailer, json)
-│   ├── dev.exs            ← dev database, no watchers
-│   ├── test.exs           ← test database, sandbox pool
-│   ├── runtime.exs        ← prod runtime config (env vars)
-│   └── prod.exs
-├── lib/
-│   ├── bubbli/
-│   │   ├── application.ex ← OTP supervision tree
-│   │   ├── mailer.ex      ← Swoosh mailer
-│   │   └── repo.ex        ← Ecto repo (will become AshPostgres.Repo)
-│   ├── bubbli_web/
-│   │   ├── controllers/
-│   │   │   └── error_json.ex
-│   │   ├── endpoint.ex    ← HTTP endpoint (Bandit)
-│   │   ├── gettext.ex
-│   │   ├── router.ex      ← API pipeline, /api scope, dev mailbox
-│   │   └── telemetry.ex
-│   ├── bubbli.ex
-│   └── bubbli_web.ex      ← module macros (controller, router, channel)
-├── web/
-│   ├── src/
-│   │   ├── routes/
-│   │   │   ├── __root.tsx     ← root layout (app shell)
-│   │   │   ├── index.tsx      ← home / feed (placeholder)
-│   │   │   └── login.tsx      ← auth page (placeholder)
-│   │   ├── api/
-│   │   │   └── client.ts     ← openapi-fetch client instance
-│   │   ├── lib/
-│   │   │   └── auth.tsx       ← auth context
-│   │   ├── components/        ← shared components
-│   │   ├── main.tsx           ← entry point (Router + Query providers)
-│   │   ├── app.css            ← Tailwind v4 entry
-│   │   └── routeTree.gen.ts   ← auto-generated by TanStack Router
-│   ├── public/
-│   ├── index.html
-│   ├── package.json           ← bun as package manager
-│   ├── vite.config.ts
-│   ├── tsconfig.json
-│   ├── tsconfig.app.json
-│   ├── tsconfig.node.json
-│   └── biome.json
-├── priv/
-│   ├── repo/migrations/
-│   ├── static/            ← favicon, robots.txt
-│   └── gettext/
-├── test/
-├── mix.exs                ← deps: phoenix, ecto, postgrex, swoosh, req, etc.
-├── mix.lock
-├── .formatter.exs
-├── .gitignore
-├── .mise.toml             ← elixir 1.19, erlang 28, bun
-├── Caddyfile              ← dev proxy config
-├── LICENSE
-├── PLAN.md
-└── README.md
-```
+- Biome linting/formatting configured and passing
+- Clean compile, zero warnings, all tests passing
 
 ### What's next (immediate)
 
-1. Run `bun run generate-api` to generate typed API client from the OpenAPI spec
-2. Wire up React auth flow (login page → API → token storage → authenticated state)
-3. Verify full round-trip: React → Caddy → Phoenix → Postgres
-4. Add system circle creation on user registration
-5. Build out remaining Phase 1 React UI (profile view/edit)
-6. Begin Phase 2 (Connections)
+1. Verify full round-trip: React → Caddy → Phoenix → Postgres (manual test)
+2. Complete remaining Phase 1: Phoenix Channel `user:{user_id}` with token auth
+3. Begin Phase 2 (Connections): define `Bubbli.Social.Connection` resource
+4. Continue Phase 3: custom circle CRUD, circle member management, React UI
+5. Build React connection management UI (send/accept/reject, list friends)
 
 ---
 
