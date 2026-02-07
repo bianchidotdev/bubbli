@@ -4,15 +4,45 @@ erlang = "28"
 go = "1.25"
 bun = "latest"
 lefthook = "2"
+caddy = "2"
+
+##### Required for all contributors #####
 
 [tasks."githook:install"]
 run = "lefthook install"
 
+##### Convenience #####
+
 [tasks.precommit]
 depends = ["detect-secrets", "web:lint", "web:format", "back:format"]
 
-[tasks."detect-secrets"]
-run = "detect-secrets audit .secrets-baseline.json"
+[tasks.dev]
+depends = ["web:dev", "back:dev", "caddy:dev"]
+
+
+##### DB #####
+[tasks."db:start"]
+run = "docker-compose -f docker/db-compose.yaml up -d"
+
+[tasks."db:setup"]
+depends = ["db:start"]
+dir = "back"
+run = "mix ash.setup"
+
+##### Backend #####
+[tasks."back:dev"]
+depends = ["db:setup"]
+dir = "back"
+run = "mix phx.server"
+
+[tasks."back:format"]
+dir = "back"
+run = "mix format"
+
+##### Frontend #####
+[tasks."web:dev"]
+dir = "web"
+run = "bun run dev"
 
 [tasks."web:lint"]
 dir = "web"
@@ -22,22 +52,12 @@ run = "bun run lint"
 dir = "web"
 run = "bun run format"
 
-[tasks."back:format"]
-run = "mix format"
-
-[tasks.dev]
-depends = ["web:dev", "back:dev", "caddy:dev"]
-
-[tasks.dbstart]
-run = "docker-compose up -d"
-
-[tasks."back:dev"]
-depends = ["dbstart"]
-run = "mix phx.server"
-
-[tasks."web:dev"]
-dir = "web"
-run = "bun run dev"
-
+##### Accessories #####
 [tasks."caddy:dev"]
-run = "caddy run"
+run = "caddy run --config Caddyfile.dev"
+
+[tasks."devex:dev"]
+run = "docker-compose -f docker/devex-compose.yaml up -d"
+
+[tasks."detect-secrets"]
+run = "detect-secrets audit .secrets-baseline.json"
