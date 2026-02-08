@@ -19,9 +19,27 @@ config :bubbli, BubbliWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  # disabled because it results in uncaught exceptions returning html instead of json
+  # debug_errors: true,
   secret_key_base: "hyU5SbOzskU875NDBQyAhGK5I4Ug5B4l+xKxLcwG9pK/NAPytHWRVWLd5VtlQY4r",
   watchers: []
+
+# This should eventually move to config.exs assuming we decide to properly use honeycomb. Right now though,
+# we'll just set it up in dev
+# config :opentelemetry, :processors,
+#   otel_batch_processor: %{
+#     exporter: {
+#       :opentelemetry_exporter,
+#       %{
+#         endpoints: ["https://api.honeycomb.io:443"],
+#         headers: [
+#           {"x-honeycomb-team", System.get_env("HONEYCOMB_API_KEY")},
+#           {"x-honeycomb-dataset", System.get_env("HONEYCOMB_DATASET") || "bubbli"}
+#         ],
+#         protocol: :grpc
+#       }
+#     }
+#   }
 
 # ## SSL Support
 #

@@ -7,6 +7,9 @@ defmodule Bubbli.Application do
 
   @impl true
   def start(_type, _args) do
+    # OpentelemetryPhoenix.setup(adapter: :bandit)
+    # OpentelemetryEcto.setup([:bubbli, :repo])
+
     children = [
       BubbliWeb.Telemetry,
       Bubbli.Repo,

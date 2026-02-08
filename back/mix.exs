@@ -8,6 +8,11 @@ defmodule Bubbli.MixProject do
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      # releases: [
+      #   bubbli: [
+      #     applications: [opentelemetry: :temporary]
+      #   ]
+      # ],
       aliases: aliases(),
       deps: deps(),
       listeners: [Phoenix.CodeReloader],
@@ -62,6 +67,14 @@ defmodule Bubbli.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"}
+
+      # otel
+      # {:opentelemetry, "~> 1.7"},
+      # {:opentelemetry_api, "~> 1.5"},
+      # {:opentelemetry_bandit, "~> 0.3.0"},
+      # {:opentelemetry_ecto, "~> 1.2"},
+      # {:opentelemetry_exporter, "~> 1.10"},
+      # {:opentelemetry_phoenix, "~> 2.0"}
     ]
   end
 
