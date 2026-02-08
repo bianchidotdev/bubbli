@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :error_tracker, repo: Bubbli.Repo, otp_app: :bubbli, enabled: true
+
 config :mime,
   extensions: %{"json" => "application/vnd.api+json"},
   types: %{"application/vnd.api+json" => ["json"]}
@@ -73,7 +75,8 @@ config :bubbli, BubbliWeb.Endpoint,
     formats: [json: BubbliWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Bubbli.PubSub
+  pubsub_server: Bubbli.PubSub,
+  live_view: [signing_salt: "Y@!6jfjeCoBLRrn6PY4QPBszt!dCrf3a"]
 
 # Configure the mailer
 #

@@ -1,5 +1,6 @@
 [
   import_deps: [
+    :error_tracker,
     :ash_authentication,
     :ash_json_api,
     :ash_postgres,
