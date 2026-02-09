@@ -41,6 +41,7 @@ defmodule Bubbli.Accounts.User do
       base "/users"
 
       get :read
+      index :search, route: "/search"
 
       patch :update_profile, route: "/:id/profile"
     end
@@ -102,15 +103,41 @@ defmodule Bubbli.Accounts.User do
       run AshAuthentication.Strategy.MagicLink.Request
     end
 
+    read :search do
+      description "Search for users by handle or display name"
+
+      argument :query, :string do
+        allow_nil? false
+        constraints min_length: 1, max_length: 100
+      end
+
+      prepare Bubbli.Accounts.User.Preparations.Search
+
+      prepare build(sort: [handle: :asc])
+    end
+
     update :update_profile do
       description "Update user profile fields"
-      accept [:display_name, :handle, :bio, :avatar_url, :profile_visibility, :comment_visibility]
+
+      accept [
+        :display_name,
+        :handle,
+        :bio,
+        :avatar_url,
+        :profile_visibility,
+        :comment_visibility
+      ]
     end
   end
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
+    end
+
+    bypass action(:search) do
+      description "Any authenticated user can search for other users"
+      authorize_if actor_present()
     end
 
     policy action(:request_magic_link) do
@@ -189,6 +216,16 @@ defmodule Bubbli.Accounts.User do
     has_many :circle_memberships, Bubbli.Social.CircleMember do
       source_attribute :id
       destination_attribute :user_id
+    end
+
+    has_many :sent_connections, Bubbli.Social.Connection do
+      source_attribute :id
+      destination_attribute :requester_id
+    end
+
+    has_many :received_connections, Bubbli.Social.Connection do
+      source_attribute :id
+      destination_attribute :receiver_id
     end
   end
 

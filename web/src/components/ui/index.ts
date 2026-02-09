@@ -12,6 +12,7 @@ export type { ButtonProps, ButtonSize, ButtonVariant } from "./button";
 export { Button } from "./button";
 // Layout
 export { Card } from "./card";
+export { EmptyState } from "./empty-state";
 // Forms
 export { FormField } from "./form-field";
 export type { InputProps, InputSize } from "./input";
@@ -19,6 +20,9 @@ export { Input } from "./input";
 export type { SelectProps, SelectSize, SelectVariant } from "./select";
 export { Select } from "./select";
 export { Spinner } from "./spinner";
+export type { TabListProps, TabListVariant, TabProps } from "./tabs";
+// Navigation
+export { Tab, TabList } from "./tabs";
 export type { TextareaProps } from "./textarea";
 export { Textarea } from "./textarea";
 

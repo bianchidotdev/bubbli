@@ -44,6 +44,7 @@ function RootComponent() {
 					{isAuthenticated ? (
 						<div className="flex items-center gap-1">
 							<NavLink to="/" label="Feed" />
+							<NavLink to="/connections" label="Connections" />
 							<NavLink to="/profile" label="Profile" />
 
 							<ThemeToggleCompact className="ml-1" />

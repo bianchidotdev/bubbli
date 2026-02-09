@@ -470,7 +470,7 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - [x] Create database, verify migration pipeline works
 - [x] Set up React app with Vite + TypeScript in `web/`
 - [x] Configure OpenAPI client codegen (`bun run generate-api` against live backend)
-- [ ] Verify full stack: React → Caddy → Phoenix → Postgres round-trip
+- [x] Verify full stack: React → Caddy → Phoenix → Postgres round-trip
 
 ### Phase 1: Auth & Users (nearly complete)
 
@@ -481,21 +481,20 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - [x] JSON:API routes for users (index, get, update_profile) auto-generated
 - [x] Policies: unauthenticated access for auth actions, read for all, update_profile for self only
 - [x] System circle creation on user registration (Ash change on `sign_in_with_magic_link`)
-- [ ] Phoenix Channel: `user:{user_id}` with token auth
 - [x] React: auth flow (request magic link → check email → token stored → authenticated)
 - [x] React: basic app shell, routing, auth context
 - [x] React: user profile view/edit
 
 ### Phase 2: Connections
 
-- [ ] Define `Bubbli.Social.Connection` Ash resource
-- [ ] Actions: `send_request`, `accept`, `reject`, `remove`
-- [ ] Validation: prevent duplicate/self-connections
-- [ ] JSON:API routes for connections
+- [x] Define `Bubbli.Social.Connection` Ash resource
+- [x] Actions: `send_request`, `accept`, `reject`, `remove`
+- [x] Validation: prevent duplicate/self-connections
+- [x] JSON:API routes for connections
+- [x] React: user search / discovery (by handle or display name)
 - [ ] Notifications on friend request and acceptance
 - [ ] Phoenix Channel: broadcast connection events
 - [ ] React: connection management (send/accept/reject requests, list friends)
-- [ ] React: user search / discovery (by handle or display name)
 
 ### Phase 3: Circles
 
@@ -531,6 +530,7 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - [ ] React: feed view with infinite scroll
 - [ ] React: post creation with circle/group target picker
 - [ ] React: post detail with comments and reactions
+- [ ] Phoenix Channel: `user:{user_id}` with token auth
 - [ ] React: real-time feed and comment updates via WebSocket
 
 ### Phase 5: Groups

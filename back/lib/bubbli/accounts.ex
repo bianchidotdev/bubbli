@@ -10,6 +10,9 @@ defmodule Bubbli.Accounts do
 
   resources do
     resource Bubbli.Accounts.Token
-    resource Bubbli.Accounts.User
+
+    resource Bubbli.Accounts.User do
+      define :search_users, action: :search, args: [:query]
+    end
   end
 end

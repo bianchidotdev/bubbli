@@ -279,6 +279,543 @@ export interface paths {
 		};
 		trace?: never;
 	};
+	"/api/connections": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List the current user's accepted connections */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["connection-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a connection */
+							data?: components["schemas"]["connection"][];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		/** @description Send a connection request to another user */
+		post: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			/** @description Request body for the /connections operation on connection resource */
+			requestBody: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								/**
+								 * Format: uuid
+								 * @description The user to send the request to
+								 */
+								receiver_id: string;
+							};
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "connection";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				201: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["connection"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/connections/pending-incoming": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List pending connection requests received by the current user */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["connection-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a connection */
+							data?: components["schemas"]["connection"][];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/connections/pending-outgoing": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List pending connection requests sent by the current user */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["connection-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a connection */
+							data?: components["schemas"]["connection"][];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/connections/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /connections/:id operation on connection resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["connection"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		/** @description Remove an existing connection (either party can do this) */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/connections/{id}/accept": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/** @description Accept a pending connection request */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /connections/:id/accept operation on connection resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: Record<string, never>;
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "connection";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["connection"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/connections/{id}/reject": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/** @description Reject a pending connection request */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for connection
+						 * @example id,requester_id,receiver_id
+						 */
+						connection?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /connections/:id/reject operation on connection resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: Record<string, never>;
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "connection";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["connection"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/users/search": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description Search for users by handle or display name */
+		get: {
+			parameters: {
+				query: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["user-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for user
+						 * @example id,email,display_name,handle,bio,avatar_url
+						 */
+						user?: string;
+					} & {
+						[key: string]: unknown;
+					};
+					query: string;
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a user */
+							data?: components["schemas"]["user"][];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/api/users/{id}": {
 		parameters: {
 			query?: never;
@@ -516,6 +1053,115 @@ export interface components {
 			less_than_or_equal?: "private" | "all_friends" | "public";
 			/** @enum {string} */
 			not_eq?: "private" | "all_friends" | "public";
+		};
+		/** @description A "Resource object" representing a connection */
+		connection: {
+			/** @description An attributes object for a connection */
+			attributes?: {
+				/**
+				 * Format: uuid
+				 * @description Field included by default.
+				 */
+				receiver_id: string;
+				/**
+				 * Format: uuid
+				 * @description Field included by default.
+				 */
+				requester_id: string;
+			};
+			id: string;
+			/** @description A relationships object for a connection */
+			relationships?: {
+				receiver?: {
+					/** @description An identifier for receiver */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+				requester?: {
+					/** @description An identifier for requester */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
+			type: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"connection-filter": {
+			and?: components["schemas"]["connection-filter"][];
+			id?: components["schemas"]["connection-filter-id"];
+			not?: components["schemas"]["connection-filter"];
+			or?: components["schemas"]["connection-filter"][];
+			receiver?: components["schemas"]["user-filter"];
+			receiver_id?: components["schemas"]["connection-filter-receiver_id"];
+			requester?: components["schemas"]["user-filter"];
+			requester_id?: components["schemas"]["connection-filter-requester_id"];
+		};
+		"connection-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"connection-filter-receiver_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"connection-filter-requester_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
 		};
 		error: {
 			/** @description An application-specific error code, expressed as a string value. */
