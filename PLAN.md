@@ -75,7 +75,8 @@ We need an API layer for future mobile apps. Building LiveView now would mean re
 ### Entity Relationship Overview
 
 ```
-User
+User (identity & auth — Accounts domain)
+ ├── has one Profile (social presentation — Accounts domain)
  ├── has many Connections (mutual, through join)
  ├── has many Circles (owns)
  │    └── has many CircleMembers (users in the circle)
@@ -85,6 +86,11 @@ User
  ├── has many GroupMemberships
  │    └── belongs to Group
  └── has many Notifications (recipient)
+
+Profile (1:1 with User, always sideloaded for display)
+ ├── belongs to User
+ ├── display_name, handle, bio, avatar_url, location
+ └── privacy settings (profile_visibility, comment_visibility)
 
 Post
  ├── belongs to User (author)
@@ -100,29 +106,60 @@ Group
  └── has visibility: public | request | private
 ```
 
+**Key design decision — User vs Profile separation:**
+
+- **User** = identity & auth. Minimal: just `id`, `email`, timestamps. All foreign keys across the system point to User.
+- **Profile** = social presentation. Display name, handle, avatar, bio, privacy settings. Never a FK target — always sideloaded via `user → profile` for display.
+- **Why separate?** Auth concerns (policies, tokens, magic links) stay cleanly isolated from social presentation (visibility settings, display fields). Profile can evolve independently (add cover photo, pronouns, links) without touching the auth resource.
+- **Why not attach Connections (or anything else) to Profile?** Connections are trust relationships between accounts, not display identities. If a user changes their profile, connections remain intact. Blocking is also account-level and pairs naturally with connections on User.
+
 ### Resource Details
 
 #### User
 
-| Field             | Type     | Notes                                           |
-| ----------------- | -------- | ----------------------------------------------- |
-| id                | uuid     | PK                                              |
-| email             | string   | Unique, used for magic link auth                |
-| display_name      | string   | Shown publicly                                  |
-| handle            | string   | Unique, @-mentionable                           |
-| avatar_url        | string   | Nullable, URL to S3 (deferred)                  |
-| bio               | string   | Nullable, short user bio                        |
-| privacy_settings  | map/json | Controls profile visibility to non-connections  |
-| inserted_at       | datetime |                                                 |
-| updated_at        | datetime |                                                 |
+Slim identity/auth resource. All social entities reference User via FK. Profile data is sideloaded for display.
 
-Privacy settings (JSON, with defaults):
-- `profile_visible_to`: `"connections_only"` | `"public"` — default `"connections_only"`
-- `comment_visibility`: `"connections_and_group_members"` | `"everyone_on_post"` — default `"connections_and_group_members"`
+| Field       | Type     | Notes                            |
+| ----------- | -------- | -------------------------------- |
+| id          | uuid     | PK                               |
+| email       | ci_string| Unique, used for magic link auth |
+| inserted_at | datetime |                                  |
+| updated_at  | datetime |                                  |
+
+Relationships:
+- `has_one :profile` → Profile (always preloaded in social contexts)
+- `has_many :owned_circles` → Circle
+- `has_many :circle_memberships` → CircleMember
+- `has_many :sent_connections` → Connection
+- `has_many :received_connections` → Connection
+
+On registration (magic link sign-in), an `EnsureProfile` after-action change creates a Profile record if one doesn't exist.
+
+#### Profile
+
+1:1 with User. Contains all social/display fields and privacy settings. Lives in the Accounts domain because it's owned by the account and created during registration. Social features consume it but don't own it.
+
+| Field              | Type     | Notes                                          |
+| ------------------ | -------- | ---------------------------------------------- |
+| id                 | uuid     | PK                                             |
+| user_id            | uuid     | FK → User, unique                              |
+| display_name       | string   | Nullable, shown publicly (max 100)             |
+| handle             | string   | Unique, @-mentionable (max 40, alphanumeric + underscores) |
+| bio                | string   | Nullable, short user bio (max 500)             |
+| avatar_url         | string   | Nullable, URL to S3 (deferred)                 |
+| location           | string   | Nullable (max 100)                             |
+| profile_visibility | enum     | `connections_only` (default), `public`          |
+| comment_visibility | enum     | `connections_and_group_members` (default), `everyone_on_post` |
+| inserted_at        | datetime |                                                |
+| updated_at         | datetime |                                                |
+
+Privacy settings:
+- `profile_visibility`: controls who can see this profile. `connections_only` = only users in a mutual circle relationship. `public` = anyone.
+- `comment_visibility`: controls how much profile info is shown to non-connections viewing comments. `connections_and_group_members` = full profile for connections/group co-members, limited for others. `everyone_on_post` = full profile for all post viewers.
 
 #### Connection
 
-Mutual friendship model. A connection is created when User A requests and User B accepts.
+Mutual friendship model. A connection is created when User A requests and User B accepts. Attached to **User** (not Profile) because connections are trust relationships between accounts.
 
 | Field        | Type     | Notes                              |
 | ------------ | -------- | ---------------------------------- |
@@ -135,7 +172,10 @@ Mutual friendship model. A connection is created when User A requests and User B
 
 Constraints:
 - Unique index on `{requester_id, receiver_id}` (ordered pair to prevent duplicates)
+- Custom validations: `NotSelfConnection`, `NoDuplicateConnection` (checks both directions)
 - Future consideration: asymmetric follow for public posts (separate `Follow` resource)
+
+JSON:API includes: `requester: [:profile], receiver: [:profile]` — profile is sideloaded for display.
 
 #### Block (schema only — implementation deferred)
 
@@ -148,23 +188,30 @@ Constraints:
 
 #### Circle
 
-A visibility circle. Every user gets three system circles on registration. Users can create custom circles.
+A visibility circle used for post targeting. Two kinds exist:
+
+1. **System circles** — virtual, defined in code (`Bubbli.Social.SystemCircle`), not stored in the database. Every user implicitly has these. No migration needed to add new ones.
+2. **Custom circles** — user-created, stored in the `circles` table. Users organize their connections into these for fine-grained post visibility.
+
+**Database table** (custom circles only):
 
 | Field       | Type     | Notes                              |
 | ----------- | -------- | ---------------------------------- |
 | id          | uuid     | PK                                 |
 | owner_id    | uuid     | FK → User                          |
 | name        | string   | e.g. "Close Friends", "Family"     |
-| type        | enum     | `system`, `custom`                 |
-| system_type | enum     | `private`, `all_friends`, `public` (null for custom) |
-| description | string   | Nullable                           |
+| type        | enum     | `system`, `custom` (custom circles only use `custom`) |
+| system_type | enum     | Deprecated — kept for backwards compat, null for custom |
+| description | string   | Nullable (max 500)                 |
 | inserted_at | datetime |                                    |
 | updated_at  | datetime |                                    |
 
-System circles (auto-created per user, non-deletable):
-1. **Private** — only the author can see (system_type: `private`)
-2. **All Friends** — all accepted connections (system_type: `all_friends`, membership is implicit/dynamic)
-3. **Public** — anyone, including non-users (system_type: `public`)
+**System circles** (virtual, from `SystemCircle.all/0`):
+1. **Private** (`:private`) — only the author can see
+2. **All Friends** (`:all_friends`) — all accepted connections (membership is implicit/dynamic)
+3. **Public** (`:public`) — anyone, including non-users
+
+System circles are returned via a `system_circles` calculation on User, not queried from the DB. This means adding a new system circle is a code change, not a migration.
 
 #### CircleMember
 
@@ -355,8 +402,12 @@ POST   /api/auth/sign-out              ← JSON-RPC: end session
 GET    /api/auth/me                    ← current user
 
 # Users
-GET    /api/users/:id                  ← public profile (filtered by privacy)
-PATCH  /api/users/:id                  ← update own profile
+GET    /api/users/:id                  ← user identity (include profile via ?include=profile)
+GET    /api/users/search               ← search by handle or display name
+
+# Profiles
+GET    /api/profiles/:id               ← profile detail (filtered by privacy)
+PATCH  /api/profiles/:id               ← update own profile (display_name, handle, bio, etc.)
 
 # Connections
 GET    /api/connections                ← list my connections (accepted)
@@ -474,13 +525,15 @@ The viewer joins channels based on what they're looking at. The server broadcast
 
 ### Phase 1: Auth & Users (nearly complete)
 
-- [x] Define `Bubbli.Accounts.User` Ash resource (email, display_name, handle, bio, avatar_url, profile_visibility, comment_visibility)
+- [x] Define `Bubbli.Accounts.User` Ash resource (slim: email only, auth-focused)
+- [x] Define `Bubbli.Accounts.Profile` Ash resource (display_name, handle, bio, avatar_url, location, privacy settings)
+- [x] `EnsureProfile` after-action change creates Profile on first sign-in
 - [x] Configure AshAuthentication magic link strategy (with email sender)
 - [x] Token-based API auth (Bearer tokens via `AshAuthentication.Plug.Helpers.retrieve_from_bearer`)
 - [x] Auth controller routes (request magic link, callback, sign-out, me) at `/api/auth/*`
-- [x] JSON:API routes for users (index, get, update_profile) auto-generated
-- [x] Policies: unauthenticated access for auth actions, read for all, update_profile for self only
-- [x] System circle creation on user registration (Ash change on `sign_in_with_magic_link`)
+- [x] JSON:API routes for users (get, search) and profiles (get, update) auto-generated
+- [x] Policies: unauthenticated access for auth actions, privacy-aware read for profiles, update for self only
+- [x] System circle creation on user registration (virtual SystemCircle module, not DB-stored)
 - [x] React: auth flow (request magic link → check email → token stored → authenticated)
 - [x] React: basic app shell, routing, auth context
 - [x] React: user profile view/edit
@@ -594,11 +647,15 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - esbuild/tailwind/heroicons removed (React/Vite will handle frontend)
 - React web app with Vite + TanStack Router + TanStack Query in `web/`
 - Ash 3.15 installed with AshPostgres, AshJsonApi, AshAuthentication
-- `Bubbli.Accounts` domain with User and Token resources
-- `Bubbli.Social` domain with Circle and CircleMember resources
+- `Bubbli.Accounts` domain with User, Profile, and Token resources
+- `Bubbli.Social` domain with Connection, Circle, and CircleMember resources
+- User/Profile split: User is slim (email + auth), Profile holds display fields + privacy settings
+- `EnsureProfile` change auto-creates Profile on first sign-in
+- System circles are virtual (`Bubbli.Social.SystemCircle` module, not DB rows)
 - Magic link auth strategy fully working (request → email → token exchange → JWT)
 - Auth controller at `/api/auth/*` (request, callback, me, sign-out)
-- JSON:API endpoints at `/api/users` and `/api/circles` (auto-generated)
+- JSON:API endpoints at `/api/users`, `/api/profiles`, `/api/circles`, `/api/connections` (auto-generated)
+- Connection resource with send_request, accept, reject, remove actions + validations
 - OpenAPI spec at `/api/open_api`, SwaggerUI at `/api/swaggerui`
 - OpenAPI → TypeScript codegen working (`bun run generate-api`)
 - Typed `openapi-fetch` client with auth middleware (`src/api/client.ts`)
@@ -606,32 +663,37 @@ The viewer joins channels based on what they're looking at. The server broadcast
 - Auth context with token storage, `/me` query, login/logout (`src/lib/auth.tsx`)
 - React auth flow: login → magic link email → callback route → token exchange → redirect
 - React routes: `/`, `/login`, `/profile`, `/auth/magic-link/callback`
-- Profile page with view/edit mode (updates via JSON:API PATCH)
-- System circles (Private, All Friends, Public) auto-created on first user registration
+- Profile page with view/edit mode (updates via JSON:API PATCH on Profile resource)
 - CORSPlug configured in endpoint
 - Biome linting/formatting configured and passing
 - Clean compile, zero warnings, all tests passing
 
 ### What's next (immediate)
 
-1. Verify full round-trip: React → Caddy → Phoenix → Postgres (manual test)
-2. Complete remaining Phase 1: Phoenix Channel `user:{user_id}` with token auth
-3. Begin Phase 2 (Connections): define `Bubbli.Social.Connection` resource
-4. Continue Phase 3: custom circle CRUD, circle member management, React UI
-5. Build React connection management UI (send/accept/reject, list friends)
+1. React: connection management UI (send/accept/reject requests, list friends)
+2. Phoenix Channel: `user:{user_id}` with token auth, broadcast connection events
+3. Notifications on friend request and acceptance
+4. Phase 3: custom circle CRUD, circle member management, React UI
+5. Phase 4: Post and PostPlacement resources, feed query
 
 ---
 
 ## Ash Domain Organization
 
 ```
-Bubbli.Accounts      ← User, Token (auth)
+Bubbli.Accounts      ← User, Profile, Token (identity, presentation, auth)
 Bubbli.Social        ← Connection, Block, Circle, CircleMember, Group, GroupMembership
 Bubbli.Content       ← Post, PostPlacement, Comment, Reaction
 Bubbli.Notifications ← Notification
 ```
 
 Each domain gets its own Ash domain module and groups related resources.
+
+**Why Profile is in Accounts (not Social):**
+- Profile is owned by the account and created during registration (dependency flows Social → Accounts, not the reverse)
+- Privacy settings are account configuration, not social interaction
+- Lifecycle is tied to User — `EnsureProfile` runs as part of the sign-in action
+- Social features *consume* profile data but don't *own* it
 
 ---
 

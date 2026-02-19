@@ -8,7 +8,7 @@ defmodule Bubbli.Social.Connection do
 
   json_api do
     type "connection"
-    includes [:requester, :receiver]
+    includes requester: [:profile], receiver: [:profile]
 
     routes do
       base "/connections"
@@ -84,12 +84,12 @@ defmodule Bubbli.Social.Connection do
     update :accept do
       description "Accept a pending connection request"
       accept []
-      change set_attribute(:status, :accepted)
-
       # Can only accept pending requests
       validate attribute_equals(:status, :pending) do
         message "can only accept pending requests"
       end
+
+      change set_attribute(:status, :accepted)
     end
 
     update :reject do

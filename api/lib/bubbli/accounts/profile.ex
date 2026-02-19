@@ -27,7 +27,17 @@ defmodule Bubbli.Accounts.Profile do
 
     create :create do
       description "Create a profile for a user"
-      accept [:display_name, :handle, :bio, :avatar_url, :location]
+
+      accept [
+        :display_name,
+        :handle,
+        :bio,
+        :avatar_url,
+        :location,
+        :profile_visibility,
+        :comment_visibility
+      ]
+
       argument :user_id, :uuid, allow_nil?: false
       change manage_relationship(:user_id, :user, type: :append_and_remove)
     end
