@@ -57,13 +57,13 @@ function RootComponent() {
 									className="flex items-center gap-2 rounded-full border border-border py-1.5 pr-3 pl-1.5 text-sm font-medium transition-all hover:border-border-strong hover:bg-surface-sunken hover:shadow-sm"
 								>
 									<Avatar
-										displayName={user?.display_name}
+										displayName={user?.profile?.display_name}
 										email={user?.email}
-										src={user?.avatar_url}
+										src={user?.profile?.avatar_url}
 										size="xs"
 									/>
 									<span className="max-w-[120px] truncate text-text-secondary">
-										{user?.display_name ?? user?.email ?? "Account"}
+										{user?.profile?.display_name ?? user?.email ?? "Account"}
 									</span>
 									<svg
 										className={`h-3.5 w-3.5 text-text-placeholder transition-transform ${menuOpen ? "rotate-180" : ""}`}
@@ -96,7 +96,7 @@ function RootComponent() {
 										<div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-surface-raised py-1 shadow-lg">
 											<div className="border-b border-border px-4 py-2.5">
 												<p className="truncate text-sm font-medium text-text">
-													{user?.display_name ?? "No name set"}
+													{user?.profile?.display_name ?? "No name set"}
 												</p>
 												<p className="truncate text-xs text-text-tertiary">
 													{user?.email}

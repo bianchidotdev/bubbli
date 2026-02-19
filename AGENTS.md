@@ -282,7 +282,20 @@ import { Button, Input, Card, Alert, Avatar, Spinner } from "@/components/ui";
 - `Ecto.Changeset.validate_number/2` **DOES NOT SUPPORT the `:allow_nil` option**. By default, Ecto validations only run if a change for the given field exists and the change value is not nil, so such as option is never needed
 - You **must** use `Ecto.Changeset.get_field(changeset, :field)` to access changeset fields
 - Fields which are set programatically, such as `user_id`, must not be listed in `cast` calls or similar for security purposes. Instead they must be explicitly set when creating the struct
-- **Always** invoke `mix ecto.gen.migration migration_name_using_underscores` when generating migration files, so the correct timestamp and conventions are applied
+- **Never** use `mix ecto.gen.migration` directly — this project uses Ash-managed migrations
+
+---
+
+## Ash migration guidelines
+
+This project uses Ash Framework's migration tooling instead of raw Ecto migrations.
+
+- **Always** use the two-step Ash workflow to generate and run migrations:
+  1. `mix ash.codegen descriptive_name_in_snake_case` — generates migrations and resource snapshots. In dev, this rolls back dev migrations and squashes them into the new named migration
+  2. `mix ash.migrate` — runs the generated migrations
+- **Never** use `mix ecto.gen.migration` or `mix ash_postgres.generate_migrations` directly — `mix ash.codegen` wraps these and handles snapshot management correctly
+- Use a descriptive name for the codegen step, e.g. `mix ash.codegen add_posts_resource` or `mix ash.codegen separate_profile_from_user`
+- If you need to reset the database entirely (e.g. during development), use `mix ecto.reset`
 
 ---
 

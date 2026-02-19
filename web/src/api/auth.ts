@@ -6,15 +6,23 @@ const API_BASE = "/api/auth";
 // Types
 // ---------------------------------------------------------------------------
 
-export interface User {
+export interface Profile {
 	id: string;
-	email: string;
 	display_name: string | null;
 	handle: string | null;
 	bio: string | null;
 	avatar_url: string | null;
+	location: string | null;
 	profile_visibility: "connections_only" | "public";
 	comment_visibility: "connections_and_group_members" | "everyone_on_post";
+	inserted_at: string;
+	updated_at: string;
+}
+
+export interface User {
+	id: string;
+	email: string;
+	profile: Profile | null;
 	inserted_at: string;
 	updated_at: string;
 }

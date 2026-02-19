@@ -13,7 +13,9 @@ function HomePage() {
 		return <UnauthenticatedHome />;
 	}
 
-	return <AuthenticatedHome displayName={user?.display_name ?? null} />;
+	return (
+		<AuthenticatedHome displayName={user?.profile?.display_name ?? null} />
+	);
 }
 
 function AuthenticatedHome({ displayName }: { displayName: string | null }) {

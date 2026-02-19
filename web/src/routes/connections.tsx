@@ -355,7 +355,7 @@ function SearchResultRow({
 	onConnect: () => void;
 	isSending: boolean;
 }) {
-	const attrs = user.attributes;
+	const profile = user.resolvedProfile?.attributes;
 
 	const trailing = (() => {
 		switch (status) {
@@ -396,10 +396,10 @@ function SearchResultRow({
 		<Card variant="flat">
 			<Card.Body>
 				<UserRow
-					displayName={attrs?.display_name}
-					handle={attrs?.handle}
-					email={attrs?.email}
-					avatarUrl={attrs?.avatar_url}
+					displayName={profile?.display_name}
+					handle={profile?.handle}
+					email={user.attributes?.email}
+					avatarUrl={profile?.avatar_url}
 					trailing={trailing}
 				/>
 			</Card.Body>
@@ -502,10 +502,10 @@ function FriendsTab({ userId }: { userId: string }) {
 					<Card key={connection.id} variant="flat">
 						<Card.Body>
 							<UserRow
-								displayName={friend.attributes?.display_name}
-								handle={friend.attributes?.handle}
+								displayName={friend.resolvedProfile?.attributes?.display_name}
+								handle={friend.resolvedProfile?.attributes?.handle}
 								email={friend.attributes?.email}
-								avatarUrl={friend.attributes?.avatar_url}
+								avatarUrl={friend.resolvedProfile?.attributes?.avatar_url}
 								trailing={trailing}
 							/>
 						</Card.Body>
@@ -614,10 +614,10 @@ function IncomingRequests({ userId }: { userId: string }) {
 					<Card key={request.id} variant="flat">
 						<Card.Body>
 							<UserRow
-								displayName={sender.attributes?.display_name}
-								handle={sender.attributes?.handle}
+								displayName={sender.resolvedProfile?.attributes?.display_name}
+								handle={sender.resolvedProfile?.attributes?.handle}
 								email={sender.attributes?.email}
-								avatarUrl={sender.attributes?.avatar_url}
+								avatarUrl={sender.resolvedProfile?.attributes?.avatar_url}
 								trailing={
 									<>
 										<Button
@@ -708,10 +708,12 @@ function OutgoingRequests({ userId }: { userId: string }) {
 					<Card key={request.id} variant="flat">
 						<Card.Body>
 							<UserRow
-								displayName={recipient.attributes?.display_name}
-								handle={recipient.attributes?.handle}
+								displayName={
+									recipient.resolvedProfile?.attributes?.display_name
+								}
+								handle={recipient.resolvedProfile?.attributes?.handle}
 								email={recipient.attributes?.email}
-								avatarUrl={recipient.attributes?.avatar_url}
+								avatarUrl={recipient.resolvedProfile?.attributes?.avatar_url}
 								trailing={
 									<>
 										<Badge variant="info" size="sm">

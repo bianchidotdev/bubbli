@@ -42,6 +42,7 @@ defmodule BubbliWeb.AuthController do
          |> Ash.create() do
       {:ok, user} ->
         bearer_token = user.__metadata__.token
+        user = Ash.load!(user, [:profile], authorize?: false)
 
         conn
         |> put_status(200)
@@ -77,6 +78,8 @@ defmodule BubbliWeb.AuthController do
         |> json(%{error: "Not authenticated"})
 
       user ->
+        user = Ash.load!(user, [:profile], authorize?: false)
+
         conn
         |> put_status(200)
         |> json(%{user: user_json(user)})
@@ -119,15 +122,28 @@ defmodule BubbliWeb.AuthController do
   end
 
   defp user_json(user) do
+    profile = user.profile
+
     %{
       id: user.id,
       email: to_string(user.email),
-      display_name: user.display_name,
-      handle: user.handle,
-      bio: user.bio,
-      avatar_url: user.avatar_url,
-      profile_visibility: user.profile_visibility,
-      comment_visibility: user.comment_visibility,
+      profile:
+        if profile do
+          %{
+            id: profile.id,
+            display_name: profile.display_name,
+            handle: profile.handle,
+            bio: profile.bio,
+            avatar_url: profile.avatar_url,
+            location: profile.location,
+            profile_visibility: profile.profile_visibility,
+            comment_visibility: profile.comment_visibility,
+            inserted_at: profile.inserted_at,
+            updated_at: profile.updated_at
+          }
+        else
+          nil
+        end,
       inserted_at: user.inserted_at,
       updated_at: user.updated_at
     }

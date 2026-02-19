@@ -36,14 +36,13 @@ defmodule Bubbli.Accounts.User do
 
   json_api do
     type "user"
+    includes [:profile]
 
     routes do
       base "/users"
 
       get :read
       index :search, route: "/search"
-
-      patch :update_profile, route: "/:id/profile"
     end
   end
 
@@ -90,6 +89,9 @@ defmodule Bubbli.Accounts.User do
       change {AshAuthentication.Strategy.RememberMe.MaybeGenerateTokenChange,
               strategy_name: :remember_me}
 
+      # Ensure a profile record exists for the user after sign-in/registration
+      change Bubbli.Accounts.User.Changes.EnsureProfile
+
       metadata :token, :string do
         allow_nil? false
       end
@@ -113,20 +115,7 @@ defmodule Bubbli.Accounts.User do
 
       prepare Bubbli.Accounts.User.Preparations.Search
 
-      prepare build(sort: [handle: :asc])
-    end
-
-    update :update_profile do
-      description "Update user profile fields"
-
-      accept [
-        :display_name,
-        :handle,
-        :bio,
-        :avatar_url,
-        :profile_visibility,
-        :comment_visibility
-      ]
+      prepare build(sort: [email: :asc])
     end
   end
 
@@ -152,15 +141,11 @@ defmodule Bubbli.Accounts.User do
       # Can always read yourself
       authorize_if expr(id == ^actor(:id))
       # Can read anyone with a public profile
-      authorize_if expr(profile_visibility == :public)
+      authorize_if expr(exists(profile, profile_visibility == :public))
       # Can read users you've added to one of your circles
       authorize_if expr(exists(circle_memberships, circle.owner_id == ^actor(:id)))
       # Can read users who've added you to one of their circles
       authorize_if expr(exists(owned_circles.members, user_id == ^actor(:id)))
-    end
-
-    policy action(:update_profile) do
-      authorize_if expr(id == ^actor(:id))
     end
   end
 
@@ -172,42 +157,17 @@ defmodule Bubbli.Accounts.User do
       public? true
     end
 
-    attribute :display_name, :string do
-      public? true
-      constraints max_length: 100
-    end
-
-    attribute :handle, :string do
-      public? true
-      constraints max_length: 40, match: ~r/\A[a-zA-Z0-9_]+\z/
-    end
-
-    attribute :bio, :string do
-      public? true
-      constraints max_length: 500
-    end
-
-    attribute :avatar_url, :string do
-      public? true
-    end
-
-    attribute :profile_visibility, :atom do
-      constraints one_of: [:connections_only, :public]
-      default :connections_only
-      allow_nil? false
-    end
-
-    attribute :comment_visibility, :atom do
-      constraints one_of: [:connections_and_group_members, :everyone_on_post]
-      default :connections_and_group_members
-      allow_nil? false
-    end
-
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
 
   relationships do
+    has_one :profile, Bubbli.Accounts.Profile do
+      source_attribute :id
+      destination_attribute :user_id
+      public? true
+    end
+
     has_many :owned_circles, Bubbli.Social.Circle do
       source_attribute :id
       destination_attribute :owner_id
@@ -240,6 +200,5 @@ defmodule Bubbli.Accounts.User do
 
   identities do
     identity :unique_email, [:email]
-    identity :unique_handle, [:handle]
   end
 end

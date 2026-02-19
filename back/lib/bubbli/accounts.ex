@@ -14,5 +14,7 @@ defmodule Bubbli.Accounts do
     resource Bubbli.Accounts.User do
       define :search_users, action: :search, args: [:query]
     end
+
+    resource Bubbli.Accounts.Profile
   end
 end

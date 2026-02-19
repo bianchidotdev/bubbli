@@ -1,6 +1,6 @@
 defmodule Bubbli.Accounts.User.Preparations.Search do
   @moduledoc """
-  Applies ILIKE filtering on `handle` and `display_name` for user search,
+  Applies ILIKE filtering on profile `handle` and `display_name` for user search,
   and excludes the current actor from results.
 
   Expects the query to have a `:query` argument containing the search term.
@@ -25,9 +25,12 @@ defmodule Bubbli.Accounts.User.Preparations.Search do
 
     query
     |> Ash.Query.filter(
-      not is_nil(handle) and
-        (fragment("? ILIKE ?", handle, ^pattern) or
-           fragment("? ILIKE ?", display_name, ^pattern))
+      exists(
+        profile,
+        not is_nil(handle) and
+          (fragment("? ILIKE ?", handle, ^pattern) or
+             fragment("? ILIKE ?", display_name, ^pattern))
+      )
     )
     |> exclude_actor(context)
   end

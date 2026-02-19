@@ -5,19 +5,33 @@ import api from "./client";
 // Types — derived from the JSON:API schema
 // ---------------------------------------------------------------------------
 
-/** A user object as returned by the JSON:API `included` array or search results. */
-export interface UserResource {
+/** A profile resource as returned in the JSON:API `included` array. */
+export interface ProfileResource {
 	id: string;
-	type: string;
+	type: "profile";
 	attributes?: {
-		email?: string;
 		display_name?: string | null;
 		handle?: string | null;
 		bio?: string | null;
 		avatar_url?: string | null;
+		location?: string | null;
 		profile_visibility?: "connections_only" | "public";
 		comment_visibility?: "connections_and_group_members" | "everyone_on_post";
 	};
+}
+
+/** A user object as returned by the JSON:API `included` array or search results. */
+export interface UserResource {
+	id: string;
+	type: "user";
+	attributes?: {
+		email?: string;
+	};
+	relationships?: {
+		profile?: { data?: { id: string; type: "profile" } | null };
+	};
+	/** Resolved after processing the `included` array — not part of the raw payload. */
+	resolvedProfile?: ProfileResource | null;
 }
 
 /** A connection resource as returned by the JSON:API. */
@@ -47,14 +61,40 @@ export interface ResolvedConnection {
 // Helpers
 // ---------------------------------------------------------------------------
 
+type IncludedResource =
+	| UserResource
+	| ProfileResource
+	| { id: string; type: string; [k: string]: unknown };
+
+/**
+ * Given an array of JSON:API included resources, find and attach each user's
+ * resolved profile so consumers can access `user.resolvedProfile`.
+ */
+function attachProfiles(
+	users: UserResource[],
+	included: IncludedResource[],
+): UserResource[] {
+	const profiles = included.filter(
+		(r): r is ProfileResource => r.type === "profile",
+	);
+
+	return users.map((user) => {
+		const profileRef = user.relationships?.profile?.data;
+		const profile = profileRef
+			? (profiles.find((p) => p.id === profileRef.id) ?? null)
+			: null;
+		return { ...user, resolvedProfile: profile };
+	});
+}
+
 /**
  * Resolve relationship references against the JSON:API `included` array.
  */
 function resolveIncluded(
 	connection: ConnectionResource,
-	included: unknown[],
+	included: IncludedResource[],
 ): ResolvedConnection {
-	const users = (included ?? []) as UserResource[];
+	const users = included.filter((r): r is UserResource => r.type === "user");
 
 	const requesterId =
 		connection.relationships?.requester?.data?.id ??
@@ -65,8 +105,10 @@ function resolveIncluded(
 		connection.attributes?.receiver_id ??
 		"";
 
-	const requester = users.find((u) => u.id === requesterId) ?? null;
-	const receiver = users.find((u) => u.id === receiverId) ?? null;
+	const resolvedUsers = attachProfiles(users, included);
+
+	const requester = resolvedUsers.find((u) => u.id === requesterId) ?? null;
+	const receiver = resolvedUsers.find((u) => u.id === receiverId) ?? null;
 
 	return {
 		id: connection.id,
@@ -115,10 +157,13 @@ export function useSearchUsers(query: string) {
 		queryKey: connectionKeys.search(query),
 		queryFn: async () => {
 			const { data, error } = await api.GET("/api/users/search", {
-				params: { query: { query } },
+				params: { query: { query, include: "profile" } },
 			});
 			if (error) throw error;
-			return (data?.data ?? []) as UserResource[];
+
+			const rawUsers = (data?.data ?? []) as UserResource[];
+			const included = (data?.included ?? []) as IncludedResource[];
+			return attachProfiles(rawUsers, included);
 		},
 		enabled: query.trim().length >= 1,
 		staleTime: 1000 * 30,
@@ -128,18 +173,20 @@ export function useSearchUsers(query: string) {
 
 /**
  * List accepted connections for the current user.
- * Includes requester and receiver user data.
+ * Includes requester and receiver user data along with their profiles.
  */
 export function useConnections() {
 	return useQuery({
 		queryKey: connectionKeys.accepted(),
 		queryFn: async () => {
 			const { data, error } = await api.GET("/api/connections", {
-				params: { query: { include: "requester,receiver" } },
+				params: {
+					query: { include: "requester.profile,receiver.profile" },
+				},
 			});
 			if (error) throw error;
 			const connections = (data?.data ?? []) as ConnectionResource[];
-			const included = (data?.included ?? []) as unknown[];
+			const included = (data?.included ?? []) as IncludedResource[];
 			return connections.map((c) => resolveIncluded(c, included));
 		},
 	});
@@ -153,12 +200,14 @@ export function usePendingIncoming() {
 			const { data, error } = await api.GET(
 				"/api/connections/pending-incoming",
 				{
-					params: { query: { include: "requester,receiver" } },
+					params: {
+						query: { include: "requester.profile,receiver.profile" },
+					},
 				},
 			);
 			if (error) throw error;
 			const connections = (data?.data ?? []) as ConnectionResource[];
-			const included = (data?.included ?? []) as unknown[];
+			const included = (data?.included ?? []) as IncludedResource[];
 			return connections.map((c) => resolveIncluded(c, included));
 		},
 	});
@@ -172,12 +221,14 @@ export function usePendingOutgoing() {
 			const { data, error } = await api.GET(
 				"/api/connections/pending-outgoing",
 				{
-					params: { query: { include: "requester,receiver" } },
+					params: {
+						query: { include: "requester.profile,receiver.profile" },
+					},
 				},
 			);
 			if (error) throw error;
 			const connections = (data?.data ?? []) as ConnectionResource[];
-			const included = (data?.included ?? []) as unknown[];
+			const included = (data?.included ?? []) as IncludedResource[];
 			return connections.map((c) => resolveIncluded(c, included));
 		},
 	});

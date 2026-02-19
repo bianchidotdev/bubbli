@@ -322,7 +322,7 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -382,7 +382,7 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -441,7 +441,7 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -502,7 +502,7 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -560,7 +560,7 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -671,7 +671,7 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: unknown[];
+							included?: components["schemas"]["user"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -742,6 +742,129 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
+							included?: components["schemas"]["user"][];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/profiles/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /profiles/:id operation on profile resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for profile
+						 * @example id,display_name,handle,bio,avatar_url,location,profile_visibility,comment_visibility,user_id
+						 */
+						profile?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["profile"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/** @description Update profile fields (supports partial updates for inline editing) */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for profile
+						 * @example id,display_name,handle,bio,avatar_url,location,profile_visibility,comment_visibility,user_id
+						 */
+						profile?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /profiles/:id operation on profile resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								avatar_url?: string | null;
+								bio?: string | null;
+								comment_visibility?:
+									| ("connections_and_group_members" | "everyone_on_post")
+									| null;
+								display_name?: string | null;
+								handle?: string | null;
+								location?: string | null;
+								profile_visibility?: ("connections_only" | "public") | null;
+							};
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "profile";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["profile"];
 							included?: unknown[];
 							meta?: {
 								[key: string]: unknown;
@@ -775,7 +898,7 @@ export interface paths {
 					fields?: {
 						/**
 						 * @description Comma separated field names for user
-						 * @example id,email,display_name,handle,bio,avatar_url
+						 * @example id,email
 						 */
 						user?: string;
 					} & {
@@ -798,7 +921,7 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a user */
 							data?: components["schemas"]["user"][];
-							included?: unknown[];
+							included?: components["schemas"]["profile"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -833,7 +956,7 @@ export interface paths {
 					fields?: {
 						/**
 						 * @description Comma separated field names for user
-						 * @example id,email,display_name,handle,bio,avatar_url
+						 * @example id,email
 						 */
 						user?: string;
 					} & {
@@ -856,7 +979,7 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["user"];
-							included?: unknown[];
+							included?: components["schemas"]["profile"][];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -872,86 +995,6 @@ export interface paths {
 		options?: never;
 		head?: never;
 		patch?: never;
-		trace?: never;
-	};
-	"/api/users/{id}/profile": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		/** @description Update user profile fields */
-		patch: {
-			parameters: {
-				query?: {
-					/** @description Relationship paths to include in the response */
-					include?: string;
-					/** @description Limits the response fields to only those listed for each type */
-					fields?: {
-						/**
-						 * @description Comma separated field names for user
-						 * @example id,email,display_name,handle,bio,avatar_url
-						 */
-						user?: string;
-					} & {
-						[key: string]: unknown;
-					};
-				};
-				header?: never;
-				path: {
-					id: string;
-				};
-				cookie?: never;
-			};
-			/** @description Request body for the /users/:id/profile operation on user resource */
-			requestBody?: {
-				content: {
-					"application/vnd.api+json": {
-						data: {
-							attributes?: {
-								avatar_url?: string | null;
-								bio?: string | null;
-								comment_visibility?:
-									| ("connections_and_group_members" | "everyone_on_post")
-									| null;
-								display_name?: string | null;
-								handle?: string | null;
-								profile_visibility?: ("connections_only" | "public") | null;
-							};
-							id: string;
-							relationships?: Record<string, never>;
-							/** @enum {unknown} */
-							type?: "user";
-						};
-					};
-				};
-			};
-			responses: {
-				/** @description Success */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/vnd.api+json": {
-							data?: components["schemas"]["user"];
-							included?: unknown[];
-							meta?: {
-								[key: string]: unknown;
-							};
-						};
-					};
-				};
-				default: components["responses"]["errors"];
-			};
-		};
 		trace?: never;
 	};
 }
@@ -1188,26 +1231,245 @@ export interface components {
 		links: {
 			[key: string]: components["schemas"]["link"];
 		};
-		/** @description A "Resource object" representing a user */
-		user: {
-			/** @description An attributes object for a user */
+		/** @description A "Resource object" representing a profile */
+		profile: {
+			/** @description An attributes object for a profile */
 			attributes?: {
 				/** @description Field included by default. */
 				avatar_url?: (string | null) | null;
 				/** @description Field included by default. */
 				bio?: (string | null) | null;
+				/**
+				 * @description Field included by default.
+				 * @enum {string}
+				 */
+				comment_visibility:
+					| "connections_and_group_members"
+					| "everyone_on_post";
 				/** @description Field included by default. */
 				display_name?: (string | null) | null;
 				/** @description Field included by default. */
-				email: string;
-				/** @description Field included by default. */
 				handle?: (string | null) | null;
+				/** @description Field included by default. */
+				location?: (string | null) | null;
+				/**
+				 * @description Field included by default.
+				 * @enum {string}
+				 */
+				profile_visibility: "connections_only" | "public";
+				/**
+				 * Format: uuid
+				 * @description Field included by default.
+				 */
+				user_id: string;
+			};
+			id: string;
+			/** @description A relationships object for a profile */
+			relationships?: {
+				user?: {
+					/** @description An identifier for user */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
+			type: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"profile-filter": {
+			and?: components["schemas"]["profile-filter"][];
+			avatar_url?: components["schemas"]["profile-filter-avatar_url"];
+			bio?: components["schemas"]["profile-filter-bio"];
+			comment_visibility?: components["schemas"]["profile-filter-comment_visibility"];
+			display_name?: components["schemas"]["profile-filter-display_name"];
+			handle?: components["schemas"]["profile-filter-handle"];
+			id?: components["schemas"]["profile-filter-id"];
+			location?: components["schemas"]["profile-filter-location"];
+			not?: components["schemas"]["profile-filter"];
+			or?: components["schemas"]["profile-filter"][];
+			profile_visibility?: components["schemas"]["profile-filter-profile_visibility"];
+			user?: components["schemas"]["user-filter"];
+			user_id?: components["schemas"]["profile-filter-user_id"];
+		};
+		"profile-filter-avatar_url": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"profile-filter-bio": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"profile-filter-comment_visibility": {
+			/** @enum {string} */
+			eq?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			greater_than?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			greater_than_or_equal?:
+				| "connections_and_group_members"
+				| "everyone_on_post";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			less_than_or_equal?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			not_eq?: "connections_and_group_members" | "everyone_on_post";
+		};
+		"profile-filter-display_name": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"profile-filter-handle": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"profile-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"profile-filter-location": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+		};
+		"profile-filter-profile_visibility": {
+			/** @enum {string} */
+			eq?: "connections_only" | "public";
+			/** @enum {string} */
+			greater_than?: "connections_only" | "public";
+			/** @enum {string} */
+			greater_than_or_equal?: "connections_only" | "public";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "connections_only" | "public";
+			/** @enum {string} */
+			less_than_or_equal?: "connections_only" | "public";
+			/** @enum {string} */
+			not_eq?: "connections_only" | "public";
+		};
+		"profile-filter-user_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		/** @description A "Resource object" representing a user */
+		user: {
+			/** @description An attributes object for a user */
+			attributes?: {
+				/** @description Field included by default. */
+				email: string;
 				/** @description Virtual system circles defined in code, not the database */
 				system_circles?: (unknown[] | null) | null;
 			};
 			id: string;
 			/** @description A relationships object for a user */
-			relationships?: Record<string, never>;
+			relationships?: {
+				profile?: {
+					/** @description An identifier for profile */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
 			type: string;
 		};
 		/**
@@ -1216,59 +1478,11 @@ export interface components {
 		 */
 		"user-filter": {
 			and?: components["schemas"]["user-filter"][];
-			avatar_url?: components["schemas"]["user-filter-avatar_url"];
-			bio?: components["schemas"]["user-filter-bio"];
-			display_name?: components["schemas"]["user-filter-display_name"];
 			email?: components["schemas"]["user-filter-email"];
-			handle?: components["schemas"]["user-filter-handle"];
 			id?: components["schemas"]["user-filter-id"];
 			not?: components["schemas"]["user-filter"];
 			or?: components["schemas"]["user-filter"][];
-		};
-		"user-filter-avatar_url": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
-			not_eq?: string;
-		};
-		"user-filter-bio": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
-			not_eq?: string;
-		};
-		"user-filter-display_name": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
-			not_eq?: string;
+			profile?: components["schemas"]["profile-filter"];
 		};
 		"user-filter-email": {
 			contains?: string;
@@ -1281,21 +1495,6 @@ export interface components {
 			is_not_distinct_from?: string;
 			less_than?: string;
 			less_than_or_equal?: string;
-			not_eq?: string;
-		};
-		"user-filter-handle": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
 			not_eq?: string;
 		};
 		"user-filter-id": {
