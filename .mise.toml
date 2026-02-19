@@ -14,10 +14,10 @@ run = "lefthook install"
 ##### Convenience #####
 
 [tasks.precommit]
-depends = ["detect-secrets", "web:lint", "web:format", "back:format"]
+depends = ["detect-secrets", "web:lint", "web:format", "api:format"]
 
 [tasks.dev]
-depends = ["web:dev", "back:dev", "caddy:dev"]
+depends = ["web:dev", "api:dev", "caddy:dev"]
 
 
 ##### DB #####
@@ -26,17 +26,17 @@ run = "docker-compose -f docker/db-compose.yaml up -d"
 
 [tasks."db:setup"]
 depends = ["db:start"]
-dir = "back"
+dir = "api"
 run = "mix ash.setup"
 
 ##### Backend #####
-[tasks."back:dev"]
+[tasks."api:dev"]
 depends = ["db:setup"]
-dir = "back"
+dir = "api"
 run = "mix phx.server"
 
-[tasks."back:format"]
-dir = "back"
+[tasks."api:format"]
+dir = "api"
 run = "mix format"
 
 ##### Frontend #####
