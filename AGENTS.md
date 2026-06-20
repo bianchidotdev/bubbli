@@ -1,40 +1,102 @@
+# General Rules
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+---
+
 # Bubbli
 
 Bubbli is a social application with two main parts:
 
-- **Backend** (`/`): An Elixir/Phoenix API server using Ash Framework, serving a JSON:API
+- **Backend** (`/api`): An Elixir/Phoenix API server using Ash Framework, serving a JSON:API
 - **Frontend** (`/web`): A React SPA using Vite, TanStack Router, TanStack Query, and Tailwind CSS v4
 
 ## Project structure
 
 ```
 bubbli/
-├── config/              # Elixir app configuration
-├── lib/
-│   ├── bubbli/          # Core business logic (Ash domains, resources)
-│   │   ├── accounts/    # User accounts, authentication
-│   │   └── social/      # Social features (posts, circles, etc.)
-│   └── bubbli_web/      # Phoenix endpoint, router, controllers (JSON:API only)
-├── priv/                # Migrations, seeds, static assets
-├── test/                # Elixir tests
-├── web/                 # React SPA (separate from Phoenix)
+├── api/
+│   ├── config/              # Elixir app configuration
+│   ├── lib/
+│   │   ├── bubbli/          # Core business logic (Ash domains, resources)
+│   │   │   ├── accounts/    # User accounts, authentication
+│   │   │   ├── social/      # Social features (posts, circles, etc.)
+│   │   ├── bubbli_web/      # Phoenix endpoint, router, controllers (JSON:API only)
+│   ├── priv/                # Migrations, seeds, static assets
+│   ├── test/                # Elixir tests
+│   ├── mix.exs
+├── docker/                  # compose file for database(s)
+├── web/                     # React SPA (separate from Phoenix)
 │   ├── src/
-│   │   ├── api/         # API client (openapi-fetch), auth helpers, generated schema
+│   │   ├── api/             # API client (openapi-fetch), auth helpers, generated schema
 │   │   ├── components/
-│   │   │   └── ui/      # Design system component library (see below)
-│   │   ├── lib/         # Shared hooks and providers (auth, theme)
-│   │   └── routes/      # TanStack Router file-based routes
-│   ├── biome.json       # Linter/formatter config (tabs, double quotes)
+│   │   │   └── ui/          # Design system component library (see below)
+│   │   ├── lib/             # Shared hooks and providers (auth, theme)
+│   │   └── routes/          # TanStack Router file-based routes
+│   ├── biome.json           # Linter/formatter config (tabs, double quotes)
 │   ├── package.json
 │   └── vite.config.ts
-├── mix.exs
-├── Caddyfile            # Local reverse proxy config
-└── lefthook.yml         # Git hooks
+├── Caddyfile                # Local reverse proxy config
+└── lefthook.yml             # Git hooks
 ```
 
 ## General guidelines
 
-- Use `mix precommit` alias when you are done with all changes and fix any pending issues
+- Use `mise run precommit` command when you are done with all changes and fix any pending issues
 - Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps
 
 ---
