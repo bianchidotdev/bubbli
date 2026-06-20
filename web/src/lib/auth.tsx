@@ -170,5 +170,5 @@ export function useAuth(): AuthContextValue {
 // Helpers for non-React code (e.g. the API client)
 // ---------------------------------------------------------------------------
 
-export { getToken, setToken, clearToken };
 export type { User };
+export { clearToken, getToken, setToken };

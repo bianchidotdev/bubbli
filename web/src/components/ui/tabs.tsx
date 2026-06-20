@@ -103,5 +103,5 @@ function Tab({ active = false, className = "", children, ...rest }: TabProps) {
 // Exports
 // ---------------------------------------------------------------------------
 
-export { TabList, Tab };
-export type { TabListVariant, TabListProps, TabProps };
+export type { TabListProps, TabListVariant, TabProps };
+export { Tab, TabList };

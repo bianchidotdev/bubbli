@@ -115,4 +115,4 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
 Select.displayName = "Select";
 
-export { Select, type SelectProps, type SelectVariant, type SelectSize };
+export { Select, type SelectProps, type SelectSize, type SelectVariant };

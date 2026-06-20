@@ -13,26 +13,26 @@
     "generate-api": "openapi-typescript http://localhost:4000/api/open_api -o src/api/schema.d.ts"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.20",
-    "@tanstack/react-router": "^1.158.4",
-    "openapi-fetch": "^0.15.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-router": "^1.170.16",
+    "openapi-fetch": "^0.17.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.14",
-    "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/react-query-devtools": "^5.91.3",
-    "@tanstack/router-devtools": "^1.158.4",
-    "@tanstack/router-plugin": "^1.158.4",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
+    "@biomejs/biome": "^2.5.0",
+    "@tailwindcss/vite": "^4.3.1",
+    "@tanstack/react-query-devtools": "^5.101.0",
+    "@tanstack/router-devtools": "^1.167.0",
+    "@tanstack/router-plugin": "^1.168.18",
+    "@types/node": "^26.0.0",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
-    "openapi-typescript": "^7.10.1",
-    "tailwindcss": "^4.1.18",
-    "typescript": "~5.9.3",
-    "vite": "npm:rolldown-vite@7.2.5"
+    "@vitejs/plugin-react": "^6.0.2",
+    "openapi-typescript": "^7.13.0",
+    "tailwindcss": "^4.3.1",
+    "typescript": "~6.0.3",
+    "vite": "npm:rolldown-vite@7.3.1"
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"

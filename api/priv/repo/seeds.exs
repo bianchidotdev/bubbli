@@ -63,6 +63,12 @@ defmodule Seeds do
   end
 end
 
+# early exit if database is already seeded
+if Bubbli.Repo.exists?(User, email: "alice@example.com") do
+  IO.puts("🌱 Database already seeded. Exiting...")
+  exit(:normal)
+end
+
 # ---------------------------------------------------------------------------
 # Users & Profiles
 # ---------------------------------------------------------------------------

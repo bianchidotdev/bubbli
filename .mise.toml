@@ -1,10 +1,13 @@
 [tools]
-elixir = "1.19"
-erlang = "28"
-go = "1.25"
+# backend
+elixir = "1.20"
+erlang = "29"
+# frontend
 bun = "latest"
-lefthook = "2"
+# proxy
 caddy = "2"
+# tooling
+lefthook = "2"
 
 ##### Required for all contributors #####
 
@@ -22,12 +25,20 @@ depends = ["web:dev", "api:dev", "caddy:dev"]
 
 ##### DB #####
 [tasks."db:start"]
-run = "docker-compose -f docker/db-compose.yaml up -d"
+run = "docker compose -f docker/db-compose.yaml up -d"
 
 [tasks."db:setup"]
 depends = ["db:start"]
 dir = "api"
-run = "mix ash.setup"
+run = "mix setup"
+
+[tasks."db:reset"]
+depends = ["db:start"]
+dir = "api"
+run = "mix db.reset"
+
+[tasks."db:psql"]
+run = "docker compose -f docker/db-compose.yaml exec -it db psql -U postgres -d bubbli_dev"
 
 ##### Backend #####
 [tasks."api:dev"]

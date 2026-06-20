@@ -87,9 +87,9 @@ defmodule Bubbli.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ash.setup", "run priv/repo/seeds.exs"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      setup: ["deps.get", "db.setup"],
+      "db.setup": ["ash.setup", "run priv/repo/seeds.exs"],
+      "db.reset": ["ash.reset", "run priv/repo/seeds.exs"],
       test: ["ash.setup --quiet", "test"],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
