@@ -31,18 +31,7 @@ defmodule Bubbli.Social.Circle do
     create :create_custom do
       description "Create a custom circle"
       accept [:name, :description]
-
-      change fn changeset, context ->
-        case context.actor do
-          %{id: owner_id} ->
-            changeset
-            |> Ash.Changeset.force_change_attribute(:owner_id, owner_id)
-            |> Ash.Changeset.force_change_attribute(:type, :custom)
-
-          _ ->
-            Ash.Changeset.add_error(changeset, field: :owner_id, message: "must be authenticated")
-        end
-      end
+      change relate_actor(:owner)
     end
 
     update :update do
@@ -84,18 +73,6 @@ defmodule Bubbli.Social.Circle do
       allow_nil? false
       public? true
       constraints max_length: 100
-    end
-
-    attribute :type, :atom do
-      allow_nil? false
-      default :custom
-      constraints one_of: [:system, :custom]
-    end
-
-    attribute :system_type, :atom do
-      constraints one_of: [:private, :all_friends, :public]
-      public? true
-      description "Deprecated: system circles are now virtual. Kept for backwards compatibility."
     end
 
     attribute :description, :string do
