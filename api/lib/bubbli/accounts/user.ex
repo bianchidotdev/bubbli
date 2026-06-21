@@ -157,6 +157,8 @@ defmodule Bubbli.Accounts.User do
       public? true
     end
 
+    attribute :last_feed_viewed_at, :utc_datetime_usec
+
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
@@ -186,6 +188,16 @@ defmodule Bubbli.Accounts.User do
     has_many :received_connections, Bubbli.Social.Connection do
       source_attribute :id
       destination_attribute :receiver_id
+    end
+
+    has_many :group_memberships, Bubbli.Social.GroupMember do
+      source_attribute :id
+      destination_attribute :user_id
+    end
+
+    has_many :posts, Bubbli.Social.Post do
+      source_attribute :id
+      destination_attribute :author_id
     end
   end
 

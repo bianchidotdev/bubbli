@@ -22,5 +22,22 @@ defmodule Bubbli.Social do
 
     resource Bubbli.Social.Circle
     resource Bubbli.Social.CircleMember
+
+    resource Bubbli.Social.Group do
+      define :create_group, action: :create
+      define :list_groups, action: :list
+      define :get_group, action: :read, get_by: [:id]
+    end
+
+    resource Bubbli.Social.GroupMember do
+      define :join_group, action: :join, args: [:group_id]
+    end
+
+    resource Bubbli.Social.Post do
+      define :create_post, action: :create
+      define :list_feed, action: :list_feed
+    end
+
+    resource Bubbli.Social.PostAudience
   end
 end

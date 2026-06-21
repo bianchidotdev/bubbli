@@ -190,6 +190,13 @@ Use both: Tidewave MCP for runtime intelligence, LSP for diagnostics and symbol 
 
 ---
 
+## API
+
+The frontend uses generated API clients (refreshed using `bun run generate-api` and stored in `web/src/api/schema.d.ts`).
+Never make custom `fetch` calls to the backend, and prefer using the generated API client
+
+---
+
 ## Design system (`web/src/components/ui/`)
 
 The project has a custom component library built on **semantic design tokens** and **CSS custom properties**, registered with Tailwind v4's `@theme` directive. All components automatically support light and dark themes.

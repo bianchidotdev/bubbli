@@ -322,7 +322,10 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -382,7 +385,10 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -441,7 +447,10 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -502,7 +511,10 @@ export interface paths {
 						"application/vnd.api+json": {
 							/** @description An array of resource objects representing a connection */
 							data?: components["schemas"]["connection"][];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -560,7 +572,10 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -671,7 +686,10 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
-							included?: components["schemas"]["user"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -742,7 +760,755 @@ export interface paths {
 					content: {
 						"application/vnd.api+json": {
 							data?: components["schemas"]["connection"];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+							)[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/group-members": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Join a public group */
+		post: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group_member
+						 * @example id,role
+						 */
+						group_member?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			/** @description Request body for the /group-members operation on group_member resource */
+			requestBody: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								/** Format: uuid */
+								group_id: string;
+							};
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "group_member";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				201: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["group_member"];
+							included?: unknown[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/group-members/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/** @description Leave a group */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group_member
+						 * @example id,role
+						 */
+						group_member?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/group-members/{id}/remove": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/** @description Remove a member from a group (admin only) */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group_member
+						 * @example id,role
+						 */
+						group_member?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/groups": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List groups visible to the current user */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["group-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group
+						 * @example id,name,description,cover_image_url,privacy
+						 */
+						group?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a group */
+							data?: components["schemas"]["group"][];
 							included?: components["schemas"]["user"][];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		/** @description Create a new group */
+		post: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group
+						 * @example id,name,description,cover_image_url,privacy
+						 */
+						group?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			/** @description Request body for the /groups operation on group resource */
+			requestBody: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								cover_image_url?: string | null;
+								description?: string | null;
+								name: string;
+								privacy?: ("public" | "private") | null;
+							};
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "group";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				201: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["group"];
+							included?: components["schemas"]["user"][];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/groups/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /groups/:id operation on group resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group
+						 * @example id,name,description,cover_image_url,privacy
+						 */
+						group?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["group"];
+							included?: components["schemas"]["user"][];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		/** @description Delete a group */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group
+						 * @example id,name,description,cover_image_url,privacy
+						 */
+						group?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		/** @description Update group details */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for group
+						 * @example id,name,description,cover_image_url,privacy
+						 */
+						group?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /groups/:id operation on group resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								cover_image_url?: string | null;
+								description?: string | null;
+								name?: string | null;
+								privacy?: ("public" | "private") | null;
+							};
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "group";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["group"];
+							included?: components["schemas"]["user"][];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		trace?: never;
+	};
+	"/api/posts": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** @description Create a new post with audience targeting */
+		post: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for post
+						 * @example id,body
+						 */
+						post?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			/** @description Request body for the /posts operation on post resource */
+			requestBody: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								audiences: Record<string, never>[];
+								body: string;
+							};
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "post";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				201: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["post"];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+								| components["schemas"]["post_audience"]
+							)[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/posts/feed": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description List posts visible to the current user */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Filters the query to results with attributes matching the given filter object */
+					filter?: components["schemas"]["post-filter"];
+					/** @description Sort order to apply to the results */
+					sort?: string;
+					/** @description Paginates the response with the limit and offset or keyset pagination. */
+					page?: {
+						/** @default false */
+						count?: boolean;
+						limit?: number;
+						offset?: number;
+					};
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for post
+						 * @example id,body
+						 */
+						post?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							/** @description An array of resource objects representing a post */
+							data?: components["schemas"]["post"][];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+								| components["schemas"]["post_audience"]
+							)[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/posts/{id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** @description /posts/:id operation on post resource */
+		get: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for post
+						 * @example id,body
+						 */
+						post?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["post"];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+								| components["schemas"]["post_audience"]
+							)[];
+							meta?: {
+								[key: string]: unknown;
+							};
+						};
+					};
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		put?: never;
+		post?: never;
+		/** @description Delete a post */
+		delete: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for post
+						 * @example id,body
+						 */
+						post?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Deleted successfully */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content?: never;
+				};
+				default: components["responses"]["errors"];
+			};
+		};
+		options?: never;
+		head?: never;
+		/** @description Edit post body */
+		patch: {
+			parameters: {
+				query?: {
+					/** @description Relationship paths to include in the response */
+					include?: string;
+					/** @description Limits the response fields to only those listed for each type */
+					fields?: {
+						/**
+						 * @description Comma separated field names for post
+						 * @example id,body
+						 */
+						post?: string;
+					} & {
+						[key: string]: unknown;
+					};
+				};
+				header?: never;
+				path: {
+					id: string;
+				};
+				cookie?: never;
+			};
+			/** @description Request body for the /posts/:id operation on post resource */
+			requestBody?: {
+				content: {
+					"application/vnd.api+json": {
+						data: {
+							attributes?: {
+								body?: string | null;
+							};
+							id: string;
+							relationships?: Record<string, never>;
+							/** @enum {unknown} */
+							type?: "post";
+						};
+					};
+				};
+			};
+			responses: {
+				/** @description Success */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/vnd.api+json": {
+							data?: components["schemas"]["post"];
+							included?: (
+								| components["schemas"]["user"]
+								| components["schemas"]["profile"]
+								| components["schemas"]["post_audience"]
+							)[];
 							meta?: {
 								[key: string]: unknown;
 							};
@@ -1001,36 +1767,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
 	schemas: {
-		/** @description A "Resource object" representing a circle */
-		circle: {
-			/** @description An attributes object for a circle */
-			attributes?: {
-				/** @description Field included by default. */
-				description?: (string | null) | null;
-				/** @description Field included by default. */
-				name: string;
-				/** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. Field included by default. */
-				system_type?: ("private" | "all_friends" | "public" | null) | null;
-			};
-			id: string;
-			/** @description A relationships object for a circle */
-			relationships?: Record<string, never>;
-			type: string;
-		};
-		/**
-		 * @description Filters the query to results matching the given filter object
-		 * @example
-		 */
-		"circle-filter": {
-			and?: components["schemas"]["circle-filter"][];
-			description?: components["schemas"]["circle-filter-description"];
-			id?: components["schemas"]["circle-filter-id"];
-			name?: components["schemas"]["circle-filter-name"];
-			not?: components["schemas"]["circle-filter"];
-			or?: components["schemas"]["circle-filter"][];
-			system_type?: components["schemas"]["circle-filter-system_type"];
-		};
-		"circle-filter-description": {
+		"profile-filter-location": {
 			contains?: string;
 			eq?: string;
 			greater_than?: string;
@@ -1044,8 +1781,25 @@ export interface components {
 			less_than_or_equal?: string;
 			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"circle-filter-id": {
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"group-filter": {
+			and?: components["schemas"]["group-filter"][];
+			cover_image_url?: components["schemas"]["group-filter-cover_image_url"];
+			description?: components["schemas"]["group-filter-description"];
+			id?: components["schemas"]["group-filter-id"];
+			name?: components["schemas"]["group-filter-name"];
+			not?: components["schemas"]["group-filter"];
+			or?: components["schemas"]["group-filter"][];
+			owner?: components["schemas"]["user-filter"];
+			privacy?: components["schemas"]["group-filter-privacy"];
+		};
+		"profile-filter-id": {
 			/** Format: uuid */
 			eq?: string;
 			/** Format: uuid */
@@ -1053,8 +1807,10 @@ export interface components {
 			/** Format: uuid */
 			greater_than_or_equal?: string;
 			in?: string[];
+			/** Format: uuid */
 			is_distinct_from?: string;
 			is_nil?: boolean;
+			/** Format: uuid */
 			is_not_distinct_from?: string;
 			/** Format: uuid */
 			less_than?: string;
@@ -1077,6 +1833,28 @@ export interface components {
 			less_than_or_equal?: string;
 			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		"post-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
 		};
 		/** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. */
 		"circle-filter-system_type": {
@@ -1096,6 +1874,80 @@ export interface components {
 			less_than_or_equal?: "private" | "all_friends" | "public";
 			/** @enum {string} */
 			not_eq?: "private" | "all_friends" | "public";
+		};
+		/** @description A link MUST be represented as either: a string containing the link's URL or a link object. */
+		link: string;
+		errors: components["schemas"]["error"][];
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"post_audience-filter": {
+			and?: components["schemas"]["post_audience-filter"][];
+			circle?: components["schemas"]["circle-filter"];
+			circle_id?: components["schemas"]["post_audience-filter-circle_id"];
+			group?: components["schemas"]["group-filter"];
+			group_id?: components["schemas"]["post_audience-filter-group_id"];
+			id?: components["schemas"]["post_audience-filter-id"];
+			not?: components["schemas"]["post_audience-filter"];
+			or?: components["schemas"]["post_audience-filter"][];
+			type?: components["schemas"]["post_audience-filter-type"];
+		};
+		/** @description A "Resource object" representing a circle */
+		circle: {
+			/** @description An attributes object for a circle */
+			attributes?: {
+				/** @description Field included by default. */
+				description?: (string | null) | null;
+				/** @description Field included by default. */
+				name: string;
+				/** @description Deprecated: system circles are now virtual. Kept for backwards compatibility. Field included by default. */
+				system_type?: ("private" | "all_friends" | "public" | null) | null;
+			};
+			id: string;
+			/** @description A relationships object for a circle */
+			relationships?: Record<string, never>;
+			type: string;
+		};
+		"user-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"post_audience-filter-group_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
 		};
 		/** @description A "Resource object" representing a connection */
 		connection: {
@@ -1138,73 +1990,99 @@ export interface components {
 			};
 			type: string;
 		};
-		/**
-		 * @description Filters the query to results matching the given filter object
-		 * @example
-		 */
-		"connection-filter": {
-			and?: components["schemas"]["connection-filter"][];
-			id?: components["schemas"]["connection-filter-id"];
-			not?: components["schemas"]["connection-filter"];
-			or?: components["schemas"]["connection-filter"][];
-			receiver?: components["schemas"]["user-filter"];
-			receiver_id?: components["schemas"]["connection-filter-receiver_id"];
-			requester?: components["schemas"]["user-filter"];
-			requester_id?: components["schemas"]["connection-filter-requester_id"];
-		};
-		"connection-filter-id": {
-			/** Format: uuid */
+		"post-filter-body": {
+			contains?: string;
 			eq?: string;
-			/** Format: uuid */
 			greater_than?: string;
-			/** Format: uuid */
 			greater_than_or_equal?: string;
+			ilike?: string;
 			in?: string[];
 			is_distinct_from?: string;
 			is_nil?: boolean;
 			is_not_distinct_from?: string;
-			/** Format: uuid */
 			less_than?: string;
-			/** Format: uuid */
 			less_than_or_equal?: string;
-			/** Format: uuid */
+			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"connection-filter-receiver_id": {
-			/** Format: uuid */
+		"profile-filter-avatar_url": {
+			contains?: string;
 			eq?: string;
-			/** Format: uuid */
 			greater_than?: string;
-			/** Format: uuid */
 			greater_than_or_equal?: string;
+			ilike?: string;
 			in?: string[];
 			is_distinct_from?: string;
 			is_nil?: boolean;
 			is_not_distinct_from?: string;
-			/** Format: uuid */
 			less_than?: string;
-			/** Format: uuid */
 			less_than_or_equal?: string;
-			/** Format: uuid */
+			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"connection-filter-requester_id": {
-			/** Format: uuid */
+		"group-filter-cover_image_url": {
+			contains?: string;
 			eq?: string;
-			/** Format: uuid */
 			greater_than?: string;
-			/** Format: uuid */
 			greater_than_or_equal?: string;
+			ilike?: string;
 			in?: string[];
 			is_distinct_from?: string;
 			is_nil?: boolean;
 			is_not_distinct_from?: string;
-			/** Format: uuid */
 			less_than?: string;
-			/** Format: uuid */
 			less_than_or_equal?: string;
-			/** Format: uuid */
+			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		/** @description A "Resource object" representing a post_audience */
+		post_audience: {
+			/** @description An attributes object for a post_audience */
+			attributes?: {
+				/** @description Field included by default. */
+				circle_id?: (string | null) | null;
+				/** @description Field included by default. */
+				group_id?: (string | null) | null;
+				/**
+				 * @description Field included by default.
+				 * @enum {string}
+				 */
+				type: "public" | "connections" | "circle" | "group" | "private";
+			};
+			id: string;
+			/** @description A relationships object for a post_audience */
+			relationships?: {
+				circle?: {
+					/** @description An identifier for circle */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+				group?: {
+					/** @description An identifier for group */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
+			type: string;
+		};
+		links: {
+			[key: string]: components["schemas"]["link"];
 		};
 		error: {
 			/** @description An application-specific error code, expressed as a string value. */
@@ -1225,11 +2103,394 @@ export interface components {
 			/** @description A short, human-readable summary of the problem. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization. */
 			title?: string;
 		};
-		errors: components["schemas"]["error"][];
-		/** @description A link MUST be represented as either: a string containing the link's URL or a link object. */
-		link: string;
-		links: {
-			[key: string]: components["schemas"]["link"];
+		"group-filter-name": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"connection-filter": {
+			and?: components["schemas"]["connection-filter"][];
+			id?: components["schemas"]["connection-filter-id"];
+			not?: components["schemas"]["connection-filter"];
+			or?: components["schemas"]["connection-filter"][];
+			receiver?: components["schemas"]["user-filter"];
+			receiver_id?: components["schemas"]["connection-filter-receiver_id"];
+			requester?: components["schemas"]["user-filter"];
+			requester_id?: components["schemas"]["connection-filter-requester_id"];
+		};
+		"post_audience-filter-type": {
+			/** @enum {string} */
+			eq?: "public" | "connections" | "circle" | "group" | "private";
+			/** @enum {string} */
+			greater_than?: "public" | "connections" | "circle" | "group" | "private";
+			/** @enum {string} */
+			greater_than_or_equal?:
+				| "public"
+				| "connections"
+				| "circle"
+				| "group"
+				| "private";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "public" | "connections" | "circle" | "group" | "private";
+			/** @enum {string} */
+			less_than_or_equal?:
+				| "public"
+				| "connections"
+				| "circle"
+				| "group"
+				| "private";
+			/** @enum {string} */
+			not_eq?: "public" | "connections" | "circle" | "group" | "private";
+		};
+		"profile-filter-handle": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		"connection-filter-receiver_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"group-filter-privacy": {
+			/** @enum {string} */
+			eq?: "public" | "private";
+			/** @enum {string} */
+			greater_than?: "public" | "private";
+			/** @enum {string} */
+			greater_than_or_equal?: "public" | "private";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "public" | "private";
+			/** @enum {string} */
+			less_than_or_equal?: "public" | "private";
+			/** @enum {string} */
+			not_eq?: "public" | "private";
+		};
+		"connection-filter-requester_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"connection-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"post_audience-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"group_member-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		"group_member-filter-role": {
+			/** @enum {string} */
+			eq?: "admin" | "member";
+			/** @enum {string} */
+			greater_than?: "admin" | "member";
+			/** @enum {string} */
+			greater_than_or_equal?: "admin" | "member";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "admin" | "member";
+			/** @enum {string} */
+			less_than_or_equal?: "admin" | "member";
+			/** @enum {string} */
+			not_eq?: "admin" | "member";
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"profile-filter": {
+			and?: components["schemas"]["profile-filter"][];
+			avatar_url?: components["schemas"]["profile-filter-avatar_url"];
+			bio?: components["schemas"]["profile-filter-bio"];
+			comment_visibility?: components["schemas"]["profile-filter-comment_visibility"];
+			display_name?: components["schemas"]["profile-filter-display_name"];
+			handle?: components["schemas"]["profile-filter-handle"];
+			id?: components["schemas"]["profile-filter-id"];
+			location?: components["schemas"]["profile-filter-location"];
+			not?: components["schemas"]["profile-filter"];
+			or?: components["schemas"]["profile-filter"][];
+			profile_visibility?: components["schemas"]["profile-filter-profile_visibility"];
+			user?: components["schemas"]["user-filter"];
+			user_id?: components["schemas"]["profile-filter-user_id"];
+		};
+		"profile-filter-bio": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		"profile-filter-profile_visibility": {
+			/** @enum {string} */
+			eq?: "connections_only" | "public";
+			/** @enum {string} */
+			greater_than?: "connections_only" | "public";
+			/** @enum {string} */
+			greater_than_or_equal?: "connections_only" | "public";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "connections_only" | "public";
+			/** @enum {string} */
+			less_than_or_equal?: "connections_only" | "public";
+			/** @enum {string} */
+			not_eq?: "connections_only" | "public";
+		};
+		"profile-filter-user_id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
+		};
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"post-filter": {
+			and?: components["schemas"]["post-filter"][];
+			author?: components["schemas"]["user-filter"];
+			body?: components["schemas"]["post-filter-body"];
+			id?: components["schemas"]["post-filter-id"];
+			not?: components["schemas"]["post-filter"];
+			or?: components["schemas"]["post-filter"][];
+			post_audiences?: components["schemas"]["post_audience-filter"];
+		};
+		"group-filter-description": {
+			contains?: string;
+			eq?: string;
+			greater_than?: string;
+			greater_than_or_equal?: string;
+			ilike?: string;
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			less_than?: string;
+			less_than_or_equal?: string;
+			like?: string;
+			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
+		};
+		"profile-filter-comment_visibility": {
+			/** @enum {string} */
+			eq?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			greater_than?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			greater_than_or_equal?:
+				| "connections_and_group_members"
+				| "everyone_on_post";
+			in?: string[];
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			is_not_distinct_from?: string;
+			/** @enum {string} */
+			less_than?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			less_than_or_equal?: "connections_and_group_members" | "everyone_on_post";
+			/** @enum {string} */
+			not_eq?: "connections_and_group_members" | "everyone_on_post";
+		};
+		/** @description A "Resource object" representing a post */
+		post: {
+			/** @description An attributes object for a post */
+			attributes?: {
+				/** @description Field included by default. */
+				body: string;
+			};
+			id: string;
+			/** @description A relationships object for a post */
+			relationships?: {
+				author?: {
+					/** @description An identifier for author */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+				post_audiences?: {
+					/** @description Relationship data for post_audiences */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					}[];
+				};
+			};
+			type: string;
+		};
+		"circle-filter-id": {
+			/** Format: uuid */
+			eq?: string;
+			/** Format: uuid */
+			greater_than?: string;
+			/** Format: uuid */
+			greater_than_or_equal?: string;
+			in?: string[];
+			/** Format: uuid */
+			is_distinct_from?: string;
+			is_nil?: boolean;
+			/** Format: uuid */
+			is_not_distinct_from?: string;
+			/** Format: uuid */
+			less_than?: string;
+			/** Format: uuid */
+			less_than_or_equal?: string;
+			/** Format: uuid */
+			not_eq?: string;
 		};
 		/** @description A "Resource object" representing a profile */
 		profile: {
@@ -1283,70 +2544,46 @@ export interface components {
 		 * @description Filters the query to results matching the given filter object
 		 * @example
 		 */
-		"profile-filter": {
-			and?: components["schemas"]["profile-filter"][];
-			avatar_url?: components["schemas"]["profile-filter-avatar_url"];
-			bio?: components["schemas"]["profile-filter-bio"];
-			comment_visibility?: components["schemas"]["profile-filter-comment_visibility"];
-			display_name?: components["schemas"]["profile-filter-display_name"];
-			handle?: components["schemas"]["profile-filter-handle"];
-			id?: components["schemas"]["profile-filter-id"];
-			location?: components["schemas"]["profile-filter-location"];
-			not?: components["schemas"]["profile-filter"];
-			or?: components["schemas"]["profile-filter"][];
-			profile_visibility?: components["schemas"]["profile-filter-profile_visibility"];
+		"group_member-filter": {
+			and?: components["schemas"]["group_member-filter"][];
+			group?: components["schemas"]["group-filter"];
+			id?: components["schemas"]["group_member-filter-id"];
+			not?: components["schemas"]["group_member-filter"];
+			or?: components["schemas"]["group_member-filter"][];
+			role?: components["schemas"]["group_member-filter-role"];
 			user?: components["schemas"]["user-filter"];
-			user_id?: components["schemas"]["profile-filter-user_id"];
 		};
-		"profile-filter-avatar_url": {
-			contains?: string;
+		"post_audience-filter-circle_id": {
+			/** Format: uuid */
 			eq?: string;
+			/** Format: uuid */
 			greater_than?: string;
+			/** Format: uuid */
 			greater_than_or_equal?: string;
-			ilike?: string;
 			in?: string[];
+			/** Format: uuid */
 			is_distinct_from?: string;
 			is_nil?: boolean;
+			/** Format: uuid */
 			is_not_distinct_from?: string;
+			/** Format: uuid */
 			less_than?: string;
+			/** Format: uuid */
 			less_than_or_equal?: string;
-			like?: string;
+			/** Format: uuid */
 			not_eq?: string;
 		};
-		"profile-filter-bio": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
-			not_eq?: string;
-		};
-		"profile-filter-comment_visibility": {
-			/** @enum {string} */
-			eq?: "connections_and_group_members" | "everyone_on_post";
-			/** @enum {string} */
-			greater_than?: "connections_and_group_members" | "everyone_on_post";
-			/** @enum {string} */
-			greater_than_or_equal?:
-				| "connections_and_group_members"
-				| "everyone_on_post";
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			/** @enum {string} */
-			less_than?: "connections_and_group_members" | "everyone_on_post";
-			/** @enum {string} */
-			less_than_or_equal?: "connections_and_group_members" | "everyone_on_post";
-			/** @enum {string} */
-			not_eq?: "connections_and_group_members" | "everyone_on_post";
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"user-filter": {
+			and?: components["schemas"]["user-filter"][];
+			email?: components["schemas"]["user-filter-email"];
+			id?: components["schemas"]["user-filter-id"];
+			not?: components["schemas"]["user-filter"];
+			or?: components["schemas"]["user-filter"][];
+			profile?: components["schemas"]["profile-filter"];
 		};
 		"profile-filter-display_name": {
 			contains?: string;
@@ -1362,90 +2599,68 @@ export interface components {
 			less_than_or_equal?: string;
 			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"profile-filter-handle": {
+		/**
+		 * @description Filters the query to results matching the given filter object
+		 * @example
+		 */
+		"circle-filter": {
+			and?: components["schemas"]["circle-filter"][];
+			description?: components["schemas"]["circle-filter-description"];
+			id?: components["schemas"]["circle-filter-id"];
+			name?: components["schemas"]["circle-filter-name"];
+			not?: components["schemas"]["circle-filter"];
+			or?: components["schemas"]["circle-filter"][];
+			system_type?: components["schemas"]["circle-filter-system_type"];
+		};
+		"user-filter-email": {
 			contains?: string;
 			eq?: string;
 			greater_than?: string;
 			greater_than_or_equal?: string;
-			ilike?: string;
 			in?: string[];
 			is_distinct_from?: string;
 			is_nil?: boolean;
 			is_not_distinct_from?: string;
 			less_than?: string;
 			less_than_or_equal?: string;
-			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"profile-filter-id": {
-			/** Format: uuid */
-			eq?: string;
-			/** Format: uuid */
-			greater_than?: string;
-			/** Format: uuid */
-			greater_than_or_equal?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			/** Format: uuid */
-			less_than?: string;
-			/** Format: uuid */
-			less_than_or_equal?: string;
-			/** Format: uuid */
-			not_eq?: string;
-		};
-		"profile-filter-location": {
-			contains?: string;
-			eq?: string;
-			greater_than?: string;
-			greater_than_or_equal?: string;
-			ilike?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			less_than?: string;
-			less_than_or_equal?: string;
-			like?: string;
-			not_eq?: string;
-		};
-		"profile-filter-profile_visibility": {
-			/** @enum {string} */
-			eq?: "connections_only" | "public";
-			/** @enum {string} */
-			greater_than?: "connections_only" | "public";
-			/** @enum {string} */
-			greater_than_or_equal?: "connections_only" | "public";
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			/** @enum {string} */
-			less_than?: "connections_only" | "public";
-			/** @enum {string} */
-			less_than_or_equal?: "connections_only" | "public";
-			/** @enum {string} */
-			not_eq?: "connections_only" | "public";
-		};
-		"profile-filter-user_id": {
-			/** Format: uuid */
-			eq?: string;
-			/** Format: uuid */
-			greater_than?: string;
-			/** Format: uuid */
-			greater_than_or_equal?: string;
-			in?: string[];
-			is_distinct_from?: string;
-			is_nil?: boolean;
-			is_not_distinct_from?: string;
-			/** Format: uuid */
-			less_than?: string;
-			/** Format: uuid */
-			less_than_or_equal?: string;
-			/** Format: uuid */
-			not_eq?: string;
+		/** @description A "Resource object" representing a group */
+		group: {
+			/** @description An attributes object for a group */
+			attributes?: {
+				/** @description Field included by default. */
+				cover_image_url?: (string | null) | null;
+				/** @description Field included by default. */
+				description?: (string | null) | null;
+				/** @description Field included by default. */
+				name: string;
+				/**
+				 * @description Field included by default.
+				 * @enum {string}
+				 */
+				privacy: "public" | "private";
+			};
+			id: string;
+			/** @description A relationships object for a group */
+			relationships?: {
+				owner?: {
+					/** @description An identifier for owner */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
+			type: string;
 		};
 		/** @description A "Resource object" representing a user */
 		user: {
@@ -1472,32 +2687,60 @@ export interface components {
 			};
 			type: string;
 		};
-		/**
-		 * @description Filters the query to results matching the given filter object
-		 * @example
-		 */
-		"user-filter": {
-			and?: components["schemas"]["user-filter"][];
-			email?: components["schemas"]["user-filter-email"];
-			id?: components["schemas"]["user-filter-id"];
-			not?: components["schemas"]["user-filter"];
-			or?: components["schemas"]["user-filter"][];
-			profile?: components["schemas"]["profile-filter"];
-		};
-		"user-filter-email": {
+		"circle-filter-description": {
 			contains?: string;
 			eq?: string;
 			greater_than?: string;
 			greater_than_or_equal?: string;
+			ilike?: string;
 			in?: string[];
 			is_distinct_from?: string;
 			is_nil?: boolean;
 			is_not_distinct_from?: string;
 			less_than?: string;
 			less_than_or_equal?: string;
+			like?: string;
 			not_eq?: string;
+			string_ends_with?: string;
+			string_starts_with?: string;
 		};
-		"user-filter-id": {
+		/** @description A "Resource object" representing a group_member */
+		group_member: {
+			/** @description An attributes object for a group_member */
+			attributes?: {
+				/**
+				 * @description Field included by default.
+				 * @enum {string}
+				 */
+				role: "admin" | "member";
+			};
+			id: string;
+			/** @description A relationships object for a group_member */
+			relationships?: {
+				group?: {
+					/** @description An identifier for group */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+				user?: {
+					/** @description An identifier for user */
+					data?: {
+						id: string;
+						meta?: {
+							[key: string]: unknown;
+						};
+						type: string;
+					} | null;
+				};
+			};
+			type: string;
+		};
+		"group-filter-id": {
 			/** Format: uuid */
 			eq?: string;
 			/** Format: uuid */
@@ -1505,8 +2748,10 @@ export interface components {
 			/** Format: uuid */
 			greater_than_or_equal?: string;
 			in?: string[];
+			/** Format: uuid */
 			is_distinct_from?: string;
 			is_nil?: boolean;
+			/** Format: uuid */
 			is_not_distinct_from?: string;
 			/** Format: uuid */
 			less_than?: string;
