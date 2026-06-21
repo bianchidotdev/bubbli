@@ -8,6 +8,7 @@ bun = "latest"
 caddy = "2"
 # tooling
 lefthook = "2"
+trufflehog = "latest"
 
 ##### Required for all contributors #####
 
@@ -17,7 +18,7 @@ run = "lefthook install"
 ##### Convenience #####
 
 [tasks.precommit]
-depends = ["detect-secrets", "web:lint", "web:format", "api:format"]
+depends = ["web:lint", "web:format", "api:format"]
 
 [tasks.dev]
 depends = ["web:dev", "api:dev", "caddy:dev"]
@@ -69,6 +70,3 @@ run = "caddy run --config Caddyfile.dev"
 
 [tasks."devex:dev"]
 run = "docker-compose -f docker/devex-compose.yaml up -d"
-
-[tasks."detect-secrets"]
-run = "git diff --staged --name-only -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline"
