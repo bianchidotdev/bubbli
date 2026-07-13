@@ -39,14 +39,7 @@ defmodule Bubbli.Social.Post do
                author_id == ^actor(:id) or
                  exists(post_audiences, type == :public) or
                  (exists(post_audiences, type == :connections) and
-                    (exists(
-                       author.sent_connections,
-                       status == :accepted and receiver_id == ^actor(:id)
-                     ) or
-                       exists(
-                         author.received_connections,
-                         status == :accepted and requester_id == ^actor(:id)
-                       ))) or
+                    exists(author.connections, peer_id == ^actor(:id))) or
                  exists(
                    post_audiences,
                    type == :circle and exists(circle.members, user_id == ^actor(:id))
@@ -99,14 +92,7 @@ defmodule Bubbli.Social.Post do
 
       authorize_if expr(
                      exists(post_audiences, type == :connections) and
-                       (exists(
-                          author.sent_connections,
-                          status == :accepted and receiver_id == ^actor(:id)
-                        ) or
-                          exists(
-                            author.received_connections,
-                            status == :accepted and requester_id == ^actor(:id)
-                          ))
+                       exists(author.connections, peer_id == ^actor(:id))
                    )
 
       authorize_if expr(

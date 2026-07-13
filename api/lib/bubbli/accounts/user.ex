@@ -180,14 +180,19 @@ defmodule Bubbli.Accounts.User do
       destination_attribute :user_id
     end
 
-    has_many :sent_connections, Bubbli.Social.Connection do
+    has_many :sent_connection_requests, Bubbli.Social.ConnectionRequest do
       source_attribute :id
       destination_attribute :requester_id
     end
 
-    has_many :received_connections, Bubbli.Social.Connection do
+    has_many :received_connection_requests, Bubbli.Social.ConnectionRequest do
       source_attribute :id
       destination_attribute :receiver_id
+    end
+
+    has_many :connections, Bubbli.Social.Connection do
+      source_attribute :id
+      destination_attribute :user_id
     end
 
     has_many :group_memberships, Bubbli.Social.GroupMember do

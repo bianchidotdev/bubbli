@@ -20,6 +20,8 @@ defmodule Bubbli.Social.CircleMember do
       argument :circle_id, :uuid, allow_nil?: false
       argument :user_id, :uuid, allow_nil?: false
 
+      validate {Bubbli.Social.CircleMember.Validations.MustBeConnected, []}
+
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.force_change_attribute(

@@ -21,7 +21,7 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "type",
+      "source": "body",
       "type": "text"
     },
     {
@@ -43,78 +43,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "post_audiences_post_id_fkey",
+        "name": "posts_author_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "posts"
+        "table": "users"
       },
       "scale": null,
       "size": null,
-      "source": "post_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "post_audiences_circle_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "circles"
-      },
-      "scale": null,
-      "size": null,
-      "source": "circle_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "post_audiences_group_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "groups"
-      },
-      "scale": null,
-      "size": null,
-      "source": "group_id",
+      "source": "author_id",
       "type": "uuid"
     },
     {
@@ -128,6 +66,18 @@
       "size": null,
       "source": "inserted_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": false,
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "updated_at",
+      "type": "utc_datetime_usec"
     }
   ],
   "base_filter": null,
@@ -136,7 +86,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "24833BEB8DF07DF828320BE613AC96322C059F776DF3DBDA665B1D05C87692F0",
+  "hash": "C2B6FDCB9FCB8D2F380C0C12C9F4C231A9D5D5467ADC9A1625BB93F0746C1EAE",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -145,5 +95,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "post_audiences"
+  "table": "posts"
 }

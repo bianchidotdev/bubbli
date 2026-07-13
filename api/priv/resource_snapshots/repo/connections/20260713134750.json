@@ -18,11 +18,30 @@
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": null,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "connections_user_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "users"
+      },
       "scale": null,
       "size": null,
-      "source": "type",
-      "type": "text"
+      "source": "user_id",
+      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -43,78 +62,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "post_audiences_post_id_fkey",
+        "name": "connections_peer_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "posts"
+        "table": "users"
       },
       "scale": null,
       "size": null,
-      "source": "post_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "post_audiences_circle_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "circles"
-      },
-      "scale": null,
-      "size": null,
-      "source": "circle_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "post_audiences_group_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "groups"
-      },
-      "scale": null,
-      "size": null,
-      "source": "group_id",
+      "source": "peer_id",
       "type": "uuid"
     },
     {
@@ -133,39 +90,30 @@
   "base_filter": null,
   "check_constraints": [],
   "create_table_options": null,
-  "custom_indexes": [
+  "custom_indexes": [],
+  "custom_statements": [],
+  "has_create_action": true,
+  "hash": "E8B1BE0CFAC22B031853D492B614C52B17AF045C127011666B3CBA3A2A957858",
+  "identities": [
     {
       "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [
-        "post_id",
-        "type"
-      ],
-      "fields": [
+      "base_filter": null,
+      "index_name": "connections_unique_edge_index",
+      "keys": [
         {
           "type": "atom",
-          "value": "post_id"
+          "value": "user_id"
         },
         {
           "type": "atom",
-          "value": "type"
+          "value": "peer_id"
         }
       ],
-      "include": null,
-      "message": null,
-      "name": null,
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": null,
+      "name": "unique_edge",
+      "nils_distinct?": true,
       "where": null
     }
   ],
-  "custom_statements": [],
-  "has_create_action": true,
-  "hash": "5D19B17897DE2985A35FD782AE758B7A628636FBBDF8F4BC86EF1C12965BC9D2",
-  "identities": [],
   "multitenancy": {
     "attribute": null,
     "global": null,
@@ -173,5 +121,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "post_audiences"
+  "table": "connections"
 }

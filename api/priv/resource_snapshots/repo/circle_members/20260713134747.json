@@ -18,47 +18,30 @@
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": null,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "circle_members_circle_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "circles"
+      },
       "scale": null,
       "size": null,
-      "source": "name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "description",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "cover_image_url",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"public\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "privacy",
-      "type": "text"
+      "source": "circle_id",
+      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -79,7 +62,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "groups_owner_id_fkey",
+        "name": "circle_members_user_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -88,7 +71,7 @@
       },
       "scale": null,
       "size": null,
-      "source": "owner_id",
+      "source": "user_id",
       "type": "uuid"
     },
     {
@@ -102,18 +85,6 @@
       "size": null,
       "source": "inserted_at",
       "type": "utc_datetime_usec"
-    },
-    {
-      "allow_nil?": false,
-      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "updated_at",
-      "type": "utc_datetime_usec"
     }
   ],
   "base_filter": null,
@@ -122,8 +93,27 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "08E9BE26E674540D7AC4A1D483B705B7E43A1B94661DEDE1168B01496F4BABDD",
-  "identities": [],
+  "hash": "C4A28ED827497396A1A5AB3A7DF1976BD0759D336E591BBE0C27CF658314B42F",
+  "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "circle_members_unique_circle_member_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "circle_id"
+        },
+        {
+          "type": "atom",
+          "value": "user_id"
+        }
+      ],
+      "name": "unique_circle_member",
+      "nils_distinct?": true,
+      "where": null
+    }
+  ],
   "multitenancy": {
     "attribute": null,
     "global": null,
@@ -131,5 +121,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "groups"
+  "table": "circle_members"
 }

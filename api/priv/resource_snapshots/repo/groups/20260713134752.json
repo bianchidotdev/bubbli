@@ -18,30 +18,47 @@
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "connections_requester_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "users"
-      },
+      "references": null,
       "scale": null,
       "size": null,
-      "source": "requester_id",
-      "type": "uuid"
+      "source": "name",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "description",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "cover_image_url",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"public\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "privacy",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -62,7 +79,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "connections_receiver_id_fkey",
+        "name": "groups_owner_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -71,20 +88,8 @@
       },
       "scale": null,
       "size": null,
-      "source": "receiver_id",
+      "source": "owner_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"pending\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "status",
-      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -117,27 +122,8 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "857ED5745468029B8BE7683C8B75809E4D748A4CED208D0220B6875F54B8F0F5",
-  "identities": [
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "connections_unique_connection_pair_index",
-      "keys": [
-        {
-          "type": "atom",
-          "value": "requester_id"
-        },
-        {
-          "type": "atom",
-          "value": "receiver_id"
-        }
-      ],
-      "name": "unique_connection_pair",
-      "nils_distinct?": true,
-      "where": null
-    }
-  ],
+  "hash": "165F1ADAE8F0B6FD6B9C1F555AC93BB0F5C6293F8D10CC8683DDD8DC03BCFA8A",
+  "identities": [],
   "multitenancy": {
     "attribute": null,
     "global": null,
@@ -145,5 +131,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "connections"
+  "table": "groups"
 }

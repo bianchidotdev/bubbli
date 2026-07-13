@@ -9,14 +9,19 @@ defmodule Bubbli.Social do
   end
 
   resources do
+    resource Bubbli.Social.ConnectionRequest do
+      define :send_connection_request, action: :send, args: [:receiver_id]
+      define :accept_connection_request, action: :accept
+      define :reject_connection_request, action: :reject
+      define :cancel_connection_request, action: :cancel
+      define :list_incoming_connection_requests, action: :list_incoming
+      define :list_outgoing_connection_requests, action: :list_outgoing
+      define :get_connection_request, action: :read, get_by: [:id]
+    end
+
     resource Bubbli.Social.Connection do
-      define :send_connection_request, action: :send_request, args: [:receiver_id]
-      define :accept_connection, action: :accept
-      define :reject_connection, action: :reject
+      define :list_connections, action: :list
       define :remove_connection, action: :remove
-      define :list_connections, action: :list_accepted
-      define :list_pending_incoming_connections, action: :list_pending_incoming
-      define :list_pending_outgoing_connections, action: :list_pending_outgoing
       define :get_connection, action: :read, get_by: [:id]
     end
 

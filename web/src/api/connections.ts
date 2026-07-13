@@ -34,13 +34,21 @@ export interface UserResource {
 	resolvedProfile?: ProfileResource | null;
 }
 
-/** A connection resource as returned by the JSON:API. */
-export interface ConnectionResource {
+/** Lifecycle state of a connection request. */
+export type ConnectionRequestStatus =
+	| "pending"
+	| "accepted"
+	| "rejected"
+	| "cancelled";
+
+/** A connection request resource as returned by the JSON:API. */
+export interface ConnectionRequestResource {
 	id: string;
 	type: string;
 	attributes?: {
-		requester_id: string;
-		receiver_id: string;
+		requester_id?: string;
+		receiver_id?: string;
+		status?: ConnectionRequestStatus;
 	};
 	relationships?: {
 		requester?: { data?: { id: string; type: string } | null };
@@ -48,13 +56,29 @@ export interface ConnectionResource {
 	};
 }
 
-/** A connection with its resolved requester and receiver user data. */
-export interface ResolvedConnection {
+/** A connection request with its resolved requester and receiver user data. */
+export interface ResolvedConnectionRequest {
 	id: string;
+	status: ConnectionRequestStatus;
 	requesterId: string;
 	receiverId: string;
 	requester: UserResource | null;
 	receiver: UserResource | null;
+}
+
+/** An established connection resource as returned by the JSON:API. */
+export interface ConnectionResource {
+	id: string;
+	type: string;
+	relationships?: {
+		peer?: { data?: { id: string; type: string } | null };
+	};
+}
+
+/** A connection with its resolved peer (the connected user). */
+export interface ResolvedConnection {
+	id: string;
+	peer: UserResource | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,49 +111,60 @@ function attachProfiles(
 	});
 }
 
-/**
- * Resolve relationship references against the JSON:API `included` array.
- */
-function resolveIncluded(
+/** Resolve a connection request's requester/receiver against `included`. */
+function resolveRequest(
+	request: ConnectionRequestResource,
+	included: IncludedResource[],
+): ResolvedConnectionRequest {
+	const users = included.filter((r): r is UserResource => r.type === "user");
+	const resolvedUsers = attachProfiles(users, included);
+
+	const requesterId =
+		request.relationships?.requester?.data?.id ??
+		request.attributes?.requester_id ??
+		"";
+	const receiverId =
+		request.relationships?.receiver?.data?.id ??
+		request.attributes?.receiver_id ??
+		"";
+
+	return {
+		id: request.id,
+		status: request.attributes?.status ?? "pending",
+		requesterId,
+		receiverId,
+		requester: resolvedUsers.find((u) => u.id === requesterId) ?? null,
+		receiver: resolvedUsers.find((u) => u.id === receiverId) ?? null,
+	};
+}
+
+/** Resolve a connection's `peer` (the connected user) against `included`. */
+function resolveConnection(
 	connection: ConnectionResource,
 	included: IncludedResource[],
 ): ResolvedConnection {
 	const users = included.filter((r): r is UserResource => r.type === "user");
-
-	const requesterId =
-		connection.relationships?.requester?.data?.id ??
-		connection.attributes?.requester_id ??
-		"";
-	const receiverId =
-		connection.relationships?.receiver?.data?.id ??
-		connection.attributes?.receiver_id ??
-		"";
-
 	const resolvedUsers = attachProfiles(users, included);
 
-	const requester = resolvedUsers.find((u) => u.id === requesterId) ?? null;
-	const receiver = resolvedUsers.find((u) => u.id === receiverId) ?? null;
+	const peerId = connection.relationships?.peer?.data?.id ?? "";
 
 	return {
 		id: connection.id,
-		requesterId,
-		receiverId,
-		requester,
-		receiver,
+		peer: resolvedUsers.find((u) => u.id === peerId) ?? null,
 	};
 }
 
 /**
- * Given a resolved connection and the current user's ID, return the "other"
- * user in the connection (the one who isn't the current user).
+ * Given a resolved connection request and the current user's ID, return the
+ * "other" user in the request (the one who isn't the current user).
  */
 export function otherUser(
-	connection: ResolvedConnection,
+	request: ResolvedConnectionRequest,
 	currentUserId: string,
 ): UserResource | null {
-	return connection.requesterId === currentUserId
-		? connection.receiver
-		: connection.requester;
+	return request.requesterId === currentUserId
+		? request.receiver
+		: request.requester;
 }
 
 // ---------------------------------------------------------------------------
@@ -138,9 +173,9 @@ export function otherUser(
 
 export const connectionKeys = {
 	all: ["connections"] as const,
-	accepted: () => [...connectionKeys.all, "accepted"] as const,
-	pendingIncoming: () => [...connectionKeys.all, "pending-incoming"] as const,
-	pendingOutgoing: () => [...connectionKeys.all, "pending-outgoing"] as const,
+	connections: () => [...connectionKeys.all, "list"] as const,
+	incoming: () => [...connectionKeys.all, "requests", "incoming"] as const,
+	outgoing: () => [...connectionKeys.all, "requests", "outgoing"] as const,
 	search: (query: string) => ["user-search", query] as const,
 };
 
@@ -172,22 +207,20 @@ export function useSearchUsers(query: string) {
 }
 
 /**
- * List accepted connections for the current user.
- * Includes requester and receiver user data along with their profiles.
+ * List the current user's established connections.
+ * Includes each connected peer along with their profile.
  */
 export function useConnections() {
 	return useQuery({
-		queryKey: connectionKeys.accepted(),
+		queryKey: connectionKeys.connections(),
 		queryFn: async () => {
 			const { data, error } = await api.GET("/api/connections", {
-				params: {
-					query: { include: "requester.profile,receiver.profile" },
-				},
+				params: { query: { include: "peer.profile" } },
 			});
 			if (error) throw error;
 			const connections = (data?.data ?? []) as ConnectionResource[];
 			const included = (data?.included ?? []) as IncludedResource[];
-			return connections.map((c) => resolveIncluded(c, included));
+			return connections.map((c) => resolveConnection(c, included));
 		},
 	});
 }
@@ -195,10 +228,10 @@ export function useConnections() {
 /** List pending incoming connection requests (current user is the receiver). */
 export function usePendingIncoming() {
 	return useQuery({
-		queryKey: connectionKeys.pendingIncoming(),
+		queryKey: connectionKeys.incoming(),
 		queryFn: async () => {
 			const { data, error } = await api.GET(
-				"/api/connections/pending-incoming",
+				"/api/connection-requests/incoming",
 				{
 					params: {
 						query: { include: "requester.profile,receiver.profile" },
@@ -206,9 +239,9 @@ export function usePendingIncoming() {
 				},
 			);
 			if (error) throw error;
-			const connections = (data?.data ?? []) as ConnectionResource[];
+			const requests = (data?.data ?? []) as ConnectionRequestResource[];
 			const included = (data?.included ?? []) as IncludedResource[];
-			return connections.map((c) => resolveIncluded(c, included));
+			return requests.map((r) => resolveRequest(r, included));
 		},
 	});
 }
@@ -216,10 +249,10 @@ export function usePendingIncoming() {
 /** List pending outgoing connection requests (current user is the requester). */
 export function usePendingOutgoing() {
 	return useQuery({
-		queryKey: connectionKeys.pendingOutgoing(),
+		queryKey: connectionKeys.outgoing(),
 		queryFn: async () => {
 			const { data, error } = await api.GET(
-				"/api/connections/pending-outgoing",
+				"/api/connection-requests/outgoing",
 				{
 					params: {
 						query: { include: "requester.profile,receiver.profile" },
@@ -227,9 +260,9 @@ export function usePendingOutgoing() {
 				},
 			);
 			if (error) throw error;
-			const connections = (data?.data ?? []) as ConnectionResource[];
+			const requests = (data?.data ?? []) as ConnectionRequestResource[];
 			const included = (data?.included ?? []) as IncludedResource[];
-			return connections.map((c) => resolveIncluded(c, included));
+			return requests.map((r) => resolveRequest(r, included));
 		},
 	});
 }
@@ -244,10 +277,10 @@ export function useSendConnectionRequest() {
 
 	return useMutation({
 		mutationFn: async (receiverId: string) => {
-			const { data, error } = await api.POST("/api/connections", {
+			const { data, error } = await api.POST("/api/connection-requests", {
 				body: {
 					data: {
-						type: "connection",
+						type: "connection_request",
 						attributes: { receiver_id: receiverId },
 					},
 				},
@@ -256,68 +289,84 @@ export function useSendConnectionRequest() {
 			return data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: connectionKeys.all,
-			});
+			queryClient.invalidateQueries({ queryKey: connectionKeys.all });
 		},
 	});
 }
 
-/** Accept a pending connection request. */
+/** Accept a pending connection request, establishing a mutual connection. */
 export function useAcceptConnection() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (connectionId: string) => {
-			const { data, error } = await api.PATCH("/api/connections/{id}/accept", {
-				params: { path: { id: connectionId } },
-				body: {
-					data: {
-						id: connectionId,
-						type: "connection",
-						attributes: {},
+		mutationFn: async (requestId: string) => {
+			const { data, error } = await api.PATCH(
+				"/api/connection-requests/{id}/accept",
+				{
+					params: { path: { id: requestId } },
+					body: {
+						data: { id: requestId, type: "connection_request", attributes: {} },
 					},
 				},
-			});
+			);
 			if (error) throw error;
 			return data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: connectionKeys.all,
-			});
+			queryClient.invalidateQueries({ queryKey: connectionKeys.all });
 		},
 	});
 }
 
-/** Reject a pending connection request. */
+/** Reject a pending incoming connection request. */
 export function useRejectConnection() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (connectionId: string) => {
-			const { data, error } = await api.PATCH("/api/connections/{id}/reject", {
-				params: { path: { id: connectionId } },
-				body: {
-					data: {
-						id: connectionId,
-						type: "connection",
-						attributes: {},
+		mutationFn: async (requestId: string) => {
+			const { data, error } = await api.PATCH(
+				"/api/connection-requests/{id}/reject",
+				{
+					params: { path: { id: requestId } },
+					body: {
+						data: { id: requestId, type: "connection_request", attributes: {} },
 					},
 				},
-			});
+			);
 			if (error) throw error;
 			return data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: connectionKeys.all,
-			});
+			queryClient.invalidateQueries({ queryKey: connectionKeys.all });
 		},
 	});
 }
 
-/** Remove an existing connection (either party can do this). */
+/** Cancel (withdraw) a pending outgoing connection request. */
+export function useCancelConnectionRequest() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (requestId: string) => {
+			const { data, error } = await api.PATCH(
+				"/api/connection-requests/{id}/cancel",
+				{
+					params: { path: { id: requestId } },
+					body: {
+						data: { id: requestId, type: "connection_request", attributes: {} },
+					},
+				},
+			);
+			if (error) throw error;
+			return data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: connectionKeys.all });
+		},
+	});
+}
+
+/** Remove an established connection. */
 export function useRemoveConnection() {
 	const queryClient = useQueryClient();
 
@@ -329,9 +378,7 @@ export function useRemoveConnection() {
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: connectionKeys.all,
-			});
+			queryClient.invalidateQueries({ queryKey: connectionKeys.all });
 		},
 	});
 }

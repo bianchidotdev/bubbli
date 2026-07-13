@@ -6,7 +6,7 @@
 # and authorization policies entirely, which is appropriate for dev seeds.
 
 alias Bubbli.Accounts.{User, Profile}
-alias Bubbli.Social.{Circle, CircleMember, Connection}
+alias Bubbli.Social.{Circle, CircleMember, ConnectionRequest}
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -45,10 +45,10 @@ defmodule Seeds do
     |> Ash.create!(authorize?: false)
   end
 
-  def send_connection!(requester, receiver) do
-    Connection
+  def send_connection_request!(requester, receiver) do
+    ConnectionRequest
     |> Ash.Changeset.for_create(
-      :send_request,
+      :send,
       %{receiver_id: receiver.id},
       actor: requester,
       authorize?: false
@@ -56,8 +56,8 @@ defmodule Seeds do
     |> Ash.create!(authorize?: false)
   end
 
-  def accept_connection!(connection, actor) do
-    connection
+  def accept_connection_request!(request, actor) do
+    request
     |> Ash.Changeset.for_update(:accept, %{}, actor: actor, authorize?: false)
     |> Ash.update!(authorize?: false)
   end
@@ -134,28 +134,28 @@ IO.puts("✅ Created 5 users with profiles")
 IO.puts("🌱 Creating connections...")
 
 # Alice <-> Bob (accepted)
-conn_ab = Seeds.send_connection!(alice, bob)
-Seeds.accept_connection!(conn_ab, bob)
+req_ab = Seeds.send_connection_request!(alice, bob)
+Seeds.accept_connection_request!(req_ab, bob)
 
 # Alice <-> Carol (accepted)
-conn_ac = Seeds.send_connection!(alice, carol)
-Seeds.accept_connection!(conn_ac, carol)
+req_ac = Seeds.send_connection_request!(alice, carol)
+Seeds.accept_connection_request!(req_ac, carol)
 
 # Bob <-> Dave (accepted)
-conn_bd = Seeds.send_connection!(bob, dave)
-Seeds.accept_connection!(conn_bd, dave)
+req_bd = Seeds.send_connection_request!(bob, dave)
+Seeds.accept_connection_request!(req_bd, dave)
 
 # Carol -> Dave (pending — Dave hasn't accepted yet)
-_conn_cd = Seeds.send_connection!(carol, dave)
+_req_cd = Seeds.send_connection_request!(carol, dave)
 
 # Eve -> Alice (pending — Alice hasn't accepted yet)
-_conn_ea = Seeds.send_connection!(eve, alice)
+_req_ea = Seeds.send_connection_request!(eve, alice)
 
 # Dave <-> Eve (accepted)
-conn_de = Seeds.send_connection!(dave, eve)
-Seeds.accept_connection!(conn_de, eve)
+req_de = Seeds.send_connection_request!(dave, eve)
+Seeds.accept_connection_request!(req_de, eve)
 
-IO.puts("✅ Created 6 connections (4 accepted, 2 pending)")
+IO.puts("✅ Created 4 connections and 2 pending requests")
 
 # ---------------------------------------------------------------------------
 # Circles & Members

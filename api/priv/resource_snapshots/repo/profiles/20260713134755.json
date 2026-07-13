@@ -13,7 +13,7 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -21,19 +21,7 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "type",
+      "source": "display_name",
       "type": "text"
     },
     {
@@ -45,7 +33,7 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "system_type",
+      "source": "handle",
       "type": "text"
     },
     {
@@ -57,39 +45,56 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "description",
+      "source": "bio",
       "type": "text"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "circles_owner_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "users"
-      },
+      "references": null,
       "scale": null,
       "size": null,
-      "source": "owner_id",
-      "type": "uuid"
+      "source": "avatar_url",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "location",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"connections_only\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "profile_visibility",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"connections_and_group_members\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "comment_visibility",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -114,6 +119,37 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "profiles_user_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "users"
+      },
+      "scale": null,
+      "size": null,
+      "source": "user_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -122,25 +158,35 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "B29C7A668FC5CFA5551C2364A40B08F5717827532EFE96D2E375611E76C0461D",
+  "hash": "B3FF38A4597ED09ABD042056BA34D38DB51782CAF55B7A2DD28D33BDCB414504",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "circles_unique_system_circle_index",
+      "index_name": "profiles_unique_handle_index",
       "keys": [
         {
           "type": "atom",
-          "value": "owner_id"
-        },
-        {
-          "type": "atom",
-          "value": "system_type"
+          "value": "handle"
         }
       ],
-      "name": "unique_system_circle",
+      "name": "unique_handle",
       "nils_distinct?": true,
-      "where": "type = 'system'"
+      "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "profiles_unique_user_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "user_id"
+        }
+      ],
+      "name": "unique_user",
+      "nils_distinct?": true,
+      "where": null
     }
   ],
   "multitenancy": {
@@ -150,5 +196,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "circles"
+  "table": "profiles"
 }

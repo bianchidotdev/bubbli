@@ -31,16 +31,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "circle_members_circle_id_fkey",
+        "name": "group_members_group_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "circles"
+        "table": "groups"
       },
       "scale": null,
       "size": null,
-      "source": "circle_id",
+      "source": "group_id",
       "type": "uuid"
     },
     {
@@ -62,7 +62,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "circle_members_user_id_fkey",
+        "name": "group_members_user_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -73,6 +73,18 @@
       "size": null,
       "source": "user_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"member\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "role",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -93,23 +105,23 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "C06FBEB854B9DCFCFED7C1C276965258C68FB36AEE0136AAD8ADF0061556B033",
+  "hash": "84ACB3E51515B0D8C9126614EC6DBE282FAE47981DB5333E2F800D4CC955E704",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "circle_members_unique_circle_member_index",
+      "index_name": "group_members_unique_group_member_index",
       "keys": [
         {
           "type": "atom",
-          "value": "circle_id"
+          "value": "group_id"
         },
         {
           "type": "atom",
           "value": "user_id"
         }
       ],
-      "name": "unique_circle_member",
+      "name": "unique_group_member",
       "nils_distinct?": true,
       "where": null
     }
@@ -121,5 +133,5 @@
   },
   "repo": "Elixir.Bubbli.Repo",
   "schema": null,
-  "table": "circle_members"
+  "table": "group_members"
 }

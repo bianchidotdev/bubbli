@@ -1,4 +1,4 @@
-defmodule Bubbli.Social.Connection.Validations.NotSelfConnection do
+defmodule Bubbli.Social.ConnectionRequest.Validations.NotSelfRequest do
   @moduledoc """
   Validates that a user cannot send a connection request to themselves.
 

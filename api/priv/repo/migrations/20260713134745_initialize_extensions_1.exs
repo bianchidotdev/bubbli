@@ -1,4 +1,4 @@
-defmodule Bubbli.Repo.Migrations.InitializeAndAddAuthenticationResourcesExtensions1 do
+defmodule Bubbli.Repo.Migrations.InitializeExtensions1 do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
 
@@ -101,6 +101,21 @@ defmodule Bubbli.Repo.Migrations.InitializeAndAddAuthenticationResourcesExtensio
     """)
 
     execute("""
+    CREATE OR REPLACE FUNCTION ash_required(value ANYCOMPATIBLE, payload jsonb)
+    RETURNS ANYCOMPATIBLE AS $$
+    BEGIN
+      IF value IS NULL THEN
+        RETURN ash_raise_error(payload, value);
+      END IF;
+
+      RETURN value;
+    END;
+    $$ LANGUAGE plpgsql
+    STABLE
+    SET search_path = '';
+    """)
+
+    execute("""
     CREATE OR REPLACE FUNCTION uuid_generate_v7()
     RETURNS UUID
     AS $$
@@ -135,7 +150,7 @@ defmodule Bubbli.Repo.Migrations.InitializeAndAddAuthenticationResourcesExtensio
     # Uncomment this if you actually want to uninstall the extensions
     # when this migration is rolled back:
     execute(
-      "DROP FUNCTION IF EXISTS uuid_generate_v7(), timestamp_from_uuid_v7(uuid), ash_raise_error(jsonb), ash_raise_error(jsonb, ANYCOMPATIBLE), ash_elixir_and(BOOLEAN, ANYCOMPATIBLE), ash_elixir_and(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(BOOLEAN, ANYCOMPATIBLE), ash_trim_whitespace(text[])"
+      "DROP FUNCTION IF EXISTS uuid_generate_v7(), ash_raise_error(jsonb), ash_raise_error(jsonb, ANYCOMPATIBLE), ash_elixir_and(BOOLEAN, ANYCOMPATIBLE), ash_elixir_and(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(BOOLEAN, ANYCOMPATIBLE), ash_trim_whitespace(text[]), ash_required(ANYCOMPATIBLE, jsonb)"
     )
 
     # execute("DROP EXTENSION IF EXISTS \"citext\"")

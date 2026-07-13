@@ -4,6 +4,7 @@ import {
 	otherUser,
 	type UserResource,
 	useAcceptConnection,
+	useCancelConnectionRequest,
 	useConnections,
 	usePendingIncoming,
 	usePendingOutgoing,
@@ -224,11 +225,7 @@ function ConnectionsContent({ userId }: { userId: string }) {
 						</Tab>
 					</TabList>
 
-					{tab === "friends" ? (
-						<FriendsTab userId={userId} />
-					) : (
-						<RequestsTab userId={userId} />
-					)}
+					{tab === "friends" ? <FriendsTab /> : <RequestsTab userId={userId} />}
 				</>
 			)}
 		</div>
@@ -260,8 +257,7 @@ function SearchResults({
 	const pendingInIds = new Set<string>();
 
 	for (const c of connections.data ?? []) {
-		const other = otherUser(c, userId);
-		if (other) connectedIds.add(other.id);
+		if (c.peer) connectedIds.add(c.peer.id);
 	}
 	for (const c of pendingOutgoing.data ?? []) {
 		const other = otherUser(c, userId);
@@ -411,7 +407,7 @@ function SearchResultRow({
 // Friends tab
 // ---------------------------------------------------------------------------
 
-function FriendsTab({ userId }: { userId: string }) {
+function FriendsTab() {
 	const { data: connections, isLoading, isError } = useConnections();
 	const removeConnection = useRemoveConnection();
 	const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
@@ -456,7 +452,7 @@ function FriendsTab({ userId }: { userId: string }) {
 	return (
 		<div className="space-y-2">
 			{connections.map((connection) => {
-				const friend = otherUser(connection, userId);
+				const friend = connection.peer;
 				if (!friend) return null;
 
 				const isConfirming = confirmRemoveId === connection.id;
@@ -656,7 +652,7 @@ function IncomingRequests({ userId }: { userId: string }) {
 
 function OutgoingRequests({ userId }: { userId: string }) {
 	const { data: requests, isLoading, isError } = usePendingOutgoing();
-	const removeConnection = useRemoveConnection();
+	const cancelRequest = useCancelConnectionRequest();
 
 	if (isLoading) {
 		return (
@@ -701,8 +697,7 @@ function OutgoingRequests({ userId }: { userId: string }) {
 				if (!recipient) return null;
 
 				const isCancelling =
-					removeConnection.isPending &&
-					removeConnection.variables === request.id;
+					cancelRequest.isPending && cancelRequest.variables === request.id;
 
 				return (
 					<Card key={request.id} variant="flat">
@@ -723,7 +718,7 @@ function OutgoingRequests({ userId }: { userId: string }) {
 											variant="ghost"
 											size="sm"
 											loading={isCancelling}
-											onClick={() => removeConnection.mutate(request.id)}
+											onClick={() => cancelRequest.mutate(request.id)}
 										>
 											Cancel
 										</Button>
